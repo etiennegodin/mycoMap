@@ -43,19 +43,6 @@ def shannonIndex(tree_cover):
     
     return(shannon_index)
 
-def mycoValueEssences(tree_cover):
-    #indice myco - selon arbres favorable
-    indices_essences = []
-    for key in essencesInfo:   
-        point = pointEssence[key]
-        proportion = essencesInfo[key]
-
-        value = point * proportion
-        indices_essences.append(value)
-        
-    mycoValueEssences = np.sum(np.array(indices_essences))
-    return(mycoValueEssences)
-
 def mycoValueAge(cl_age_et):
     #indice age du secteur 
     # assumer que plus vieux = plus de bois mort donc sapotrophes???
@@ -63,38 +50,23 @@ def mycoValueAge(cl_age_et):
     mycoValueAge =  mycoAgeValueDict[cl_age_et]
     return(mycoValueAge)
 
-def mycoValue(df):
-    n = df['n']
-    H = df['H']
-    mVE = df['mVE']
-    mVA = df['mVA']
-
-
-    nStrength = 2
-    HStrength = 2
-    mVEStrength = 3
-    mVAStrength = 1
-
-    #ponderation egale 
-    mV = (n * nStrength) * ( H * HStrength) * ( mVE * mVEStrength) * (mVA * mVAStrength) 
-    mV = mV / 100
-    #mV = mV / (nStrength + HStrength + mVEStrength + mVAStrength)
-    return(mV)
-
-def mycorhizalValue(essencesInfo, associations):
+def mycoValueMicorrhizal(treeAssociations,*mycoFactors):
+    tree_cover = mycoFactors[-1]
+    print(tree_cover)
+    
+    combined_values = []
+    for tree, percentage in tree_cover.items():
+        print(tree, percentage)
+        print(treeAssociations[tree])
+        value = percentage * treeAssociations[tree]
+        combined_values.append(value)
+        
     #indice myco - selon arbres favorable
-    valuesList = []
-    for essence in essencesInfo:   
-        value = associations[essence]
-        pourcentage = essencesInfo[essence]
-        #value = value * pourcentage
-        valuesList.append(value)
     
-    mycorhizalValue = np.sum(np.array(valuesList))
-    #mycorhizalValue = np.sum(np.array(valuesList)) / len(essencesInfo)
-    return(mycorhizalValue)
+    mycoValueMicorrhizal = np.sum(np.array(combined_values))
+    #mycoValueMicorrhizal = np.sum(np.array(combined_values)) / len(tree_cover.keys())
+    return(mycoValueMicorrhizal)
     
-
 def mycoValueSapotrophic(*mycoFactors):
     # sapotrophic 
     tree_cover = mycoFactors[-1]
@@ -111,16 +83,14 @@ def mycoValueSapotrophic(*mycoFactors):
     return mycoValue
 
 #densite, cl_age_et, tree_cover
-def mycoValueAnalysis(*mycoFactors, ecology):
+def mycoValueAnalysis(name, *mycoFactors, ecology, treeAssociations):
     mycoValue = 0
     if ecology == 'mycorrhizal':
-        print('-------------------------')
-        mycoValue = 1
+        mycoValue = mycoValueMicorrhizal(treeAssociations,*mycoFactors, )
     #treeCove
     elif ecology == 'sapotrophic':
         mycoValue = mycoValueSapotrophic(*mycoFactors)
-        #mycoValue = 2
-        
+    
     elif ecology == 'parasitic':
         mycoValue = 3
     #age 

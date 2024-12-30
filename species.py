@@ -14,11 +14,9 @@ class Specie:
 
 
     def set_mycoValue(self, row):
-        print('----------------------------------')
         mycoFactors = list(row.values)
         mycoFactors = mycoFactors[1:4]
-        #print(mycoFactors)
-        self.mycoValue = mycoValueAnalysis(*mycoFactors, ecology = self.ecology)
+        self.mycoValue = mycoValueAnalysis(self.name, *mycoFactors, ecology = self.ecology, treeAssociations = self.treeAssociations)
 
         return self.mycoValue
         
@@ -44,6 +42,7 @@ def populateSpeciesList():
                 treeAssociations = pd.read_csv(treeAssociationsPath + name + '.csv') 
                 #Drop first collumns (doubled from csv)    
                 treeAssociations = treeAssociations.drop(treeAssociations.columns[0], axis=1)
+                treeAssociations = pd.Series(treeAssociations.mycoValueEssences.values,index=treeAssociations.code).to_dict()
             except:
                 print("Can't find treeAssociation file for {}".format(name))
                 treeAssociations = NaN
