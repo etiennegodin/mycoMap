@@ -10,7 +10,7 @@ import ast
 dataPath = './data/'
 geoDataPath = './geoData/'
 qgisExportPath = './data/qgisExport/'
-essenceInfoPath = dataPath + 'essenceInfo/'
+essenceInfoPath = './data/cleanGeoData/'
 speciesPath = "./species/"
 mycoMapPath = 'mycoMap - '
 outputDataPath = dataPath + 'dataOutput/'
@@ -36,8 +36,8 @@ class sapotrophicSpecies:
         self.mycorhizal = False
 
 
-codeEssence_path = './data/mycoMap - code_essence.csv'
-classeAgePath = './data/mycoMap - classe_age.csv'
+codeEssence_path = './data/input/code_essence.csv'
+classeAgePath = './data/input/classe_age.csv'
 
 
 #________dictionnary pour type essence______
@@ -52,51 +52,6 @@ valuesAge = dict(zip(dfAge['code'], dfAge['mycoValueAge']))
 
 #functions 
 
-def getRegionCode(filename):
-    code = str(filename[-7:-4])
-    code = code.upper()
-    return(code)
-
-
-def essenceCode(code):
-    # de-concatene le code d'essence dun polygon
-    #essencesInfo = []
-    result = re.findall(r'([A-Z]+)(\d+)', code)
-    result = dict(result)    #print(len(split_data))
-    # value from string to %
-    for key in result:
-        result[key] = int(result[key]) / 100
-    #essencesInfo.append(result)
-    return(result)
-
-def essenceInfo(qgisExportPath = qgisExportPath, test = False):
-
-    #process and handles de-concatene function 
-    print('Processing essenceInfo')
-    allRegions = []
-    # List all files in the directory
-    for f in os.listdir(qgisExportPath):
-        allRegions.append(f)
-
-    if test == True:
-        #quicker tests
-        allRegions = allRegions[0:2]
-
-
-    print('found {} regions to process'.format(len(allRegions)))
-
-    for index, r in enumerate(allRegions):
-        print(str(index) + "/" + str(len(allRegions)))
-        regionCode = r[14:17]
-        print('Processing {}'.format(regionCode))
-
-        #file path to export essenceInfo data
-        essenceInfoOutput = essenceInfoPath + 'essenceInfo{}.csv'.format(regionCode)
-        #path to export final data
-        df = pd.read_csv(qgisExportPath + r )
-        df['essencesInfo'] = df['eta_ess_pc'].apply(essenceCode)
-        df.to_csv(essenceInfoOutput, index=False) 
-        print('writing {}'.format(essenceInfoOutput))
 
 def listEssenceInfoFiles(essenceInfoPath = essenceInfoPath):
     allFiles = []
@@ -187,20 +142,6 @@ def mycorhizalValue(essencesInfo, associations):
     return(mycorhizalValue)
     
 
-
-
-x = 0
-# process essenceInfo first, input for next function
-if len(os.listdir(essenceInfoPath)) == len(os.listdir(qgisExportPath)): 
-    print('Files already processed in essenceInfo')
-    #x = int(input('Do you want to overwrite? 0/1? '))
-    if x == 1:
-        essenceInfo()
-else:
-    print('EssenceInfo not processed')
-    essenceInfo()
-
-
 #create species to look analyse for 
 species = []
 
@@ -208,13 +149,9 @@ cantharellus = mycorhizalSpecies('cantharellus')
 print(cantharellus.mycorhizal)
 species.append(cantharellus)
 
-
 genericSapotrophic = sapotrophicSpecies('genericSapotrophic')
 #species.append(genericSapotrophic)
 print(species)
-
-#mycorhizal 
-# looking onyl at specific species no need for n & H & age
 
 
 for s in species:
@@ -292,36 +229,3 @@ for s in species:
     merged_df.to_csv(outputAllData, index=False) 
     print('output')
 
-
-
-
-
-
-
-
-
-
-#dataOutputPath = dataPath + 'dataOutput/' + 'data{}.csv'.format(regionCode)
-
-
-'''
-if os.path.exists(essenceInfoPath):
-    print('essenceInfo already de-concatenated for {}'.format(regionCode))
-    #test if data file is already made 
-    if not os.path.exists(dataOutputPath): 
-            print("{} doesn't exists, processing essenceInfo".format(dataOutputPath))
-            print("loading {} as dfData".format(essenceInfoPath))
-            
-        
-            #data analysis
-            
-            dfData['mVE'] = dfData['essencesInfo'].apply(mycoValueEssences)
-            dfData['mycoValue'] = dfData.apply(mycoValue, axis =1)
-        
-            dfOutput = dfData.iloc[:, [0, 1, -5, -4, -3, -2, -1]]
-            
-
-    if os.path.exists(dataOutputPath): 
-        print('final data output already exists for {}'.format(regionCode))
-
-'''
