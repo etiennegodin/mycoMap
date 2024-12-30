@@ -50,3 +50,15 @@ def cleanRawGeoData(cleanGeoDataPath = cleanGeoDataPath):
 
     print("Processed all raw geo data inputs")
 
+def processGeoData():
+    
+    # Pre-process rawGeoData 
+    if len(os.listdir(cleanGeoDataPath)) == 0:
+        print('Raw Geo data not processed')
+        cleanRawGeoData() 
+    
+    else:
+        # Raw Geo data already cleaned
+        print('Raw Geo data already cleaned and saved in {}'.format(cleanGeoDataPath))
+
+

@@ -1,19 +1,15 @@
 
 
+#n = richnessIndex 
+# H = shannonIndex
 
-def listEssenceInfoFiles(essenceInfoPath = essenceInfoPath):
-    allFiles = []
-    for f in os.listdir(essenceInfoPath):
-        allFiles.append(f)
-    return(allFiles)
+def richnessIndex(tree_cover):
 
-def richnessIndex(essencesInfo):
-
-    #indice de ricnesse (nb especes)
+    #nb on individual species 
     n = len(essencesInfo)
     return(n)
 
-def shannonIndex(essencesInfo):
+def shannonIndex(tree_cover):
     #indice shannon 
     #creer liste proportions d'essence
     proportions_list = []
@@ -39,7 +35,7 @@ def shannonIndex(essencesInfo):
     shannon_index = -np.sum(proportions * np.log(proportions))
     return(shannon_index)
 
-def mycoValueEssences(essencesInfo):
+def mycoValueEssences(tree_cover):
     #indice myco - selon arbres favorable
     indices_essences = []
     for key in essencesInfo:   
@@ -52,7 +48,7 @@ def mycoValueEssences(essencesInfo):
     mycoValueEssences = np.sum(np.array(indices_essences))
     return(mycoValueEssences)
 
-def mycoValueAge(codeAge):
+def mycoValueAge(cl_age):
     #indice age du secteur 
     # assumer que plus vieux = plus de bois mort donc sapotrophes???
     mycoValueAge = valuesAge[codeAge]
@@ -90,7 +86,18 @@ def mycorhizalValue(essencesInfo, associations):
     return(mycorhizalValue)
     
 
-def mycoValue(row):
+def mycoValueSapotrophic(*args):
+    # sapotrophic 
+    # higher n, H & age means more variety of tree, diversity and possible dead wood
+
+def mycoValueAnalysis(densite, cl_age_et, tree_cover, ecology):
+
+
+
+    print(densite,cl_age_et,tree_cover, ecology)
+
+
     #treeCover
     #age 
     pass
+

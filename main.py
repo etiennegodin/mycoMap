@@ -3,20 +3,18 @@ import pandas as pd
 import re
 import ast
 
-from cleanRawGeoData import treeCoverReformat, cleanRawGeoData, rawGeoDataPath, cleanGeoDataPath
+from cleanRawGeoData import processGeoData, cleanGeoDataPath
+from species import populateSpeciesList
 
+# Create a list of all species objects to analyse 
+speciesList = populateSpeciesList()
 
-# Pre-process rawGeoData 
-if len(os.listdir(cleanGeoDataPath)) == 0:
-    print('Raw Geo data not processed')
-    cleanRawGeoData() 
-    
-else:
-    # Raw Geo data already cleaned
-    print('Raw Geo data already cleaned and saved in {}'.format(cleanGeoDataPath))
+#Process & clean input geo Data 
+processGeoData()
 
 # Create list of all exported cleanGeoData files
 allRegions = []
+
 for f in os.listdir(cleanGeoDataPath):
     allRegions.append(f)
 
@@ -31,9 +29,18 @@ for region in allRegions:
     dfRegion = dfRegion.iloc[:, [1,4,-3,-1]]
 
     #Convert treeCover back to dict (bug read from pd.read_csv )
-    dfRegion['tree_cover'] = dfRegion['tree_cover'].apply(ast.literal_eval)
+    #dfRegion['tree_cover'] = dfRegion['tree_cover'].apply(ast.literal_eval)
+    dfRegion = dfRegion.head()
+    #print(dfRegion.head())
+
+    for index, specie in enumerate(speciesList):
+        #print(index)
+        dfRegion[specie.name] = dfRegion.apply(lambda row: specie.set_mycoValue(row), axis = 1)
+        #dfRegion[specie.name] = 'xx'
+
     print(dfRegion.head())
-    
+
+
     #species 
     #dfRegion['realtive_specie'] = dfRegion.apply(mycoValue function, axis = 1)
 
@@ -61,3 +68,8 @@ for index, f in enumerate(allFiles):
             merged_df = pd.concat([merged_df, dfData], ignore_index=True)
 
 '''
+
+
+
+#dfData['essencesInfo'] = dfData['essencesInfo'].apply(ast.literal_eval)
+

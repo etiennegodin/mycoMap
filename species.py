@@ -1,45 +1,62 @@
 import pandas as pd
+from numpy import NaN 
+
+from mycoValueAnalysis import mycoValueAnalysis
 
 speciesListFile = 'data/input/mycoMap - speciesList.csv'
 treeAssociationsPath = 'data/input/treeAssociations/'
 
 class Specie:
-    def __init__(self, *args):
+    def __init__(self, name, ecology, treeAssociations):
         self.name = name 
         self.ecology = ecology
         self.treeAssociations = treeAssociations
 
 
-    def mycoValue():
+    def set_mycoValue(self, row):
+        print('----------------------------------')
+        mycoFactors = list(row.values)
+        print(mycoFactors)
+        mycoFactors = mycoFactors[1:4]
+        print(mycoFactors)
+        self.mycoValue = mycoValueAnalysis(*mycoFactors, ecology = self.ecology)
+        self.mycoValue = 'xx'
 
+        return self.mycoValue
+        
     def __str__(self):
         return self.name
 
 
-speciesList = []
+def populateSpeciesList():
 
-#dfData['essencesInfo'] = dfData['essencesInfo'].apply(ast.literal_eval)
-df = pd.read_csv(speciesListFile)            
+    speciesList = []
+    df = pd.read_csv(speciesListFile) 
+      
+    for index, row in df.iterrows():
+        name = (row['name'])
+        ecology = (row['ecology'])
+        #Pre-set treeAssociation to None 
+        #Kept as None if not mycorhizal or can't find file 
+        treeAssociations = None
+
+        #if Mycorrhizal look for tree associations file to inform 
+        if ecology == 'mycorrhizal':
+            try:
+                treeAssociations = pd.read_csv(treeAssociationsPath + name + '.csv') 
+                #Drop first collumns (doubled from csv)    
+                treeAssociations = treeAssociations.drop(treeAssociations.columns[0], axis=1)
+            except:
+                print("Can't find treeAssociation file for {}".format(name))
+                treeAssociations = NaN
+                
 
 
-for index, row in df.iterrows():
-    name = (row['name'])
-    ecology = (row['ecology'])
+        # specie instantiation
+        specie = Specie(name,ecology,treeAssociations)
+        speciesList.append(specie)
 
-    #if Mycorrhizal look for tree associations file to inform 
-    if ecology == 'mycorrhizal':
-        try:
-            treeAssociations = pd.read_csv(treeAssociationsPath + name + '.csv') 
-        except:
-            print("Can't find treeAssociation file for {}".format(name))
-
-        #Drop first collumns (doubled from csv)    
-        treeAssociations = treeAssociations.drop(treeAssociations.columns[0], axis=1)
-        
-    specie = Specie(name,ecology,treeAssociations)
-    speciesList.append(specie)
     
+    return speciesList
 
-for specie in speciesList:
-    print(specie.name)
 
