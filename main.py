@@ -33,7 +33,7 @@ for region in allRegions:
     #Convert treeCover back to dict (bug read from pd.read_csv )
     dfRegion['tree_cover'] = dfRegion['tree_cover'].apply(ast.literal_eval)
     print(dfRegion.head())
-
+    
     #species 
     #dfRegion['realtive_specie'] = dfRegion.apply(mycoValue function, axis = 1)
 

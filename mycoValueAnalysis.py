@@ -91,4 +91,6 @@ def mycorhizalValue(essencesInfo, associations):
     
 
 def mycoValue(row):
+    #treeCover
+    #age 
     pass
