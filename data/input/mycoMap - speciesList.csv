@@ -1,4 +1,5 @@
 name,ecology,season
 cantherellusSp,mycorrhizal,
 genericMycorrhizal,mycorrhizal,
-test,mycorrhizal,
+testSapotrophic,sapotrophic,
+testParasitic,parasitic,

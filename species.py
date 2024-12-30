@@ -16,11 +16,9 @@ class Specie:
     def set_mycoValue(self, row):
         print('----------------------------------')
         mycoFactors = list(row.values)
-        print(mycoFactors)
         mycoFactors = mycoFactors[1:4]
-        print(mycoFactors)
+        #print(mycoFactors)
         self.mycoValue = mycoValueAnalysis(*mycoFactors, ecology = self.ecology)
-        self.mycoValue = 'xx'
 
         return self.mycoValue
         

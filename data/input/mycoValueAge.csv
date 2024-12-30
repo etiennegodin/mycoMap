@@ -1,21 +1,21 @@
-code,description,mycoValueAge
-10,Peuplement équienne : classe d'age de 10 ans,1
-120,Peuplement équienne : classe d'age de 120 ans,5
-30,Peuplement équienne : classe d'age de 30 ans,2
-50,Peuplement équienne : classe d'age de 50 ans,3
-70,Peuplement équienne : classe d'age de 70 ans,3
-90,Peuplement équienne : classe d'age de 90 ans,4
-JIN,Jeune peuplement inéquienne,1
-JIR,Jeune peuplement irrégulier dont l'origine remonte à moins de 80 ans,3
-VIN,Vieux peuplement inéquienne,5
-VIR,Vieux peuplement irrégulier dont l'origine remonte à plus de 80 ans,5
-10,Peuplement équienne : classe d'age de 10 ans,1
-110,Peuplement équienne : classe d'âge de 110 ans,5
-120,Peuplement équienne : classe d'age de 120 ans,5
-130,Peuplement équienne : classe d'âge de 130 ans,5
-30,Peuplement équienne : classe d'age de 30 ans,2
-50,Peuplement équienne : classe d'age de 50 ans,3
-70,Peuplement équienne : classe d'age de 70 ans,3
-90,Peuplement équienne : classe d'age de 90 ans,4
-JIN,Jeune peuplement inéquienne,1
-VIN,Vieux peuplement inéquienne,5
+code,mycoValueAge,description
+10,1,Peuplement équienne : classe d'age de 10 ans
+120,5,Peuplement équienne : classe d'age de 120 ans
+30,2,Peuplement équienne : classe d'age de 30 ans
+50,3,Peuplement équienne : classe d'age de 50 ans
+70,3,Peuplement équienne : classe d'age de 70 ans
+90,4,Peuplement équienne : classe d'age de 90 ans
+JIN,1,Jeune peuplement inéquienne
+JIR,3,Jeune peuplement irrégulier dont l'origine remonte à moins de 80 ans
+VIN,5,Vieux peuplement inéquienne
+VIR,5,Vieux peuplement irrégulier dont l'origine remonte à plus de 80 ans
+10,1,Peuplement équienne : classe d'age de 10 ans
+110,5,Peuplement équienne : classe d'âge de 110 ans
+120,5,Peuplement équienne : classe d'age de 120 ans
+130,5,Peuplement équienne : classe d'âge de 130 ans
+30,2,Peuplement équienne : classe d'age de 30 ans
+50,3,Peuplement équienne : classe d'age de 50 ans
+70,3,Peuplement équienne : classe d'age de 70 ans
+90,4,Peuplement équienne : classe d'age de 90 ans
+JIN,1,Jeune peuplement inéquienne
+VIN,5,Vieux peuplement inéquienne

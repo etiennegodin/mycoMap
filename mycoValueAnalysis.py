@@ -1,38 +1,46 @@
-
+import numpy as np
+import pandas as pd 
 
 #n = richnessIndex 
 # H = shannonIndex
 
-def richnessIndex(tree_cover):
+#Read mycoValueAge.csv' and create dict where code is key and values is mycoValueAge
+dfAgeCode = pd.read_csv('data/input/mycoValueAge.csv')
+mycoAgeValueDict = pd.Series(dfAgeCode.mycoValueAge.values,index=dfAgeCode.code).to_dict()
 
+def richnessIndex(tree_cover):
     #nb on individual species 
-    n = len(essencesInfo)
+    n = len(tree_cover.keys())
     return(n)
 
 def shannonIndex(tree_cover):
     #indice shannon 
-    #creer liste proportions d'essence
-    proportions_list = []
-    for key in essencesInfo:
-        #print(key)
-        proportions_list.append(essencesInfo[key])
 
-    #numpy array
+    #creer liste proportions d'essence
+    #Ex: [0.3, 0.2, 0.2, 0.2, 0.1]
+    proportions_list = []
+
+    for key in tree_cover:
+        proportions_list.append(tree_cover[key])
+
+    # Reformat proprtions list in np.array         
     proportions = np.array(proportions_list)
 
     try:
         # Vérifiez que la somme des proportions est égale à 1 (100%)
         if not np.isclose(np.sum(proportions), 1.0):
-            raise ValueError("Les proportions des espèces doivent totaliser 1")
+            raise ValueError("Can't calculate shannonIndex, total of tree species proprotions do not equal 100%")
         
-        # Calculez l'indice de Shannon
+        # Calculate shannon index
+        # https://en.wikipedia.org/wiki/Diversity_index
         shannon_index = -np.sum(proportions * np.log(proportions))
         
     except ValueError:
-        # En cas d'erreur, attribuez la valeur 0 à l'indice de Shannon
+        # In case of error, assign value of 0 
         shannon_index = 0
     
-    shannon_index = -np.sum(proportions * np.log(proportions))
+    shannon_index = round(shannon_index,5)
+    
     return(shannon_index)
 
 def mycoValueEssences(tree_cover):
@@ -48,10 +56,11 @@ def mycoValueEssences(tree_cover):
     mycoValueEssences = np.sum(np.array(indices_essences))
     return(mycoValueEssences)
 
-def mycoValueAge(cl_age):
+def mycoValueAge(cl_age_et):
     #indice age du secteur 
     # assumer que plus vieux = plus de bois mort donc sapotrophes???
-    mycoValueAge = valuesAge[codeAge]
+
+    mycoValueAge =  mycoAgeValueDict[cl_age_et]
     return(mycoValueAge)
 
 def mycoValue(df):
@@ -86,18 +95,34 @@ def mycorhizalValue(essencesInfo, associations):
     return(mycorhizalValue)
     
 
-def mycoValueSapotrophic(*args):
+def mycoValueSapotrophic(*mycoFactors):
     # sapotrophic 
+    tree_cover = mycoFactors[-1]
+    cl_age_et = mycoFactors[-2]
+
+    n = richnessIndex(tree_cover)
+    H = shannonIndex(tree_cover)
+    age = mycoValueAge(cl_age_et)
+
     # higher n, H & age means more variety of tree, diversity and possible dead wood
+    #better method to weight each element
+    mycoValue = n * H * age
 
-def mycoValueAnalysis(densite, cl_age_et, tree_cover, ecology):
+    return mycoValue
 
-
-
-    print(densite,cl_age_et,tree_cover, ecology)
-
-
-    #treeCover
+#densite, cl_age_et, tree_cover
+def mycoValueAnalysis(*mycoFactors, ecology):
+    mycoValue = 0
+    if ecology == 'mycorrhizal':
+        print('-------------------------')
+        mycoValue = 1
+    #treeCove
+    elif ecology == 'sapotrophic':
+        mycoValue = mycoValueSapotrophic(*mycoFactors)
+        #mycoValue = 2
+        
+    elif ecology == 'parasitic':
+        mycoValue = 3
     #age 
-    pass
+    return mycoValue
 
