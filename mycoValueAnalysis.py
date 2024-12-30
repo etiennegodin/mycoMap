@@ -52,17 +52,13 @@ def mycoValueAge(cl_age_et):
 
 def mycoValueMicorrhizal(treeAssociations,*mycoFactors):
     tree_cover = mycoFactors[-1]
-    print(tree_cover)
     
     combined_values = []
     for tree, percentage in tree_cover.items():
-        print(tree, percentage)
-        print(treeAssociations[tree])
         value = percentage * treeAssociations[tree]
         combined_values.append(value)
-        
     #indice myco - selon arbres favorable
-    
+
     mycoValueMicorrhizal = np.sum(np.array(combined_values))
     #mycoValueMicorrhizal = np.sum(np.array(combined_values)) / len(tree_cover.keys())
     return(mycoValueMicorrhizal)
@@ -82,17 +78,20 @@ def mycoValueSapotrophic(*mycoFactors):
 
     return mycoValue
 
-#densite, cl_age_et, tree_cover
+
 def mycoValueAnalysis(name, *mycoFactors, ecology, treeAssociations):
-    mycoValue = 0
+    mycoValue = None
+   
+    #densite, cl_age_et, tree_cover
     if ecology == 'mycorrhizal':
         mycoValue = mycoValueMicorrhizal(treeAssociations,*mycoFactors, )
     #treeCove
     elif ecology == 'sapotrophic':
         mycoValue = mycoValueSapotrophic(*mycoFactors)
+
     
     elif ecology == 'parasitic':
-        mycoValue = 3
-    #age 
+        pass
+
     return mycoValue
 
