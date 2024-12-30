@@ -5,8 +5,8 @@ import os
 # Clean raw geo data from Foret Ouverte
 # Transform desciption of tree cover percentage from string to dict 
  
-inputPath = './data/input/rawGeoData/'
-outputPath = './data/input/cleanGeoData/'
+rawGeoDataPath = './data/input/rawGeoData/'
+cleanGeoDataPath = './data/input/cleanGeoData/'
 
 
 def treeCoverReformat(code):
@@ -18,12 +18,12 @@ def treeCoverReformat(code):
         result[key] = int(result[key]) / 100
     return(result)
 
-def cleanRawGeoData(outputPath = outputPath):
+def cleanRawGeoData(cleanGeoDataPath = cleanGeoDataPath):
     print('Processing tree cover data')
 
     #Create list with all input files 
     allRegions = []
-    for f in os.listdir(inputPath):
+    for f in os.listdir(rawGeoDataPath):
         allRegions.append(f)
    
     print('Found {} regions to process'.format(len(allRegions)))
@@ -40,22 +40,13 @@ def cleanRawGeoData(outputPath = outputPath):
         print('Processing {}'.format(regionCode))
 
         #Define file path to export treeCover data
-        fileOutputPath = outputPath + 'CARTE_ECO_MAJ_{}.csv'.format(regionCode)
+        filecleanGeoDataPath = cleanGeoDataPath + 'CARTE_ECO_MAJ_{}.csv'.format(regionCode)
         #path to export final data
-        df = pd.read_csv(inputPath + r )
+        df = pd.read_csv(rawGeoDataPath + r )
         # Apply main logic converting string to dict with tree percentage
         df['tree_cover'] = df['eta_ess_pc'].apply(treeCoverReformat)
-        df.to_csv(fileOutputPath, index=False) 
-        print('writing {}'.format(fileOutputPath))
+        df.to_csv(filecleanGeoDataPath, index=False) 
+        print('writing {}'.format(filecleanGeoDataPath))
 
     print("Processed all raw geo data inputs")
 
-
-# process essenceInfo first, input for next function
-if len(os.listdir(outputPath)) == 0:
-    print('Raw Geo data not processed')
-    cleanRawGeoData() 
-    
-else:
-    # Raw Geo data already cleaned
-    print('Raw Geo data already cleaned and saved in {}'.format(outputPath))
