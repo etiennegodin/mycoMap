@@ -1,0 +1,21 @@
+code,description,mycoValueAge
+10,Peuplement équienne : classe d'age de 10 ans,1
+120,Peuplement équienne : classe d'age de 120 ans,5
+30,Peuplement équienne : classe d'age de 30 ans,2
+50,Peuplement équienne : classe d'age de 50 ans,3
+70,Peuplement équienne : classe d'age de 70 ans,3
+90,Peuplement équienne : classe d'age de 90 ans,4
+JIN,Jeune peuplement inéquienne,1
+JIR,Jeune peuplement irrégulier dont l'origine remonte à moins de 80 ans,3
+VIN,Vieux peuplement inéquienne,5
+VIR,Vieux peuplement irrégulier dont l'origine remonte à plus de 80 ans,5
+10,Peuplement équienne : classe d'age de 10 ans,1
+110,Peuplement équienne : classe d'âge de 110 ans,5
+120,Peuplement équienne : classe d'age de 120 ans,5
+130,Peuplement équienne : classe d'âge de 130 ans,5
+30,Peuplement équienne : classe d'age de 30 ans,2
+50,Peuplement équienne : classe d'age de 50 ans,3
+70,Peuplement équienne : classe d'age de 70 ans,3
+90,Peuplement équienne : classe d'age de 90 ans,4
+JIN,Jeune peuplement inéquienne,1
+VIN,Vieux peuplement inéquienne,5
