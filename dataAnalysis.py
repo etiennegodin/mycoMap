@@ -113,19 +113,19 @@ def mycoValueAge(codeAge):
 def mycoValue(df):
     n = df['n']
     H = df['H']
-    mVE = df['mVE']
+    mvT = df['mvT']
     mVA = df['mVA']
 
 
     nStrength = 2
     HStrength = 2
-    mVEStrength = 3
+    mvTStrength = 3
     mVAStrength = 1
 
     #ponderation egale 
-    mV = (n * nStrength) * ( H * HStrength) * ( mVE * mVEStrength) * (mVA * mVAStrength) 
+    mV = (n * nStrength) * ( H * HStrength) * ( mvT * mvTStrength) * (mVA * mVAStrength) 
     mV = mV / 100
-    #mV = mV / (nStrength + HStrength + mVEStrength + mVAStrength)
+    #mV = mV / (nStrength + HStrength + mvTStrength + mVAStrength)
     return(mV)
 
 def mycorhizalValue(essencesInfo, associations):

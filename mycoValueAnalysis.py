@@ -1,7 +1,6 @@
 
 
 
-
 def listEssenceInfoFiles(essenceInfoPath = essenceInfoPath):
     allFiles = []
     for f in os.listdir(essenceInfoPath):
@@ -90,3 +89,6 @@ def mycorhizalValue(essencesInfo, associations):
     #mycorhizalValue = np.sum(np.array(valuesList)) / len(essencesInfo)
     return(mycorhizalValue)
     
+
+def mycoValue(row):
+    pass
