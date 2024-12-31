@@ -67,6 +67,7 @@ def mycoValueSapotrophic(*mycoFactors):
     # sapotrophic 
     tree_cover = mycoFactors[-1]
     cl_age_et = mycoFactors[-2]
+    density = mycoFactors[0]
 
     n = richnessIndex(tree_cover)
     H = shannonIndex(tree_cover)
@@ -74,6 +75,8 @@ def mycoValueSapotrophic(*mycoFactors):
 
     # higher n, H & age means more variety of tree, diversity and possible dead wood
     #better method to weight each element
+
+    print(n,H,age,density)
     mycoValue = n * H * age
 
     return mycoValue
