@@ -39,14 +39,14 @@ if allRegionsDfOutputName not in outputFileList or override == True:
     #Process & clean input geo Data 
     processGeoData()
 
-    # Create list of all exported cleanGeoData files
+    # Create list of all exported cleanGeoData filesn
     allRegions = []
 
     for f in os.listdir(cleanGeoDataPath):
         allRegions.append(f)
 
     #testing
-    #allRegions = allRegions[0:1]
+    allRegions = allRegions[0:1]
     print(allRegions)
 
     #empty dataframe for final output
@@ -59,7 +59,7 @@ if allRegionsDfOutputName not in outputFileList or override == True:
         dfRegion = dfRegion.iloc[:, [1,4,-3,-1]]
 
         ### TESTING 
-        #dfRegion = dfRegion.head(1000)
+        dfRegion = dfRegion.head(1000)
 
 
         #Convert treeCover back to dict (bug read from pd.read_csv )
