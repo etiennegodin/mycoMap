@@ -17,3 +17,15 @@ def saveDfToCsv(df, output_path):
 
           
     
+def pdToCsv(df, speciesFolder, filename = "occ.csv" ):
+    outputpath = speciesFolder + filename 
+
+    df.to_csv(outputpath)
+    print('Writting pd as csv')
+    print('{}'.format(outputpath))
+    return outputpath
+
+
+def csvToPandas(csv):
+    df = pd.read_csv(csv, index_col = 0)
+    return(df)

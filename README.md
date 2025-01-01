@@ -37,5 +37,8 @@ Tree identity and tree species richness influence the fungal biomass and species
 They also revealed that tree composition can explain a large proportion of variation in the species composition of fungal communities, even greater than soil properties
 
 ________________
+Statistics
+
+This is the simplest form, where we have one thing we’re trying to predict and one thing we think might influence it. For example, We are perform a predictive analysis where are trying to predict someone’s weight based on their height.
 
 Multiple Linear Regression: Here, things get a bit more complex. We’re still predicting one thing, but now we’re considering multiple factors that might influence it. For instance, we might predict a person’s weight based on their height, age, and maybe even their diet habits.
