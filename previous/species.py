@@ -46,14 +46,9 @@ def populateSpeciesList():
             except:
                 print("Can't find treeAssociation file for {}".format(name))
                 treeAssociations = NaN
-                
-
 
         # specie instantiation
         specie = Specie(name,ecology,treeAssociations)
         speciesList.append(specie)
 
-    
     return speciesList
-
-

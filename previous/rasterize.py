@@ -30,7 +30,7 @@ X = gdf['X'].values
 Y = gdf['Y'].values
 
 # Set resolution and create grid
-resolution = 20
+resolution = 50
 x_range = np.arange(X.min(), X.max()+resolution, resolution)
 y_range = np.arange(Y.min(), Y.max()+resolution, resolution)
 grid_x, grid_y = np.meshgrid(x_range, y_range)
