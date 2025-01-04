@@ -6,16 +6,20 @@ from numpy import NaN
 # Create specie object from gbif specie_obejct with relevant informations 
 class Specie:
     def __init__(self, name, key, taxonomic_rank, ecology):
+        
+        name = name.replace(" ", "_")
         self.name = name 
         self.key = key 
         self.taxonomic_rank = str.lower(taxonomic_rank)
         self.ecology = ecology
+
+        print("Created specie object for {}".format(name))
+        print('')
       
     def __str__(self):
         return self.name
 
 def create_specie(queryName, rank = 'species'):
-
     #gbif_specie object
     try:
         gbif_species = gSpecie.name_suggest(q=queryName, rank = rank, limit = 1)
@@ -28,11 +32,13 @@ def create_specie(queryName, rank = 'species'):
 
     # define instance parameters
     name = gbif_specie['canonicalName']
+    name = name.replace(" ", "_")
+
     key = gbif_specie['key']
     taxonomic_rank = gbif_specie['rank']
 
     # Defin ecology type from specie file
-    path = 'data/species/{}.csv'.format(queryName)
+    path = 'data/species/{}.csv'.format(name)
 
     try:
         reader = csv.DictReader(open(path))
