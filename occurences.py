@@ -1,15 +1,11 @@
-import pandas as pd
-import geopandas as gpd
 from pygbif import occurrences as occ
 
 import json
 import os
-
 from zipfile import ZipFile
+import pandas as pd
 
 gbif_queries_path = 'data/gbifQueries/'
-
-
 
 def searchOccurences(specie, limit = 300, download = False):
 
@@ -47,7 +43,6 @@ def searchOccurences(specie, limit = 300, download = False):
             print('Disabled download of occurences')
     else:
         print('Found no occurences for {}'.format(specie.name))
-
 
 def create_gbif_occurence_query(*args):
 
@@ -141,14 +136,10 @@ def unzip_occurence_file(file_path, specie_path):
         zObject.extractall( 
             path = specie_path)
     
-
-def processOccurenceDownload(occurences_file):
+def create_occurences_dataframe(occurences_file):
 
     occ_df = pd.read_csv(occurences_file, sep='\t')
-    print(occ_df.head())
-
     # Cleaning dataframe with only relevant info from occurence query
-    
 
     occ_df = occ_df[['gbifID', 
                     'decimalLongitude', 
@@ -163,12 +154,13 @@ def processOccurenceDownload(occurences_file):
 
     # Specified Canada only but Lat/ Long might make it in Ontario
     occ_df = occ_df[occ_df.stateProvince == 'Québec']
+
+    # Reseting index from removed rows not in qc
     occ_df = occ_df.reset_index(drop=True)
 
     # Message printing how many occurences were in quebec
     print('From downloaded occurences {} were in Quebec and kept for analysis'.format(len(occ_df)))
-    
-    print(occ_df.head())
-    
+    return occ_df
 
 
+    
