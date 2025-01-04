@@ -1,31 +1,32 @@
-from occurences import searchOccurences, get_download_zip
+from occurences import searchOccurences, get_download_zip, processOccurenceDownload
 from specie import create_specie
 
 import pandas as pd
+import os
 
+#Readable inaturalist links
 pd.set_option('display.max_colwidth', 1000)
+
+occurences_file = None
 
 specie_name = 'Cantharellus enelensis'
 specie = create_specie(specie_name, rank = 'Species')
-print(specie.name)
 
+# Check if occurence download has already been made
+if 'download_key.txt' not in os.listdir('data/gbifQueries/{}'.format(specie.name)):
+    occ_df = searchOccurences(specie, download = True)
 
-'''
-user_input_download = None
-user_input_download = str.upper(input("Do you want to download data Y/N? "))
-
-if user_input_download == 'Y':
-    download = True
-elif user_input_download == 'N':
-    download = False
 else:
-    download = False
-'''
-    
-#occ_df = searchOccurences(specie, download = True)
+    print('Occurence request already made for {}.'.format(specie.name))
+    print('Trying to download request to disk using provided key')
+    print('')
+    #Download request data to disk
+    occurences_file = get_download_zip(specie)
+    #print(occ_df.head(50))
+    print(occurences_file)
 
-f = get_download_zip(specie)
-#print(occ_df.head(50))
+if occurences_file != None:
+    processOccurenceDownload(occurences_file)
 
-print(f)
-# {'path': 'data/gbifQueries/Cantharellus enelensis//0056321-241126133413365.zip', 'size': 12835, 'key': '0056321-241126133413365'}
+
+

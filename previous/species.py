@@ -8,6 +8,10 @@ treeAssociationsPath = 'data/input/treeAssociations/'
 
 class Specie:
     def __init__(self, name, ecology, treeAssociations):
+
+        x = name.replace(" ", "_")
+        print(name)
+        print(x)
         self.name = name 
         self.ecology = ecology
         self.treeAssociations = treeAssociations
