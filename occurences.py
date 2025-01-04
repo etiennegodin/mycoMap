@@ -71,12 +71,12 @@ def createGbifDownloadQuery(*args):
     # list of dict
     predicate_list = []
 
-    predicates_dict = {'HAS_COORDINATE' : True,
-               'HAS_GEOSPATIAL_ISSUE' : False,
-               'COUNTRY' : 'CA', 
-               'TAXON_KEY' : args[0],
-               'DECIMAL_LONGITUDE' : args[1],
-               'DECIMAL_LATITUDE' : args[2]
+    predicates_dict = {"HAS_COORDINATE" : True,
+               "HAS_GEOSPATIAL_ISSUE" : False,
+               "COUNTRY" : "CA", 
+               "TAXON_KEY" : args[0],
+               "DECIMAL_LONGITUDE" : args[1],
+               "DECIMAL_LATITUDE" : args[2]
                }
     
 
@@ -84,23 +84,28 @@ def createGbifDownloadQuery(*args):
 
         predicate = Predicate('equals', key,value)
         #print(predicate.dict)
+        #predicate_json = json.dumps(predicate.dict)
+        #print(predicate_json)
+        #print(type(predicate_json))
 
         predicate_list.append(predicate.dict)
     
-    print(predicate_list)
-
-    predicates = json.dumps(predicate_list)
+    print(len(predicate_list))
 
     query = { "type": "and",
-  "predicates": predicates
+            "predicates": predicate_list
     }
 
+    with open("data/gbifQueries/test.json", mode="w", encoding="utf-8") as write_file:
+        json.dump(query, write_file)
+    #query = json.dumps(query)
+    print(query)
     return query
 
 def downloadOccurences(query):
 
-    #res = occ.download(user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com')
-
+    x = occ.download(queries= query, format= 'SIMPLE_CSV', user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com', pred_type='and')
+    return x
     pass
 
 
