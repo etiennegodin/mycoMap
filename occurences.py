@@ -1,22 +1,33 @@
 import pandas as pd
 import geopandas as gpd
 import os 
-from pygbif import occurrences
+from pygbif import occurrences as occ
+import json
+
+class Predicate:
+    def __init__(self, type, key, value):
+
+        self.dict = { "type" : type,
+                     "key" : key,
+                     "value" : value
+        }
+
+        self.key = key 
+        self.type = type
+        self.value = value
+      
+    def __str__(self):
+        return self.type
 
 
-def searchOccurences(specie, limit = 300):
+def searchOccurences(specie, limit = 300, download = False):
 
-    #quebec geomtry as WKT
-    '''
-    with open("data/geodata/test2.txt", 'r') as file:
-        geometry = file.read()
-    '''
     decimal_longitude = '-79.3439314990000071,-63.9999979090000011'
     decimal_latitude = '45.0000682390000009, 50.0000022050000013'
     
-    occurences = occurrences.search(taxonKey = specie.key, limit= limit, hasCoordinate=True, hasGeospatialIssue = False, decimalLongitude= decimal_longitude, decimalLatitude=decimal_latitude, country = 'CA')
+    occurences = occ.search(taxonKey = specie.key, limit= limit, hasCoordinate=True, hasGeospatialIssue = False, decimalLongitude= decimal_longitude, decimalLatitude=decimal_latitude, country = 'CA')
 
-
+    # Execute dataframe only if found occurences
     if occurences['count'] != 0:
 
         # Message showing how many ocurences found, with limit input
@@ -44,41 +55,62 @@ def searchOccurences(specie, limit = 300):
 
         # Message printing how many occurences were in quebec
         print('From {} checked observations {} were in Quebec and kept for analysis'.format(limit, len(occ_df)))
-        return(occ_df)
     
     else:
         print('Found no occurences for {}'.format(specie.name))
 
+    if download == True:
+        query = createGbifDownloadQuery(specie.key,decimal_longitude,decimal_latitude, limit)
+        x = downloadOccurences(query)
+        pass
+    else:
+        return occ_df
 
-def downloadOccurences():
+def createGbifDownloadQuery(*args):
+
+    # list of dict
+    predicate_list = []
+
+    predicates_dict = {'HAS_COORDINATE' : True,
+               'HAS_GEOSPATIAL_ISSUE' : False,
+               'COUNTRY' : 'CA', 
+               'TAXON_KEY' : args[0],
+               'DECIMAL_LONGITUDE' : args[1],
+               'DECIMAL_LATITUDE' : args[2]
+               }
+    
+
+    for key, value in predicates_dict.items():
+
+        predicate = Predicate('equals', key,value)
+        #print(predicate.dict)
+
+        predicate_list.append(predicate.dict)
+    
+    print(predicate_list)
+
+    predicates = json.dumps(predicate_list)
+
+    query = { "type": "and",
+  "predicates": predicates
+    }
+
+    return query
+
+def downloadOccurences(query):
+
+    #res = occ.download(user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com')
+
     pass
 
-def writeOccurencesToFile(currentSpeciesFolder, overwrite = 1, limit = 2):
-    if 'occ.csv' not in os.listdir(currentSpeciesFolder):
-        #define species
 
-        #get occurences from species gbif
-        print('Collecting occurences for {}'.format(speciesName))
-        occurences = searchOccurences(speciesGbifKey, limit = limit)
 
-        #cluster occurences within 1km2
+def processOccurenceDownload():
+    #input file from gbif download
+    # Dataframe from occurences results
+    pass
 
-        output_path = pdToCsv(occurences, currentSpeciesFolder)
-        
-    else:
-        print('Occurences already gathered for {}'.format(speciesName))
-        overwrite = int(input('Do you want to ovewrite? 0/1 '))
-        output_path = currentSpeciesFolder + 'occ.csv'
+#occ.download(['GBIF_USER equals "egodin"', 'taxonKey in ["2387246", "2399391","2364604"]', 'year !Null', "issue !in ['RECORDED_DATE_INVALID', 'TAXON_MATCH_FUZZY', 'TAXON_MATCH_HIGHERRANK']"], "SIMPLE_CSV")
 
-    if overwrite == 1:
-        #get occurences from species gbif
-        print('Overwrite mode set to 1')
-        print('Overwritting occurences for {}'.format(speciesName))
-        occurences = searchOccurences(speciesGbifKey, limit = limit)
 
-        #cluster occurences within 1km2
-        
-        output_path = pdToCsv(occurences, currentSpeciesFolder)
-    
-    return(output_path)
 

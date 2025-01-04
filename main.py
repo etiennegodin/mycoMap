@@ -7,9 +7,9 @@ pd.set_option('display.max_colwidth', 1000)
 
 specie_name = 'Cantharellus'
 specie = create_specie(specie_name, rank = 'Genus')
-print(specie.__dict__)
+print(specie.name)
 
 
 
-occ_df = searchOccurences(specie, limit = 300)
-print(occ_df.head(50))
+occ_df = searchOccurences(specie, limit = 5, download = True)
+#print(occ_df.head(50))
