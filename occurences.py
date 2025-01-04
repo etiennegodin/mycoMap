@@ -1,23 +1,12 @@
 import pandas as pd
 import geopandas as gpd
-import os 
 from pygbif import occurrences as occ
+
 import json
+import os
 
-class Predicate:
-    def __init__(self, type, key, value):
+gbif_queries_path = 'data/gbifQueries/'
 
-        self.dict = { "type" : type,
-                     "key" : key,
-                     "value" : value
-        }
-
-        self.key = key 
-        self.type = type
-        self.value = value
-      
-    def __str__(self):
-        return self.type
 
 
 def searchOccurences(specie, limit = 300, download = False):
@@ -29,10 +18,9 @@ def searchOccurences(specie, limit = 300, download = False):
 
     # Execute dataframe only if found occurences
     if occurences['count'] != 0:
-
         # Message showing how many ocurences found, with limit input
-        print("Found {} available occurences for {} in Canada, limiting to {}".format((occurences['count']), specie.name, limit))
-
+        print("Found {} available occurences for {} in Canada within provided range".format((occurences['count']), specie.name))
+        
         # Dataframe from occurences results
         occ_df = pd.DataFrame.from_dict(occurences['results'])
 
@@ -52,63 +40,88 @@ def searchOccurences(specie, limit = 300, download = False):
         occ_df = occ_df[occ_df.stateProvince == 'Québec']
         occ_df = occ_df.reset_index(drop=True)
 
-
         # Message printing how many occurences were in quebec
-        print('From {} checked observations {} were in Quebec and kept for analysis'.format(limit, len(occ_df)))
+        #print('From {} checked observations {} were in Quebec and kept for analysis'.format(limit, len(occ_df)))
     
     else:
         print('Found no occurences for {}'.format(specie.name))
+        occ_df = None
 
     if download == True:
-        query = createGbifDownloadQuery(specie.key,decimal_longitude,decimal_latitude, limit)
-        x = downloadOccurences(query)
-        pass
-    else:
+        #check if path & download query already made ( will create folder)
+        if specie.name in os.listdir(gbif_queries_path):
+            print('Query already made and download for {}. ({})'.format(specie.name, gbif_queries_path + specie.name))
+        else:
+            #Define path to create folder to receive download
+            specie_path = gbif_queries_path + specie.name
+            # Create folder
+            os.makedirs(specie_path)
+
+            specie_path = specie_path + '/'
+
+            #Create query to send to gbif, also writes json 
+            query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie_path )
+            key = download_occurences(query)
+
+            # Write download key to disk
+            key_file_path = specie_path + 'download_key.txt'
+            with open(key_file_path, mode="w", encoding="utf-8") as write_file:
+                write_file.write(key)
+
+
+            file = get_download_zip(key, specie, specie_path)
         return occ_df
 
-def createGbifDownloadQuery(*args):
+    else:
+        print('Disabled download of occurences')
 
-    # list of dict
+def create_gbif_occurence_query(*args):
+
+    #unpack certain arguments 
+    specie = args[0]
+    specie_path = args[3]
+    
+
+    # list to receive predicate dict
     predicate_list = []
 
+    #Key from specie.key
     predicates_dict = {"HAS_COORDINATE" : True,
                "HAS_GEOSPATIAL_ISSUE" : False,
                "COUNTRY" : "CA", 
-               "TAXON_KEY" : args[0],
+               "TAXON_KEY" : specie.key,
                "DECIMAL_LONGITUDE" : args[1],
                "DECIMAL_LATITUDE" : args[2]
                }
     
-
     for key, value in predicates_dict.items():
-
-        predicate = Predicate('equals', key,value)
-        #print(predicate.dict)
-        #predicate_json = json.dumps(predicate.dict)
-        #print(predicate_json)
-        #print(type(predicate_json))
-
-        predicate_list.append(predicate.dict)
+        predicate = { "type" : 'equals',
+                     "key" : key,
+                     "value" : value
+                     }
+        
+        predicate_list.append(predicate)
     
-    print(len(predicate_list))
 
     query = { "type": "and",
             "predicates": predicate_list
     }
+    print(specie_path)
+    output_json_file = specie_path + specie.name + '.json'
 
-    with open("data/gbifQueries/test.json", mode="w", encoding="utf-8") as write_file:
+    with open(output_json_file, mode="w", encoding="utf-8") as write_file:
         json.dump(query, write_file)
     #query = json.dumps(query)
-    print(query)
     return query
 
-def downloadOccurences(query):
+def download_occurences(query):
 
-    x = occ.download(queries= query, format= 'SIMPLE_CSV', user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com', pred_type='and')
-    return x
-    pass
+    downloadQuery = occ.download(queries= query, format= 'SIMPLE_CSV', user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com', pred_type='and')
+    key = downloadQuery[0]
+    return key
 
-
+def get_download_zip(key,specie, specie_path):
+    path = specie_path + specie.name + '.zip'
 
 def processOccurenceDownload():
     #input file from gbif download
