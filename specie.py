@@ -22,7 +22,7 @@ def create_specie(queryName, rank = 'species'):
     except:
         print('Error querying species info from gbif')
     
-    print(gbif_species)
+    #print(gbif_species)
     #Returned as list, isolate first
     gbif_specie = gbif_species[0]
 
