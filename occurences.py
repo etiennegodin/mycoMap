@@ -1,30 +1,24 @@
-    
-#gbif
-def defineSpecies(rank = 'species', limit = 1, skipInput = 1, debug = 1):
-    if skipInput == 0:
-        speciesName = input("Which species to look for ?  ")
-    if debug == 1:
-        print('debug mode on, using predefined species')
-        speciesName = 'Tsuga Canadensis'
-        #speciesName = 'Acer Rubrum'
+import pandas as pd
+import geopandas as gpd
+import os 
+from pygbif import occurrences
 
 
-    #catch if name note with space 
-    formatNameTest = speciesName.split(' ')
-    if len(formatNameTest) == 1:
-        speciesName = input('Please type name with space between Genus and Species   ') 
+def searchOccurences(specie, limit = 2, year = '2024'):
 
-    speciesObject = sp.name_suggest(q=speciesName, rank = rank, limit = 1)
-    speciesGbifKey = speciesObject[0]['key']
-    speciesName = speciesObject[0]['species']
-    return(speciesGbifKey, speciesName)
-
-def searchOccurences(speciesKey, limit = 2):
     #quebec geomtry as WKT
-    with open("C:/Users/manat/OneDrive/Documents/botanique/quebecology/data/geodata/vector/frontiereQuebec.txt", 'r') as file:
-        quebecGeometry = file.read()
-    #gbif query 
-    occurences = occSearch(taxonKey = speciesKey, country='CA', limit= limit, hasCoordinate=True, geometry = quebecGeometry )
+    '''
+    with open("data/geodata/test2.txt", 'r') as file:
+        geometry = file.read()
+    '''
+
+    
+    decimal_longitude = '-79.3439314990000071,-63.9999979090000011'
+    decimal_latitude = '45.0000682390000009, 50.0000022050000013'
+
+    occurences = occurrences.search(taxonKey = specie.key, limit= limit, hasCoordinate=True, hasGeospatialIssue = False, decimalLongitude= decimal_longitude, decimalLatitude=decimal_latitude)
+
+    #print(occurences)
 
     #info kept from query
     occurenceList = []
@@ -33,8 +27,10 @@ def searchOccurences(speciesKey, limit = 2):
     occurenceLat = []
     occurenceId = []
 
-    print("Found {} available occurences for {} in Quebec, limiting to {}".format((occurences['count']), speciesName, limit))
+    print("Found {} available occurences for {} in Quebec, limiting to {}".format((occurences['count']), specie.name, limit))
 
+
+############broken writting info from occ object to pd ######################
     #cycling through occurences to keep info
     for index, o in enumerate(occurences["results"]):
         occurenceKey.append(o["key"])
@@ -43,7 +39,7 @@ def searchOccurences(speciesKey, limit = 2):
         occurenceId.append(o["occurrenceID"])
 
         dict = {
-            "key" : occurenceKey,
+            "occ_key" : occurenceKey,
             "Latitude" : occurenceLat,
             "Longitude" : occurenceLon,
             "occurenceId": occurenceId
