@@ -120,8 +120,15 @@ def download_occurences(query):
     key = downloadQuery[0]
     return key
 
-def get_download_zip(key,specie, specie_path):
-    path = specie_path + specie.name + '.zip'
+def get_download_zip(specie):
+    specie_path = gbif_queries_path + specie.name + '/'
+    key_file_path = specie_path + 'download_key.txt'
+    with open(key_file_path) as write_file:
+        key = write_file.read()
+    print(key)
+
+    occurences = occ.download_get(key, path = specie_path)
+    return (occurences)
 
 def processOccurenceDownload():
     #input file from gbif download

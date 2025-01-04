@@ -1,4 +1,4 @@
-from occurences import searchOccurences
+from occurences import searchOccurences, get_download_zip
 from specie import create_specie
 
 import pandas as pd
@@ -22,6 +22,10 @@ else:
     download = False
 '''
     
-occ_df = searchOccurences(specie, download = True)
+#occ_df = searchOccurences(specie, download = True)
+
+f = get_download_zip(specie)
 #print(occ_df.head(50))
 
+print(f)
+# {'path': 'data/gbifQueries/Cantharellus enelensis//0056321-241126133413365.zip', 'size': 12835, 'key': '0056321-241126133413365'}
