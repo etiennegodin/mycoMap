@@ -14,7 +14,12 @@ def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
     )
 
     return gdf
-    
+
+
+def gdf_to_df(gdf):
+    df = pd.DataFrame(gdf.drop(columns='geometry'))
+    return df
+
 def gpd_assign_region(occ_gdf):
 
     regions_perimetre_file = 'data/geodata/regions_perimetre/regions_perimetre.shp'
@@ -52,7 +57,7 @@ def ckdnearest(gdA, gdB):
 
     return gdf
 
-def populate_occurence_data(occ_gdf):
+def find_nearest_point(occ_gdf):
 
     regions_data_path = 'data/geodata/regions_data/'
 
