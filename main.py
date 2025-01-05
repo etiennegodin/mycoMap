@@ -43,4 +43,6 @@ if occurences_file != None:
 occ_gdf = geodata.df_to_gdf(occ_df)
 occ_gdf = geodata.gpd_assign_region(occ_gdf)
 
+occ_df = geodata.populate_occurence_data(occ_gdf)
+
 print(occ_gdf.head())

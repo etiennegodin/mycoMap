@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
@@ -29,3 +30,17 @@ def pdToCsv(df, speciesFolder, filename = "occ.csv" ):
 def csvToPandas(csv):
     df = pd.read_csv(csv, index_col = 0)
     return(df)
+
+
+def regions_folders(parent_folder_path):
+
+    regions_codes = [ '21E', '21L', '21M', '21N','21O', 
+                     '22A', '22B', '22C', '22G', '22H',
+                     '31F', '31G', '31H', '31I', '31J', '31K','31L'
+    ]
+
+    for code in regions_codes:
+        os.makedirs(parent_folder_path + code)
+
+
+x = regions_folders('data/geodata/regions_data/')
