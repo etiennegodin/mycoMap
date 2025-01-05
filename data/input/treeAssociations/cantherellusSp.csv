@@ -1,0 +1,64 @@
+id,code,essence,mycoValueEssences
+1,BG,Bouleau gris (à feuilles de peuplier),0
+2,BJ,Bouleau jaune,0
+3,BP,Bouleau à papier (blanc),0
+4,CB,Chêne blanc,0
+5,CC,Caryer cordiforme,0
+6,CF,Caryer à fruits doux,0
+7,CG,Chêne à gros fruits,0
+8,CH,Chênes,0
+9,CI,Chêne bicolore,0
+10,CR,Chêne rouge,0
+11,CT,Cerisier tardif,0
+12,EA,Érable argenté,0
+13,EB,Épinette blanche,3
+14,EI,Érable noir,0
+15,EN,Épinette noire,3
+16,EO,Érable rouge,0
+17,EP,Épinette,3
+18,ER,Érables,0
+19,ES,Érable à sucre,0
+20,EU,Épinette rouge,3
+21,EV,Épinette de Norvège,3
+22,FA,Frêne d'Amérique,0
+23,FH,Feuillus stations humides,0
+24,FI,Feuillus intolérants,0
+25,FN,Feuillus non commerciaux,0
+26,FO,Frêne noir,0
+27,FP,Frêne de Pennsylvanie,0
+28,FT,Feuillus tolérants,0
+29,FX,Feuillus indéterminés,0
+30,FZ,Feuillus indistincts plantés,0
+31,FR,Frênes,0
+32,HG,Hêtre à grandes feuilles,0
+33,ME,Mélèze européen,0
+34,MH,Mélèze hybride,0
+35,MJ,Mélèze japonais,0
+36,ML,Mélèze laricin,0
+37,NC,Noyer cendré,0
+38,NN,Noyer noir,0
+39,OA,Orme d'Amérique,0
+40,OO,Orme rouge,0
+41,OR,Ormes,0
+42,OT,Orme de Thomas,0
+43,OV,Ostryer de Virginie,0
+44,PA,Peuplier baumier,0
+45,PB,Pin blanc,1
+46,PC,Pin rigide,1
+47,PD,Peuplier à grandes dents,0
+48,PE,Peupliers,0
+49,PG,Pin gris,1
+50,PH,Peuplier hybride,0
+51,PI,Pins,1
+52,PL,Peuplier deltoïdes,0
+53,PO,Peuplier européen,0
+54,PR,Pin rouge,1
+55,PS,Pin sylvestre,1
+56,PT,Peuplier faux tremble,0
+57,PU,Pruche de l'Est,0
+58,RX,Résineux indéterminés,2
+59,RZ,Résineux indistincts plantés,2
+60,SB,Sapin baumier,3
+61,SE,Sapin et épinette blanche,3
+62,TA,Tilleul d'Amérique,0
+63,TO,Thuya occidental,0
