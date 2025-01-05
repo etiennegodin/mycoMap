@@ -36,6 +36,18 @@ def gpd_assign_region(occ_gdf):
 
 def populate_occurence_data(occ_gdf):
 
+    regions_data_path = 'data/geodata/regions_data/'
+    region_gdf_path = regions_data_path + occ_gdf['region_code']
+
+    region_gdf = gpd.read_file(region_gdf_path)
+
+    occ_gdf = gpd.sjoin(occ_gdf, region_gdf, predicate='within')
+
+    print(occ_gdf)
+
+
+
+
     
 
 
