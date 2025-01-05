@@ -1,7 +1,7 @@
 from occurences import searchOccurences, get_download_zip, create_occurences_dataframe
 from specie import create_specie
 import geodata
-from geodata import populate_occurence_data
+import geodata
 
 import pandas as pd
 import os
@@ -47,8 +47,13 @@ occ_gdf = geodata.gpd_assign_region(occ_gdf)
 #loosing some occurences in asign regions ??
 
 #occ_gdf = occ_gdf.head(1)
-occ_gdf = populate_occurence_data(occ_gdf)
-print(occ_gdf)
+occ_gdf = geodata.find_nearest_point(occ_gdf)
+
+occ_df = geodata.gdf_to_df(occ_gdf)
+
+
+print(occ_df)
+print(type(occ_df))
 #occ_df['values'] = occ_df.apply(populate_occurence_data(occ_gdf), axis = 1)
 #occ_gdf['values'] = occ_gdf.apply(lambda row: populate_occurence_data(row), axis = 1)
 
