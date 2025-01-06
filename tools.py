@@ -43,4 +43,3 @@ def regions_folders(parent_folder_path):
         os.makedirs(parent_folder_path + code)
 
 
-x = regions_folders('data/geodata/regions_data/')

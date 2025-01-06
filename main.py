@@ -1,7 +1,7 @@
 from occurences import searchOccurences, get_download_zip, create_occurences_dataframe
 from specie import create_specie
 import geodata
-import geodata
+from  tools import saveDfToCsv
 
 import pandas as pd
 import os
@@ -40,6 +40,7 @@ if occurences_file != None:
 
 # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+occ_df = occ_df.head(10)
 
 occ_gdf = geodata.df_to_gdf(occ_df)
 
@@ -50,13 +51,20 @@ occ_gdf = geodata.gpd_assign_region(occ_gdf)
 # check if occurence just too far from forest points 
 
 #occ_gdf = occ_gdf.head(1)
-occ_gdf = geodata.find_nearest_point(occ_gdf)
+occ_gdf = geodata.assign_geodata_to_occurences(occ_gdf)
 
+# Convert back to simple df 
 occ_df = geodata.gdf_to_df(occ_gdf)
 
 
 print(occ_df)
 print(type(occ_df))
+
+output_path = occurences_file[:-4] + '_geodata.csv'
+print(output_path)
+f = saveDfToCsv(occ_df, output_path)
+
+
 #occ_df['values'] = occ_df.apply(populate_occurence_data(occ_gdf), axis = 1)
 #occ_gdf['values'] = occ_gdf.apply(lambda row: populate_occurence_data(row), axis = 1)
 
