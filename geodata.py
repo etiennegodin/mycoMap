@@ -1,10 +1,10 @@
-import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import geopandas as gpd
 import numpy as np
 from scipy.spatial import cKDTree
 from shapely.geometry import Point
+import re
 
 def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
 
@@ -12,9 +12,8 @@ def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
     gdf = gpd.GeoDataFrame(
         df, geometry=gpd.points_from_xy(df[xy[0]], df[xy[1]]), crs="EPSG:4326"
     )
-
+    
     return gdf
-
 
 def gdf_to_df(gdf):
     df = pd.DataFrame(gdf.drop(columns='geometry'))
@@ -38,7 +37,6 @@ def gpd_assign_region(occ_gdf):
 
     return occ_gdf
 
-
 def ckdnearest(gdA, gdB):
 
     nA = np.array(list(gdA.geometry.apply(lambda x: (x.x, x.y))))
@@ -57,49 +55,105 @@ def ckdnearest(gdA, gdB):
 
     return gdf
 
+def interpret_tree_cover_string(code):
+    # change tree cover infor from string to dict of percentage
+    result = re.findall(r'([A-Z]+)(\d+)', code)
+    result = dict(result)
+    # value from string to %
+    for key in result:
+        result[key] = int(result[key]) / 100
+    return(result)
+
+def interpret_env_factors_data(path):
+
+    # Read csv as df 
+    df = pd.read_csv(path)
+
+    # Interpret string descirption of tree composition as dict of {tree_kind : cover_percentage} 
+    df['tree_cover'] = df['eta_ess_pc'].apply(interpret_tree_cover_string)
+
+    #Keep only geoc_maj, densite, cl_age, tree_cover data
+    df = df.iloc[:, [1,4,-3,-1]]
+
+    return df 
+
+def interpret_region_data(path):
+
+    # Read region csv as dataframe
+    df = pd.read_csv(path)
+
+    #Keep only relevant collumns
+    df = df[['geoc_maj', #id
+                'cl_pent', # classe de pente
+                'dep_sur', # depot surface
+                'cl_drai', # classe drainage
+                'origine', # Perturbation d'origine
+                'an_origine', # annee pertrubation
+                'perturb', # Perturbation partielle
+                'an_perturb', # Année de la perturbation partielle
+                'X',
+                'Y']]
+    
+    return df
+
 def find_nearest_point(occ_gdf):
 
     regions_data_path = 'data/geodata/regions_data/'
+    regions_env_factors_path = 'data/geodata/region_env_factors/CARTE_ECO_MAJ_'
 
     print('')
     print('Feeding {} occurences to populate'.format(len(occ_gdf)))
     final_gdf = gpd.GeoDataFrame()
 
+    #list all regions to iterate over
     region_code_list = os.listdir(regions_data_path)
+    # create int var for number of regions to check against loop index
     region_codes_amount = len(region_code_list)
-    #region_codes_index = region_codes_amount  1
+
+    #Iterate over regions
     for idx, region_code in enumerate(region_code_list):
 
         # End loop once all folders are done iterating
         if idx == region_codes_amount:
             break
         else:
-            print(region_code)
 
-            # Build path to read csv point of region
+            print(region_code)
+            # Build path to read env factors data of region
+            region_env_factors_path = regions_env_factors_path + region_code +'.csv'
+
+            # Create dataframe from forest composition data of region 
+            env_df = interpret_env_factors_data(region_env_factors_path)
+
+            # Build path to read point data of region 
             region_gdf_path = regions_data_path + region_code + '/' + '{}.csv'.format(region_code)
 
-            # Read region csv as dataframe
-            df = pd.read_csv(region_gdf_path)
+            # Create dataframe from point data of region 
+            df = interpret_region_data(region_gdf_path)
 
+            #merge env_factors & point df based on geoc_maj index
+            df = df.merge(env_df, on='geoc_maj')
+         
             # Reformat as gdf using xy as geometry
             region_gdf = df_to_gdf(df, xy = ['X','Y'])
 
-            # Keep only relevant columns
-            region_gdf = region_gdf[['geometry', 'geoc_maj']]
+            #Remove redundant XY columns
+            region_gdf = region_gdf.drop(columns=['X','Y'])
 
-            # Keep only region occurences for region_occ_gdf
+            # From full occurence geodataframe, keep only occurences from current region
             region_occ_gdf = occ_gdf[(occ_gdf['region_code']==region_code)]
 
-            # Check if occurence in this region
+            # Check if any occurence in this region, otherwise skip
             if len(region_occ_gdf) != 0:
                 print('{} occurences in {}'.format(len(region_occ_gdf), region_code))
 
-                # nearest 
+                # Find nearest point from occurence localisation and merge data
                 gdf = ckdnearest(region_occ_gdf, region_gdf)
-                #assign value from csv matching with geoc_maj
+               
+                #remove distance collumn from ckdnearest function, could be used for debug but not necessary in final 
+                gdf = gdf.drop(columns=['dist'])
 
-                #return partial df to final_gdf
+                #return region gdf as partial gdf to final_gdf
                 final_gdf = pd.concat([final_gdf, gdf])
 
             else:
@@ -108,35 +162,6 @@ def find_nearest_point(occ_gdf):
             
     return final_gdf
     
-
-
-
-
-    # Create geodataFrame for regions  
-    #region_gdf = gpd.read_file(region_gdf_path)
-    
-    #print(region_gdf)
-    # Read csv from region_code 
-
-    
-
-    #occ_gdf = gpd.sjoin(occ_gdf, region_gdf, predicate='within')
-
-    
-
-
-
-
-
-    
-
-
-# loop
-
-    # load specific geo file based on region value
-
-    # compare lat long with geodata from foret ouverte 
-    # assign values of densite, cl_ag_et, tree_associations based on coordinate 
 
 
 
