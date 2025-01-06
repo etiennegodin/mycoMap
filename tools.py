@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import ast
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
@@ -43,3 +44,7 @@ def regions_folders(parent_folder_path):
         os.makedirs(parent_folder_path + code)
 
 
+def convert_tree_cover_data_type(df):
+    df['tree_cover'] = df['tree_cover'].apply(ast.literal_eval)
+    
+    return df
