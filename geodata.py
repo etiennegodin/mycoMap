@@ -175,3 +175,13 @@ def assign_geodata_to_occurences(occ_gdf):
             
     return final_gdf
  
+def interpet_env_factors(df):
+
+    #interpet and gives value from columns of df referring to env_factors 
+    # ex: cl_age_et : JIN = 80 years something something
+    # cl_pente : A = pente 40 degrees etc 
+
+    #create list of dicts for each columns using modified csv file from:
+
+    #data/DICTIONNAIRE_CARTE_ECO_MAJ.xlsx
+    pass
