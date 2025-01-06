@@ -18,14 +18,13 @@ def searchOccurences(specie, limit = 300, download = False):
         print("Found {} available occurences for {} in Canada within provided range".format((occurences['count']), specie.name))
         
         if download == True:
-            #check if path & download query already made ( will create folder)
-            if specie.name not in os.listdir(gbif_queries_path):
-                #Define path to create folder to receive download
-                specie_path = gbif_queries_path + specie.name
-                # Create folder
-                os.makedirs(specie_path)
 
-                specie_path = specie_path + '/'
+            specie_path = gbif_queries_path + specie.name + '/'
+
+            if not os.path.exists(specie_path):
+                os.makedirs(specie_path)
+            
+            if 'download_key.txt' not in os.listdir(specie_path):
 
                 #Create query to send to gbif, also writes json 
                 query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie_path )
@@ -34,13 +33,11 @@ def searchOccurences(specie, limit = 300, download = False):
                 # Write download key to disk
                 key_file_path = specie_path + 'download_key.txt'
                 with open(key_file_path, mode="w", encoding="utf-8") as write_file:
-                    write_file.write(key)
-
-            else:
-                print('Query already made and download for {}. ({})'.format(specie.name, gbif_queries_path + specie.name))
+                        write_file.write(key)
                 
         else:
             print('Disabled download of occurences')
+            print('Enable download flag to make occurence requests')
     else:
         print('Found no occurences for {}'.format(specie.name))
 
