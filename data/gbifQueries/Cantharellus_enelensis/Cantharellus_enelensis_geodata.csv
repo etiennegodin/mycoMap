@@ -1,0 +1,9 @@
+gbifID,eventDate,year,stateProvince,species,occurrenceID,region_code,geoc_maj,cl_pent,dep_sur,cl_drai,origine,an_origine,perturb,an_perturb,densite,cl_age_et,tree_cover
+4923923843,2024-07-21T12:31,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/235125851,21E,"-222066,25+202889,69",A,4GS,50.0,,,,,85.0,JIN,"{'EO': 0.2, 'FO': 0.2, 'BP': 0.1, 'OR': 0.1, 'SB': 0.2, 'RX': 0.1, 'TO': 0.1}"
+4921497863,2024-08-04T16:44:27,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/233925890,31G,"-554129,93+212451,24",D,1A,30.0,,,,,85.0,50,"{'ES': 0.3, 'FT': 0.2, 'HG': 0.2, 'BP': 0.1, 'CR': 0.1, 'PE': 0.1}"
+4952340830,2023-09-04T18:15,2023,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/191565545,31H,"-321896,52+146587,81",B,1A,30.0,P,,,,85.0,30,{'RZ': 1.0}
+4945862925,2024-09-09T14:02,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/240837184,31H,"-372296,00+204675,29",A,5S,40.0,,,,,95.0,JIN,"{'EO': 0.3, 'FR': 0.2, 'FT': 0.1, 'PU': 0.3, 'RX': 0.1}"
+4935729469,2024-08-18T14:03,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/236810013,31H,"-291520,31+157116,32",D,1AY,30.0,,,,,85.0,VIN,"{'ES': 0.5, 'HG': 0.2, 'BJ': 0.1, 'FR': 0.1, 'TA': 0.1}"
+4919651370,2024-07-27T13:20:05,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/232097151,31H,"-397657,25+182238,40",C,8AM,20.0,,,,,95.0,VIN,"{'CR': 0.6, 'ES': 0.2, 'EO': 0.1, 'FT': 0.1}"
+4919121731,2024-07-27T11:13:28,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/232568040,31H,"-291500,08+214996,96",A,5S,30.0,,,,,85.0,JIN,"{'EO': 0.4, 'PE': 0.3, 'SB': 0.2, 'PU': 0.1}"
+4937219535,2024-08-21T13:28:25,2024,Québec,Cantharellus enelensis,https://www.inaturalist.org/observations/237262618,31I,"-386348,53+251612,90",B,5S,40.0,,,,,35.0,JIN,"{'FN': 0.3, 'FO': 0.3, 'BG': 0.2, 'FH': 0.1, 'RX': 0.1}"

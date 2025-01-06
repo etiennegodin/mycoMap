@@ -96,7 +96,7 @@ def interpret_region_data(path):
     
     return df
 
-def find_nearest_point(occ_gdf):
+def assign_geodata_to_occurences(occ_gdf):
 
     regions_data_path = 'data/geodata/regions_data/'
     regions_env_factors_path = 'data/geodata/region_env_factors/CARTE_ECO_MAJ_'
@@ -113,39 +113,41 @@ def find_nearest_point(occ_gdf):
     #Iterate over regions
     for idx, region_code in enumerate(region_code_list):
 
+        # Check if iterated thourhg all regions 
         # End loop once all folders are done iterating
         if idx == region_codes_amount:
             break
         else:
-
-            print(region_code)
-            # Build path to read env factors data of region
-            region_env_factors_path = regions_env_factors_path + region_code +'.csv'
-
-            # Create dataframe from forest composition data of region 
-            env_df = interpret_env_factors_data(region_env_factors_path)
-
-            # Build path to read point data of region 
-            region_gdf_path = regions_data_path + region_code + '/' + '{}.csv'.format(region_code)
-
-            # Create dataframe from point data of region 
-            df = interpret_region_data(region_gdf_path)
-
-            #merge env_factors & point df based on geoc_maj index
-            df = df.merge(env_df, on='geoc_maj')
-         
-            # Reformat as gdf using xy as geometry
-            region_gdf = df_to_gdf(df, xy = ['X','Y'])
-
-            #Remove redundant XY columns
-            region_gdf = region_gdf.drop(columns=['X','Y'])
-
             # From full occurence geodataframe, keep only occurences from current region
             region_occ_gdf = occ_gdf[(occ_gdf['region_code']==region_code)]
 
-            # Check if any occurence in this region, otherwise skip
+            # Check if any occurence in this region, otherwise skip to next
             if len(region_occ_gdf) != 0:
+
                 print('{} occurences in {}'.format(len(region_occ_gdf), region_code))
+                print(region_code)
+                # Build path to read env factors data of region
+                region_env_factors_path = regions_env_factors_path + region_code +'.csv'
+
+                # Create dataframe from forest composition data of region 
+                env_df = interpret_env_factors_data(region_env_factors_path)
+
+                # Build path to read point data of region 
+                region_gdf_path = regions_data_path + region_code + '/' + '{}.csv'.format(region_code)
+
+                # Create dataframe from point data of region 
+                df = interpret_region_data(region_gdf_path)
+
+                #merge env_factors & point df based on geoc_maj index
+                df = df.merge(env_df, on='geoc_maj')
+            
+                # Reformat as gdf using xy as geometry
+                region_gdf = df_to_gdf(df, xy = ['X','Y'])
+
+                #Remove redundant XY columns
+                region_gdf = region_gdf.drop(columns=['X','Y'])
+
+
 
                 # Find nearest point from occurence localisation and merge data
                 gdf = ckdnearest(region_occ_gdf, region_gdf)
