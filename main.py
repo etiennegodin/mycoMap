@@ -17,7 +17,7 @@ gbif_queries_path = 'data/gbifQueries/'
 # Used to check if occurence file exists
 occurences_file = None
 geo_data_file_path = None
-specie_query = 'Trametes versicolor'
+specie_query = 'Amanita muscaria'
 
 #Create specie object based on query name - Using gbif specie module
 specie = create_specie(specie_query, rank = 'Species')
@@ -26,7 +26,7 @@ specie = create_specie(specie_query, rank = 'Species')
 
 # Check if occurence download has already been made for specific specie
 specie_path = gbif_queries_path + specie.name + '/'
-download = True
+download = False
 
 if download == True:
 
@@ -38,10 +38,7 @@ if download == True:
         print('Trying to download request to disk using provided key')
         print('')
         #Download request data to disk
-        print('xxxxxx')
         occurences_file = occurences.get_download_zip(specie)
-        print(occurences_file)
-        print('')
 
         if occurences_file == None:
             pass
