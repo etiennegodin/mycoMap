@@ -21,6 +21,14 @@ def gdf_to_df(gdf):
 
 def gpd_assign_region(occ_gdf):
 
+
+    print('Debug flag for gpd_assign_region(). See comments')
+
+        # debug
+    #loosing some occurences in asign regions ??
+    # check which by assigning new index collumns and compare with previous gdf
+    # check if occurence just too far from forest points 
+    
     regions_perimetre_file = 'data/geodata/regions_perimetre/regions_perimetre.shp'
 
     # Creat gdf from regions perimetre
@@ -79,7 +87,10 @@ def interpret_env_factors_data(path):
 
 def interpret_region_data(path):
 
-    # Read region csv as dataframe
+    print('Debug flag for interpet_region_data(). See comments')
+
+    #debug - could make loading region cv faster, complaining about columns (11,30) datatype 
+    # -Specify dtype option on import
     df = pd.read_csv(path)
 
     #Keep only relevant collumns
@@ -163,8 +174,4 @@ def assign_geodata_to_occurences(occ_gdf):
                 continue
             
     return final_gdf
-    
-
-
-
-
+ 
