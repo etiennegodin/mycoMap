@@ -44,7 +44,10 @@ if occurences_file != None:
 occ_gdf = geodata.df_to_gdf(occ_df)
 
 occ_gdf = geodata.gpd_assign_region(occ_gdf)
+# debug
 #loosing some occurences in asign regions ??
+# check which by assigning new index collumns and compare with previous gdf
+# check if occurence just too far from forest points 
 
 #occ_gdf = occ_gdf.head(1)
 occ_gdf = geodata.find_nearest_point(occ_gdf)
