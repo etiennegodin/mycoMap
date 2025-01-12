@@ -191,6 +191,48 @@ def interpet_env_factors(df):
     pass
 
 
+def richnessIndex(tree_cover):
+    #indice de ricnesse (nb especes)
+    n = len(tree_cover)
+    return(n)
+
+def shannonIndex(tree_cover):
+    #indice shannon 
+    #creer liste proportions d'essence
+    proportions_list = []
+    for key in tree_cover:
+        #print(key)
+        proportions_list.append(tree_cover[key])
+
+    #numpy array
+    proportions = np.array(proportions_list)
+
+    try:
+        # Vérifiez que la somme des proportions est égale à 1 (100%)
+        if not np.isclose(np.sum(proportions), 1.0):
+            raise ValueError("Les proportions des espèces doivent totaliser 1")
+        
+        # Calculez l'indice de Shannon
+        shannon_index = -np.sum(proportions * np.log(proportions))
+        
+    except ValueError:
+        # En cas d'erreur, attribuez la valeur 0 à l'indice de Shannon
+        shannon_index = 0
+        
+    shannon_index = -np.sum(proportions * np.log(proportions))
+
+    # Entropy 
+    # SUm of surprise for each of elements
+    return(shannon_index)
+
+def ecology_factors(df):
+    df['richness_index'] = df['tree_cover'].apply(richnessIndex) 
+    df['shannon_index'] = df['tree_cover'].apply(shannonIndex)
+
+    return df 
+
+
+
 def geo(occ_df, specie):
 
     geodata_file = specie.path + specie.name + '_geodata.csv'
@@ -205,6 +247,9 @@ def geo(occ_df, specie):
         occ_gdf = assign_geodata_to_occurences(occ_gdf)
         # Convert back to standard dataframe
         occ_df = gdf_to_df(occ_gdf)
+
+        # Calculate ecology data such as shannon Index and richness Index
+        occ_df = ecology_factors(occ_df)
 
         # Save df to file 
         tools.saveDfToCsv(occ_df, geodata_file)
