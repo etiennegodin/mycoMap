@@ -2,7 +2,7 @@ from  occurences import search_occurences, occurences_request, get_occurences_do
 from specie import create_specie
 from  geodata import geo 
 import tools
-import occurence_stats
+import data_analysis
 
 
 import pandas as pd
@@ -17,7 +17,7 @@ gbif_queries_path = 'data/gbifQueries/'
 # Used to check if occurence file exists
 occurences_file = None
 geo_data_file_path = None
-specie_query = 'Laetiporus sulphureus'
+specie_query = 'Cantharellus enelensis'
 
 #Create specie object based on query name - Using gbif specie module
 specie = create_specie(specie_query, rank = 'Species')
@@ -54,10 +54,16 @@ if download == True:
     # Assign geodata to occurences 
     occ_df = geo(occ_df, specie)
 
+    print(occ_df.head())
+
     # Analysis 
 
+    
 
-    #occurence_stats.lnr_reg(occ_df)
+
+
+
+    #data_analysis.lnr_reg(occ_df, parameter = 'cl_drai')
 
         
 else: 
@@ -89,3 +95,10 @@ else:
 #3 analysis only - could include iterating over acquired species ( by group) 
 # list of all dirs in gbifQueries an iterate over to do stats and find multiple ocrelation 
 # could help define most influencal factors fro groups of mushroom instaed of juste one specifc
+
+
+#4 if null hypothesis rejected 
+
+#proceed to do map visual 
+#from linear fit, 
+#  
