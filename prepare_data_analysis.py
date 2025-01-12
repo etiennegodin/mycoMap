@@ -3,60 +3,57 @@ import pandas as pd
 
 import matplotlib.pyplot as plt
 import tools
+import csv
+
+# https://chatgpt.com/c/67842692-c814-800d-aa2f-627792370f2d
 
 
-# Temp 
+geodata_dictionnary = pd.read_csv('data/geodata_dictionnary.csv', header = 0 )
+
+def pepare_categorical_data(df, collumn, show = False):
+
+    series = df[collumn]
+    # Count per value 
+    value_counts = series.value_counts().reset_index()
+
+    if show == True:
+        print(value_counts)
+        ax = value_counts.plot(kind='bar')
+        plt.show()
+
+    return value_counts
 
 
-file = 'data/gbifQueries/Cantharellus_enelensis/Cantharellus_enelensis_geodata.csv'
-
-df = pd.read_csv(file)
-
-df = tools.convert_tree_cover_data_type(df)
 
 
+def prepare_data(df):
 
+    data = {}
 
-def richnessIndex(tree_cover):
+    for index, row in geodata_dictionnary.iterrows():
 
-
-    print(tree_cover)
-    #indice de ricnesse (nb especes)
-    n = len(tree_cover)
-    return(n)
-
-def shannonIndex(tree_cover):
-    #indice shannon 
-    #creer liste proportions d'essence
-    proportions_list = []
-    for key in tree_cover:
-        #print(key)
-        proportions_list.append(tree_cover[key])
-
-    #numpy array
-    proportions = np.array(proportions_list)
-
-    try:
-        # Vérifiez que la somme des proportions est égale à 1 (100%)
-        if not np.isclose(np.sum(proportions), 1.0):
-            raise ValueError("Les proportions des espèces doivent totaliser 1")
+        name = row['name']
+        independent_var_type = row['independent_var_type']
         
-        # Calculez l'indice de Shannon
-        shannon_index = -np.sum(proportions * np.log(proportions))
+        if independent_var_type == 'categorical':
+            categorical_data = pepare_categorical_data(df, name)
+
+            data[name] = categorical_data 
         
-    except ValueError:
-        # En cas d'erreur, attribuez la valeur 0 à l'indice de Shannon
-        shannon_index = 0
+        elif independent_var_type == 'ordinal':
+            pass
+
+        elif independent_var_type == 'discrete':
+           pass
+        elif independent_var_type == 'continuous':
+           pass
         
-    shannon_index = -np.sum(proportions * np.log(proportions))
-
-    # Entropy 
-    # SUm of surprise for each of elements
-    return(shannon_index)
+        
+    return data
 
 
-def interpret_tree_cover(df):
-    df['richness_index'] = df['tree_cover'].apply(richnessIndex) 
-    df['shannon_index'] = df['tree_cover'].apply(shannonIndex)
 
-    return df 
+
+
+
+

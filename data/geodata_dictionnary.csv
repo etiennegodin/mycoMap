@@ -1,0 +1,11 @@
+name,type,independent_var_type,dependent_var_type
+eventDate, time, continuous, continuous
+year, time, continuous, continuous
+cl_pent, environmental,categorical, ordinal
+dep_sur, environmental, categorical, categorical
+cl_drai, environmental, continuous, ordinal
+densite, environmental, discrete, discrete
+cl_age, environmental, categorical, discrete
+tree_cover, environmental, discrete, categorical
+richness_index, environmental, continuous, continuous
+shannon_index, environmental, continuous

@@ -2,7 +2,7 @@ from  occurences import search_occurences, occurences_request, get_occurences_do
 from specie import create_specie
 from  geodata import geo 
 import tools
-import data_analysis
+from  prepare_data_analysis import prepare_data
 
 
 import pandas as pd
@@ -17,7 +17,8 @@ gbif_queries_path = 'data/gbifQueries/'
 # Used to check if occurence file exists
 occurences_file = None
 geo_data_file_path = None
-specie_query = 'Cantharellus enelensis'
+
+specie_query = 'Trametes versicolor'
 
 #Create specie object based on query name - Using gbif specie module
 specie = create_specie(specie_query, rank = 'Species')
@@ -56,9 +57,12 @@ if download == True:
 
     print(occ_df.head())
 
-    # Analysis 
+    # Prepare data for analysis 
 
-    
+    data = prepare_data(occ_df)
+    print(data)
+
+
 
 
 
