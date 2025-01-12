@@ -6,6 +6,9 @@ from scipy.spatial import cKDTree
 from shapely.geometry import Point
 import re
 
+import tools 
+
+
 def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
 
     # Creates goepandas from dataframe with lat/long columns
@@ -177,6 +180,7 @@ def assign_geodata_to_occurences(occ_gdf):
  
 def interpet_env_factors(df):
 
+
     #interpet and gives value from columns of df referring to env_factors 
     # ex: cl_age_et : JIN = 80 years something something
     # cl_pente : A = pente 40 degrees etc 
@@ -185,3 +189,30 @@ def interpet_env_factors(df):
 
     #data/DICTIONNAIRE_CARTE_ECO_MAJ.xlsx
     pass
+
+
+def geo(occ_df, specie):
+
+    geodata_file = specie.path + specie.name + '_geodata.csv'
+    
+    if not os.path.exists(geodata_file):
+
+# Transform df in geopandas using Lat/Long info
+        occ_gdf = df_to_gdf(occ_df)
+        # Assign region based on geo coordinate
+        occ_gdf = gpd_assign_region(occ_gdf)
+        # Find closest data point and assign geo data to occurence
+        occ_gdf = assign_geodata_to_occurences(occ_gdf)
+        # Convert back to standard dataframe
+        occ_df = gdf_to_df(occ_gdf)
+
+        # Save df to file 
+        tools.saveDfToCsv(occ_df, geodata_file)
+
+        return occ_df
+
+    elif os.path.exists(geodata_file):
+        occ_df = pd.read_csv(geodata_file)
+        tools.convert_tree_cover_data_type(occ_df)
+        
+        return occ_df

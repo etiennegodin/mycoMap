@@ -48,3 +48,15 @@ def convert_tree_cover_data_type(df):
     df['tree_cover'] = df['tree_cover'].apply(ast.literal_eval)
     
     return df
+
+def create_folder(path):
+
+    if not os.path.exists(path):
+        print('folder do not exists')
+        os.makedirs(path)
+        print('making dir')
+
+        return path
+    else:
+        print('folder exists ')
+        return path
