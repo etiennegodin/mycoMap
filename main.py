@@ -54,6 +54,11 @@ if download == True:
     # Assign geodata to occurences 
     occ_df = geo(occ_df, specie)
 
+    # Analysis 
+
+
+    #occurence_stats.lnr_reg(occ_df)
+
         
 else: 
 

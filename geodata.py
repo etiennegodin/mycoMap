@@ -197,7 +197,7 @@ def geo(occ_df, specie):
     
     if not os.path.exists(geodata_file):
 
-# Transform df in geopandas using Lat/Long info
+    # Transform df in geopandas using Lat/Long info
         occ_gdf = df_to_gdf(occ_df)
         # Assign region based on geo coordinate
         occ_gdf = gpd_assign_region(occ_gdf)
@@ -212,7 +212,10 @@ def geo(occ_df, specie):
         return occ_df
 
     elif os.path.exists(geodata_file):
+
+        print('Geodata already processed for occurences and saved to ')
+        print(geodata_file)
         occ_df = pd.read_csv(geodata_file)
         tools.convert_tree_cover_data_type(occ_df)
-        
+
         return occ_df
