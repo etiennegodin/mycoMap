@@ -17,7 +17,7 @@ gbif_queries_path = 'data/gbifQueries/'
 # Used to check if occurence file exists
 occurences_file = None
 geo_data_file_path = None
-specie_query = 'Cerioporus squamosus'
+specie_query = 'Laetiporus sulphureus'
 
 #Create specie object based on query name - Using gbif specie module
 specie = create_specie(specie_query, rank = 'Species')
@@ -66,3 +66,26 @@ else:
 
 
 # Create dataframe based on occurences
+
+
+# Could split in separate scripts
+
+# 0 find species 
+#find species with most occurence, create list ( exploaratory in this script)
+
+#1 download data ( first portion of this main.py)
+#make iterable if fed list of species from exploratory phase
+
+#2 get data run only when confirmation of gbif , could make fancy trigger, like query email of gbif account 
+# include geo data anylissis in get_data script)
+#iterable too
+
+
+#account for fact thta occurens are human and flaws ( only in cities or near centers 
+#entropy concept ???
+
+
+
+#3 analysis only - could include iterating over acquired species ( by group) 
+# list of all dirs in gbifQueries an iterate over to do stats and find multiple ocrelation 
+# could help define most influencal factors fro groups of mushroom instaed of juste one specifc
