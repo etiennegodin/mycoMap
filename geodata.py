@@ -139,7 +139,7 @@ def assign_geodata_to_occurences(occ_gdf):
             if len(region_occ_gdf) != 0:
 
                 print('{} occurences in {}'.format(len(region_occ_gdf), region_code))
-                print(region_code)
+                print(region_code + ' ({}/{})'.format(idx+1, len(region_code_list)))
                 # Build path to read env factors data of region
                 region_env_factors_path = regions_env_factors_path + region_code +'.csv'
 

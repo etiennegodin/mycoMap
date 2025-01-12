@@ -17,7 +17,7 @@ gbif_queries_path = 'data/gbifQueries/'
 # Used to check if occurence file exists
 occurences_file = None
 geo_data_file_path = None
-specie_query = 'Amanita muscaria'
+specie_query = 'Cerioporus squamosus'
 
 #Create specie object based on query name - Using gbif specie module
 specie = create_specie(specie_query, rank = 'Species')
