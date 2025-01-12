@@ -1,6 +1,6 @@
-import occurences  
+from  occurences import search_occurences, occurences_request, get_occurences_download, create_occurences_dataframe
 from specie import create_specie
-import geodata
+from  geodata import geo 
 import tools
 import occurence_stats
 
@@ -26,67 +26,38 @@ specie = create_specie(specie_query, rank = 'Species')
 
 # Check if occurence download has already been made for specific specie
 specie_path = gbif_queries_path + specie.name + '/'
-download = False
+download = True
+
 
 if download == True:
 
-    occurences.searchOccurences(specie, download = True)
+    # Create folder for species data
+    path = tools.create_folder(specie_path)
 
-    if 'download_key.txt' in os.listdir(specie_path):
-        print('Occurence request already made for {}'.format(specie.name))
+    # Add path specie instance to re-use later 
+    specie.set_path(path)
 
-        print('Trying to download request to disk using provided key')
-        print('')
-        #Download request data to disk
-        occurences_file = occurences.get_download_zip(specie)
+    # Create a query to gbif to download species occurence
+    # Download query key is returned 
+    
+    download_key_path, download_key  = occurences_request(specie)
 
-        if occurences_file == None:
-            pass
-        else:
-            occ_df = occurences.create_occurences_dataframe(occurences_file)
+    # Add path specie instance to re-use later 
+    specie.set_download_key(download_key)
 
-            # Expected geodata file location
-            geo_data_file_path = occurences_file[:-4] + '_geodata.csv'
+    # Download occurences data requested to disk 
+    occurences_file = get_occurences_download(specie, unzip= True)
 
-            if not os.path.exists(geo_data_file_path):
-                # Transform df in geopandas using Lat/Long info
-                occ_gdf = geodata.df_to_gdf(occ_df)
-                # Assign region based on geo coordinate
-                occ_gdf = geodata.gpd_assign_region(occ_gdf)
-                # Find closest data point and assign geo data to occurence
-                occ_gdf = geodata.assign_geodata_to_occurences(occ_gdf)
-                # Convert back to standard dataframe
-                occ_df = geodata.gdf_to_df(occ_gdf)
+    # Create dataframe from downloaded occurence data 
+    occ_df = create_occurences_dataframe(occurences_file)
 
-                # Interpet mixed rows 
-                #occ_df =  geodata.interpet_env_factors()
-                
-                # Save occurences geodata to file
-                tools.saveDfToCsv(occ_df, geo_data_file_path)
-                
-            else:
-                print('Geodata already processed for occurences')
-                print(geo_data_file_path)
-
-                # Import geodata as dataframe
-                df = pd.read_csv(geo_data_file_path)
-                # Convert tree_cover columns to dict (read as string by pd.read_csv)
-                df = tools.convert_tree_cover_data_type(df)
-
-                occurence_stats.lnr_reg(df)
-
-
-                # Perform stats on occurences using geo data 
-        
-
-
-
-    else:
-        pass
+    # Assign geodata to occurences 
+    occ_df = geo(occ_df, specie)
 
         
 else: 
-    occurences.searchOccurences(specie, download = False)
 
-print(occurences_file)
+    search_occurences(specie)
+
+
 # Create dataframe based on occurences

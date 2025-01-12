@@ -7,39 +7,44 @@ import pandas as pd
 
 gbif_queries_path = 'data/gbifQueries/'
 
-def searchOccurences(specie, limit = 300, download = False):
+decimal_longitude = '-79.3439314990000071,-63.9999979090000011'
+decimal_latitude = '45.0000682390000009, 50.0000022050000013'
 
-    decimal_longitude = '-79.3439314990000071,-63.9999979090000011'
-    decimal_latitude = '45.0000682390000009, 50.0000022050000013'
-    
+def search_occurences(specie):
+    limit = 300 
     occurences = occ.search(taxonKey = specie.key, limit= limit, hasCoordinate=True, hasGeospatialIssue = False, decimalLongitude= decimal_longitude, decimalLatitude=decimal_latitude, country = 'CA')
     if occurences['count'] != 0:
         # Message showing how many ocurences found, with limit input
         print("Found {} available occurences for {} in Canada within provided range".format((occurences['count']), specie.name))
-        
-        if download == True:
-
-            specie_path = gbif_queries_path + specie.name + '/'
-
-            if not os.path.exists(specie_path):
-                os.makedirs(specie_path)
-            
-            if 'download_key.txt' not in os.listdir(specie_path):
-
-                #Create query to send to gbif, also writes json 
-                query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie_path )
-                key = download_occurences(query)
-
-                # Write download key to disk
-                key_file_path = specie_path + 'download_key.txt'
-                with open(key_file_path, mode="w", encoding="utf-8") as write_file:
-                        write_file.write(key)
-                
-        else:
-            print('Disabled download of occurences')
-            print('Enable download flag to make occurence requests')
+    
     else:
         print('Found no occurences for {}'.format(specie.name))
+
+def occurences_request(specie):
+
+    download_key_path = specie.path + specie.name + '_download_key.txt'
+    
+    if not os.path.exists(download_key_path):
+            
+
+        #Create query to send to gbif, also writes json 
+        query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie.path )
+        download_key = download_occurences(query)
+
+        # Write download key to disk
+        with open(download_key_path, mode="w", encoding="utf-8") as write_file:
+                write_file.write(download_key)
+
+        return download_key_path, download_key
+    
+    elif os.path.exists(download_key_path):
+        print('Download key already exists')
+
+        with open(download_key_path) as write_file:
+            download_key = write_file.read()
+
+        
+        return download_key_path, download_key
 
 def create_gbif_occurence_query(*args):
 
@@ -86,44 +91,46 @@ def download_occurences(query):
     key = downloadQuery[0]
     return key
 
-def get_download_zip(specie, unzip = True):
+def get_occurences_download(specie, unzip = True):
 
-    specie_path = gbif_queries_path + specie.name + '/'
+    occurences_file = specie.path + specie.name + '.csv'
 
-    if '{}.csv'.format(specie.name) in os.listdir(specie_path):
-        print('Occurence request already downloaded, unziped and renamed at {}{}.csv'.format(specie_path,specie.name))
-        print('')
-        return ('{}{}.csv'.format(specie_path,specie.name))
-    else:
-        key_file_path = specie_path + 'download_key.txt'
-        with open(key_file_path) as write_file:
-            key = write_file.read()
+    if not os.path.exists(occurences_file):
 
-        # Main command to get zip from occurence request key 
-        occurences = occ.download_get(key, path = specie_path)
+        occurences = occ.download_get(specie.download_key, path = specie.path)
+         # Main command to get zip from occurence request key 
         # returns dict with some infos 
         # ex
         # {'path': 'data/gbifQueries/Cantharellus enelensis//0056321-241126133413365.zip',
         #  'size': 12835,
         #  'key': '0056321-241126133413365'}
 
+
+
         # Option to unzip downloaded file
         if unzip == True:
 
+            print('Unziping file')
             zip_file_path = occurences['path']
             #Unzip file
-            file = unzip_occurence_file(zip_file_path, specie_path )
+            file = unzip_occurence_file(zip_file_path, specie.path )
 
-            zip_to_rename_path = specie_path + "{}.csv".format(key)
-            renamed_file_path = specie_path + "{}.csv".format(specie.name)
+            csv_to_rename_path = specie.path + "{}.csv".format(specie.download_key)
+            renamed_file_path = specie.path + "{}.csv".format(specie.name)
 
             # Rename file from key.csv to specie's name for better readability
-            os.rename(zip_to_rename_path,renamed_file_path)
-
+            os.rename(csv_to_rename_path,renamed_file_path)
+            print(renamed_file_path)
             return renamed_file_path
         else:
             print('Downloaded zip file to {}'.format(occurences['path']))
             return (occurences['path'])
+        
+    elif os.path.exists(occurences_file):
+        print('Occurence request already downloaded, unziped and renamed at {}'.format(occurences_file))
+        print('')
+        return occurences_file
+    
 
 def unzip_occurence_file(file_path, specie_path):
 

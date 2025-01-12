@@ -14,7 +14,13 @@ class Specie:
         self.ecology = ecology
 
         print("Created specie object for {}".format(name))
-        print('')
+        print('')\
+    
+    def set_path(self, path):
+        self.path = path
+
+    def set_download_key(self,key):
+        self.download_key = key
       
     def __str__(self):
         return self.name
