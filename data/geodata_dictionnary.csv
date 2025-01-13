@@ -1,11 +1,10 @@
 name,type,independent_var_type
-eventDate,time,continuous
 year,time,continuous
 cl_pent,environmental,ordinal
 dep_sur,environmental,categorical
 cl_drai,environmental,discrete
-densite,environmental,continuous
+densite,environmental,discrete
 cl_age_et,environmental,ordinal
-tree_cover,environmental,discrete
+tree_cover,environmental,temp
 richness_index,environmental,continuous
 shannon_index,environmental,continuous

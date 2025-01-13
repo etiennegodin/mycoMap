@@ -21,6 +21,7 @@ encoding_dictionnary = { 'cl_pent':
                         },
 
                         'cl_drai' : 10,
+                        'densite' : 10,
                         'cl_age_et': 
                         {
                             '10' : 10,
@@ -36,8 +37,6 @@ encoding_dictionnary = { 'cl_pent':
                         }
 
 }
-
-
 
 def encode_categorical_data(df, collumn, show = False):
 
@@ -61,12 +60,11 @@ def encode_ordinal_data(df, collumn, encoding):
     # Count per value
     value_counts = df[collumn].value_counts().reset_index()
 
-
     if collumn == 'cl_age_et':
         #Specific case for age where VIN and JIN represent range of age 
         #Creating random number between range with count as size
-        print(value_counts)
-        print('')
+        #print(value_counts)
+        #print('')
 
         jin_count = df[collumn].value_counts().get('JIN', 0)
         vin_count = df[collumn].value_counts().get('VIN', 0)
@@ -99,54 +97,84 @@ def encode_ordinal_data(df, collumn, encoding):
 
     # Sort by collumn value
     value_counts = value_counts.sort_values(collumn)
-    print(value_counts)
+    #print(value_counts)
 
     return value_counts
 
+def encode_discrete_data(df, collumn, encoding):
+    bin_size = encoding
 
+    value_counts = df[collumn].value_counts().reset_index()
 
+    #Round to lowest tens
+    value_counts[collumn] = (value_counts[collumn] // bin_size) * bin_size
 
+    # Group by column 'A' and sum the values in column 'B'
+    value_counts = value_counts.groupby(collumn, as_index=False)['count'].sum()
+
+    value_counts = value_counts.sort_values(collumn)
+
+    return value_counts
+
+def normalize_continuous_data(df, collumn):
+    new_df = pd.DataFrame()
+
+    if collumn == 'year':
+        # Don't normalise years
+        new_df[collumn] = df[collumn]
+    else:
+        new_df[collumn] = (df[collumn] - df[collumn].min()) / (df[collumn].max() - df[collumn].min())
+
+    return new_df 
 
 def prepare_data(df):
 
     data = {}
-
+    iter_count = len(geodata_dictionnary)
+    print(iter_count)
     for index, row in geodata_dictionnary.iterrows():
 
+        if index == iter_count:
+            break 
         dfTemp = df
-
+        print('')
+        print('-----------------------')
         name = row['name']
         independent_var_type = row['independent_var_type']
 
-        print(name)
+        print(name + ' ({}/{})'.format(index+1, iter_count))
         print(independent_var_type)
 
         try:
             encoding = encoding_dictionnary[name]
         except:
-            continue
+            pass
 
         if independent_var_type == 'categorical':
 
             #categorical_data = encode_categorical_data(dfTemp, name)
             #data[name] = categorical_data 
             pass
+
         elif independent_var_type == 'ordinal':
 
             ordinal_data = encode_ordinal_data(dfTemp, name, encoding)
+            print(ordinal_data)
             data[name] = ordinal_data 
 
         elif independent_var_type == 'discrete':
-           pass
+           discrete_data = encode_discrete_data(dfTemp, name, encoding)
+           print(discrete_data)
+
+           data[name] = discrete_data 
+
         elif independent_var_type == 'continuous':
+           normalized_continuous_data =  normalize_continuous_data(dfTemp, name)
+           print(normalized_continuous_data)
+
+           data[name] = normalized_continuous_data
            pass
+           
         
         
     return data
-
-
-
-
-
-
-

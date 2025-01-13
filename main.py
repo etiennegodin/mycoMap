@@ -4,6 +4,8 @@ from  geodata import geo
 import tools
 from  prepare_data_analysis import prepare_data
 
+import pprint
+
 
 import pandas as pd
 import os
@@ -58,15 +60,11 @@ if download == True:
     print(occ_df.head())
 
     # Prepare data for analysis 
-
-    
     data = prepare_data(occ_df)
-    #print(data)
 
 
-
-
-
+    # multi linear regression 
+    
 
     #data_analysis.lnr_reg(occ_df, parameter = 'cl_drai')
 
