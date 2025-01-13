@@ -261,6 +261,6 @@ def geo(occ_df, specie):
         print('Geodata already processed for occurences and saved to ')
         print(geodata_file)
         occ_df = pd.read_csv(geodata_file)
-        tools.convert_tree_cover_data_type(occ_df)
+        tools.convert_string_to_numeral(occ_df)
 
         return occ_df

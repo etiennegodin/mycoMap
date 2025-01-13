@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import ast
+import numpy as np
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
@@ -44,8 +45,8 @@ def regions_folders(parent_folder_path):
         os.makedirs(parent_folder_path + code)
 
 
-def convert_tree_cover_data_type(df):
-    df['tree_cover'] = df['tree_cover'].apply(ast.literal_eval)
+def convert_string_to_numeral(df, collumn = 'tree_cover'):
+    df[collumn] = df[collumn].apply(ast.literal_eval)
     
     return df
 
@@ -60,3 +61,19 @@ def create_folder(path):
     else:
         print('folder exists ')
         return path
+
+
+def random_number_generator(count, min, max):
+    max = max + 1
+
+    if count > 0:
+    # Generate random numbers between 30 and 50 that sum to 'count'
+
+        random_values = np.random.randint(min, max, size=count)
+        # Shuffle the random values for randomness
+        np.random.shuffle(random_values)
+
+        
+
+    return random_values 
+        # Example: Adding the mapping back to DataFrame (Optional)
