@@ -59,8 +59,9 @@ if download == True:
 
     # Prepare data for analysis 
 
+    
     data = prepare_data(occ_df)
-    print(data)
+    #print(data)
 
 
 
