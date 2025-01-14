@@ -2,8 +2,8 @@ from  occurences import search_occurences, occurences_request, get_occurences_do
 from specie import create_specie
 from  geodata import geo 
 import tools
-from prepare_data_analysis import prepare_data, preview_data
-from data_analysis import lnr_reg
+from data_analysis import prepare_data, exploratory_data_analysis
+from data_analysis_old import lnr_reg
 import pprint
 
 
@@ -58,8 +58,9 @@ if download == True:
     # Assign geodata to occurences 
     occ_df = geo(occ_df, specie)
 
-
-    data = preview_data(occ_df)
+    print(occ_df.head())
+    df = prepare_data(occ_df)
+    exploratory_data_analysis(df)
 
     # Prepare data for analysis 
     '''data = prepare_data(occ_df)
