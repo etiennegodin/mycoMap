@@ -82,9 +82,12 @@ def interpret_env_factors_data(path):
 
     # Interpret string descirption of tree composition as dict of {tree_kind : cover_percentage} 
     df['tree_cover'] = df['eta_ess_pc'].apply(interpret_tree_cover_string)
+    
 
-    #Keep only geoc_maj, densite, cl_age, tree_cover data
-    df = df.iloc[:, [1,4,-3,-1]]
+    #Keep only geoc_maj, typ_couv_et, densite, cl_age, tree_cover data
+    df = df.iloc[:, [1,3,4,-3,-1]]
+
+
 
     return df 
 
@@ -101,6 +104,8 @@ def interpret_region_data(path):
                 'cl_pent', # classe de pente
                 'dep_sur', # depot surface
                 'cl_drai', # classe drainage
+                'cl_haut', # classe hauteur
+                 'type_couv', #ype couvert
                 'origine', # Perturbation d'origine
                 'an_origine', # annee pertrubation
                 'perturb', # Perturbation partielle
