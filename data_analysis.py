@@ -169,6 +169,35 @@ def encode_continuous_data(df, collumn, bin_size = 0.05):
     return value_counts
 
 
+def lnr_reg(df, key, plot = False):
+
+    # Features (X) and target (y)
+    X = df[key].values
+    y = df["count"].values
+    # Add a constant term for the intercept
+    X_with_const = sm.add_constant(X)
+
+    # Fit the linear regression model
+    model = sm.OLS(y, X_with_const).fit()
+
+    # Print the model summary
+    print(model.summary())
+
+    # Predictions
+    df["predicted_frequency"] = model.predict(X_with_const)
+
+    # Plot the data and regression line
+    plt.scatter(df[key], df["count"], color='blue', label='Actual data')
+    plt.plot(df[key], df["predicted_frequency"], color='red', label='Regression line')
+    plt.xlabel(key)
+    plt.ylabel('Count')
+    plt.title('Linear Regression: {} vs Frequency'.format(key))
+    plt.legend()
+
+    if plot == True:
+        plt.show()
+
+
 
 def prepare_data_old(df):
 
