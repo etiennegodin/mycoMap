@@ -1,9 +1,11 @@
 import numpy as np 
 import pandas as pd
+import statsmodels.api as sm
+import seaborn as sns
+
 
 import matplotlib.pyplot as plt
 from tools import random_number_generator
-import csv
 
 # https://chatgpt.com/c/67842692-c814-800d-aa2f-627792370f2d
 
@@ -32,23 +34,47 @@ encoding_dictionnary = { 'cl_pent':
                             '110' : 110,
                             '120' : 120,
                             '130' : 130,
-                            'VIN' : 'VIN',
-                            'JIN' : 'JIN'
+                            'VIN' : 40, # 30 a 50
+                            'JIN' : 95 # 70 a 120
                         }
 
 }
 
+
+def dep_sur_map_category(value):
+    if value.startswith('1'):
+        return 'Depot Glaciaire'
+    elif value.startswith('2'):
+        return 'Depot fluvio-glaciaire'
+    elif value.startswith('3'):
+        return 'Depot fluviatile'
+    elif value.startswith('4'):
+        return 'Depot lacustre'
+    elif value.startswith('5'):
+        return 'Depot marin'
+    elif value.startswith('6'):
+        return 'Depot litoral marin'
+    elif value.startswith('7'):
+        return 'Depot organique'
+    elif value.startswith('8'):
+        return 'Depot de pente'
+    elif value.startswith('9'):
+        return 'Depot eolien'
+    elif value.startswith('R'):
+        return 'Rocheux'
+    else:
+        return 'Autre depot'
+
 def encode_categorical_data(df, collumn, show = False):
 
-    series = df[collumn]
-    # Count per value 
-    value_counts = series.value_counts().reset_index()
+    if collumn == 'dep_sur':
+
+        df[collumn] = df[collumn].apply(dep_sur_map_category)
 
 
-    if show == True:
-        print(value_counts)
-        ax = value_counts.plot(kind='bar')
-        plt.show()
+         # Count per value 
+        value_counts = df[collumn].value_counts().reset_index()
+        value_counts = value_counts.sort_values(collumn)
 
     return value_counts
 
@@ -127,6 +153,23 @@ def normalize_continuous_data(df, collumn):
 
     return new_df 
 
+def encode_continuous_data(df, collumn, bin_size = 0.05):
+
+    value_counts = df[collumn].value_counts().reset_index()
+
+    #Round to lowest tens
+    value_counts[collumn] = (value_counts[collumn] // bin_size) * bin_size
+
+    # Group by column 'A' and sum the values in column 'B'
+    value_counts = value_counts.groupby(collumn, as_index=False)['count'].sum()
+
+    value_counts = value_counts.sort_values(collumn)
+
+
+    return value_counts
+
+
+
 def prepare_data(df):
 
     data = {}
@@ -136,7 +179,9 @@ def prepare_data(df):
 
         if index == iter_count:
             break 
+        # reset dfTemp for each row
         dfTemp = df
+
         print('')
         print('-----------------------')
         name = row['name']
@@ -151,13 +196,11 @@ def prepare_data(df):
             pass
 
         if independent_var_type == 'categorical':
-
-            #categorical_data = encode_categorical_data(dfTemp, name)
-            #data[name] = categorical_data 
-            pass
+            categorical_data = encode_categorical_data(dfTemp, name)
+            print(categorical_data)
+            data[name] = categorical_data 
 
         elif independent_var_type == 'ordinal':
-
             ordinal_data = encode_ordinal_data(dfTemp, name, encoding)
             print(ordinal_data)
             data[name] = ordinal_data 
@@ -165,16 +208,68 @@ def prepare_data(df):
         elif independent_var_type == 'discrete':
            discrete_data = encode_discrete_data(dfTemp, name, encoding)
            print(discrete_data)
-
            data[name] = discrete_data 
 
         elif independent_var_type == 'continuous':
            normalized_continuous_data =  normalize_continuous_data(dfTemp, name)
-           print(normalized_continuous_data)
-
-           data[name] = normalized_continuous_data
-           pass
+           continuous_data = encode_continuous_data(normalized_continuous_data, name)
+           print(continuous_data)
+           data[name] = continuous_data
            
         
         
     return data
+
+
+def preview_data(df):
+
+    collumns_to_keep = ['year',
+                        'cl_pent',
+                        'dep_sur',
+                        'cl_drai',
+                        'densite',
+                        'cl_age_et',
+                        'richness_index',
+                        'shannon_index',
+                        'tree_cover']
+    
+    df = df[collumns_to_keep]
+
+    df = df.replace('NaN', 0)
+    df.fillna(0, inplace=True)
+
+
+
+    print(df.head())
+
+    
+    # Encode ordinal data 
+    for series_name, series in df.items():
+
+        try:
+            df[series_name] = df[series_name].map(encoding_dictionnary[series_name])
+        except:
+            pass
+
+    # Encode categrocial data
+    df['dep_sur'] = df['dep_sur'].apply(dep_sur_map_category)
+
+    df = df.astype({"year": 'int',
+                    "cl_drai": 'int',
+                    'densite' : 'int'
+                     })
+
+    print(df.head())
+
+    df.shape
+
+    print(df.describe())
+    print(df.dtypes)
+
+    X = df[collumns_to_keep[:-1]]
+
+    X = pd.get_dummies(data=X, drop_first=True)
+    print(X.head(50))
+
+    #sns.pairplot(df)
+    #plt.show()

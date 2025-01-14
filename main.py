@@ -2,8 +2,8 @@ from  occurences import search_occurences, occurences_request, get_occurences_do
 from specie import create_specie
 from  geodata import geo 
 import tools
-from  prepare_data_analysis import prepare_data
-
+from prepare_data_analysis import prepare_data, preview_data
+from data_analysis import lnr_reg
 import pprint
 
 
@@ -49,6 +49,7 @@ if download == True:
     specie.set_download_key(download_key)
 
     # Download occurences data requested to disk 
+
     occurences_file = get_occurences_download(specie, unzip= True)
 
     # Create dataframe from downloaded occurence data 
@@ -57,14 +58,24 @@ if download == True:
     # Assign geodata to occurences 
     occ_df = geo(occ_df, specie)
 
-    print(occ_df.head())
+
+    data = preview_data(occ_df)
 
     # Prepare data for analysis 
-    data = prepare_data(occ_df)
+    '''data = prepare_data(occ_df)
 
+    print(data.keys())
+
+
+    key = 'richness_index'
+    x = lnr_reg(data[key],key, plot = True )
+
+    '''
+
+    # categorical terrain rough translate to ph 
 
     # multi linear regression 
-    
+
 
     #data_analysis.lnr_reg(occ_df, parameter = 'cl_drai')
 
