@@ -4,6 +4,7 @@ import json
 import os
 from zipfile import ZipFile
 import pandas as pd
+import time
 
 gbif_queries_path = 'data/gbifQueries/'
 
@@ -150,6 +151,8 @@ def create_occurences_dataframe(occurences_file):
                     'year',
                     'stateProvince',
                     'species',
+                    'genus',
+                    'family',
                     'occurrenceID']]
     
     # Removing rows not in quebec
@@ -163,7 +166,6 @@ def create_occurences_dataframe(occurences_file):
     # Message printing how many occurences were in quebec
     print('From downloaded occurences {} were in Quebec and kept for analysis'.format(len(occ_df)))
     return occ_df
-
 
 def read_occurence_data(specie):
 
@@ -180,6 +182,8 @@ def read_occurence_data(specie):
     except:
         occ_df = pd.DataFrame()
         print("Can't read occurence data")
+        print(occurences_file)
+
         return occ_df
 
 def create_specie_occurences_data(specie):
@@ -204,7 +208,9 @@ def create_specie_occurences_data(specie):
         return occurences_file
     except:
         print(' *** Failed to download {} occurences data to disk, try again later *** '. format(specie.name))
+        #time.sleep(60)
         return None
+        
     
 
 

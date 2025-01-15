@@ -2,3 +2,4 @@ data/input/centroidAllPolygons.csv
 data/geodata/
 data/geodata/regions_perimetre/
 *.shp
+data/output/

@@ -1,12 +1,10 @@
-from  occurences import read_occurence_data, create_occurences_dataframe
-from specie import create_specie
-from  geodata import geo 
+from  data_occurences import read_occurence_data, create_occurences_dataframe
+from data_specie import create_specie
+from data_prepare import prepare_data
+from  data_geo import geo 
 import tools
-from data_analysis import prepare_data, exploratory_data_analysis
-
-
-import pandas as pd
 import os
+import pandas as pd
 
 #Readable inaturalist links
 pd.set_option('display.max_colwidth', 1000)
@@ -26,15 +24,6 @@ def create_species_list(species_list_file, length = None):
     print(species_list)
 
     return species_list
-
-def create_species_instances(species_list):
-
-    species_instances = []
-    for specie_name in species_list:
-        specie = create_specie(specie_name, rank = 'Species')
-        species_instances.append(specie)
-
-    return species_instances
 
 def create_species_data(specie):
     # Define path for specie data
@@ -56,27 +45,41 @@ def create_species_data(specie):
         print(' ### Processing geo_data for {}'.format(specie.name))
         # Assign geodata to occurences 
         occ_df = geo(occ_df, specie)
-        pass
+        return occ_df
     
     elif occ_df.empty:
         print(' ### {} occurence data not on file skipping geo_processing '.format(specie.name))
         pass
     
+if __name__ == '__main__':
+
+    species_name_list = create_species_list(species_list_file, length = 15)
+
+    species_instances = []
+
+    meta_occ_df = pd.DataFrame()
+
+    for idx, specie_name in enumerate(species_name_list):
+
+        specie = create_specie(specie_name, rank = 'Species')
+        print(' ############################## {} ############################## '.format(specie.name))
+
+        occ_df = None
+        specie.set_loop_index(idx)
+        species_instances.append(specie)
+
+        geodata_file = gbif_queries_path + '{}/{}_geodata.csv'.format(specie.name, specie.name)
+
+        if not os.path.exists(geodata_file):
+            occ_df = create_species_data(specie)
+        else:
+            occ_df = pd.read_csv(geodata_file)s
+        
+        meta_occ_df = pd.concat([meta_occ_df, occ_df])
 
 
-
-
-
-species_list = create_species_list(species_list_file, length = 10)
-
-species_instances = create_species_instances(species_list)
-
-for idx, specie in enumerate(species_instances):
-    specie.set_loop_index(idx)
-    print(' ############################## {} ############################## '.format(specie.name))
-    occ_df = create_species_data(specie)
-
-
+    print(meta_occ_df)
+    tools.saveDfToCsv(meta_occ_df, 'data/output/allOccurences.csv')
 
 '''
 
