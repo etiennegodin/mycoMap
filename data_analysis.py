@@ -41,29 +41,7 @@ encoding_dictionnary = { 'cl_pent':
 }
 
 
-def dep_sur_map_category(value):
-    if value.startswith('1'):
-        return 'Depot Glaciaire'
-    elif value.startswith('2'):
-        return 'Depot fluvio-glaciaire'
-    elif value.startswith('3'):
-        return 'Depot fluviatile'
-    elif value.startswith('4'):
-        return 'Depot lacustre'
-    elif value.startswith('5'):
-        return 'Depot marin'
-    elif value.startswith('6'):
-        return 'Depot litoral marin'
-    elif value.startswith('7'):
-        return 'Depot organique'
-    elif value.startswith('8'):
-        return 'Depot de pente'
-    elif value.startswith('9'):
-        return 'Depot eolien'
-    elif value.startswith('R'):
-        return 'Rocheux'
-    else:
-        return 'Autre depot'
+
 
 def encode_categorical_data(df, collumn, show = False):
 
