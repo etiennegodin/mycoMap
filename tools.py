@@ -53,13 +53,12 @@ def convert_string_to_numeral(df, collumn = 'tree_cover'):
 def create_folder(path):
 
     if not os.path.exists(path):
-        print('folder do not exists')
+        print('Requested folder do not exists, creating:')
         os.makedirs(path)
-        print('making dir')
+        print(path)
 
         return path
     else:
-        print('folder exists ')
         return path
 
 

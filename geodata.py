@@ -115,7 +115,7 @@ def interpret_region_data(path):
     
     return df
 
-def assign_geodata_to_occurences(occ_gdf):
+def assign_geodata_to_occurences(occ_gdf, specie):
 
     regions_data_path = 'data/geodata/regions_data/'
     regions_env_factors_path = 'data/geodata/region_env_factors/CARTE_ECO_MAJ_'
@@ -143,7 +143,7 @@ def assign_geodata_to_occurences(occ_gdf):
             # Check if any occurence in this region, otherwise skip to next
             if len(region_occ_gdf) != 0:
 
-                print('{} occurences in {}'.format(len(region_occ_gdf), region_code))
+                print('{} {} occurences in {} (Species index {})'.format(len(region_occ_gdf), specie.name, region_code, specie.loop_index))
                 print(region_code + ' ({}/{})'.format(idx+1, len(region_code_list)))
                 # Build path to read env factors data of region
                 region_env_factors_path = regions_env_factors_path + region_code +'.csv'
@@ -249,7 +249,7 @@ def geo(occ_df, specie):
         # Assign region based on geo coordinate
         occ_gdf = gpd_assign_region(occ_gdf)
         # Find closest data point and assign geo data to occurence
-        occ_gdf = assign_geodata_to_occurences(occ_gdf)
+        occ_gdf = assign_geodata_to_occurences(occ_gdf, specie)
         # Convert back to standard dataframe
         occ_df = gdf_to_df(occ_gdf)
 

@@ -168,7 +168,6 @@ def encode_continuous_data(df, collumn, bin_size = 0.05):
 
     return value_counts
 
-
 def lnr_reg(df, key, plot = False):
 
     # Features (X) and target (y)
@@ -196,8 +195,6 @@ def lnr_reg(df, key, plot = False):
 
     if plot == True:
         plt.show()
-
-
 
 def prepare_data_old(df):
 
@@ -251,6 +248,7 @@ def prepare_data_old(df):
 
 def prepare_data(df):
     collumns_to_keep = ['year',
+                        'eventDate',
                         'cl_pent',
                         'dep_sur',
                         'cl_drai',
@@ -293,7 +291,7 @@ def prepare_data(df):
 
     print(df.head())
 
-    df = pd.get_dummies(data=df, drop_first=True)
+    #df = pd.get_dummies(data=df, drop_first=True)
 
     return df
 
@@ -327,5 +325,3 @@ def exploratory_data_analysis(df):
     logistic regression if feed with other random data points without occurence
     same number as real occurence 
     '''
-
-

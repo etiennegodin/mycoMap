@@ -20,31 +20,30 @@ def search_occurences(specie):
     else:
         print('Found no occurences for {}'.format(specie.name))
 
-def occurences_request(specie):
+def create_occurences_request(specie):
 
-    download_key_path = specie.path + specie.name + '_download_key.txt'
+    request_key_path = specie.path + specie.name + '_request_key.txt'
     
-    if not os.path.exists(download_key_path):
+    if not os.path.exists(request_key_path):
             
-
-        #Create query to send to gbif, also writes json 
+        #Create json query to send to gbif, also writes json
         query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie.path )
-        download_key = download_occurences(query)
+        request_key = request_occurences(query)
 
         # Write download key to disk
-        with open(download_key_path, mode="w", encoding="utf-8") as write_file:
-                write_file.write(download_key)
+        with open(request_key_path, mode="w", encoding="utf-8") as write_file:
+                write_file.write(request_key)
 
-        return download_key_path, download_key
+        return request_key_path, request_key
     
-    elif os.path.exists(download_key_path):
-        print('Download key already exists')
+    elif os.path.exists(request_key_path):
+        print(' ## Occurences request already made to gbif')
 
-        with open(download_key_path) as write_file:
-            download_key = write_file.read()
+        with open(request_key_path) as write_file:
+            request_key = write_file.read()
 
         
-        return download_key_path, download_key
+        return request_key_path, request_key
 
 def create_gbif_occurence_query(*args):
 
@@ -85,7 +84,7 @@ def create_gbif_occurence_query(*args):
     #query = json.dumps(query)
     return query
 
-def download_occurences(query):
+def request_occurences(query):
 
     downloadQuery = occ.download(queries= query, format= 'SIMPLE_CSV', user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com', pred_type='and')
     key = downloadQuery[0]
@@ -97,7 +96,7 @@ def get_occurences_download(specie, unzip = True):
 
     if not os.path.exists(occurences_file):
 
-        occurences = occ.download_get(specie.download_key, path = specie.path)
+        occurences = occ.download_get(specie.request_key, path = specie.path)
          # Main command to get zip from occurence request key 
         # returns dict with some infos 
         # ex
@@ -115,7 +114,7 @@ def get_occurences_download(specie, unzip = True):
             #Unzip file
             file = unzip_occurence_file(zip_file_path, specie.path )
 
-            csv_to_rename_path = specie.path + "{}.csv".format(specie.download_key)
+            csv_to_rename_path = specie.path + "{}.csv".format(specie.request_key)
             renamed_file_path = specie.path + "{}.csv".format(specie.name)
 
             # Rename file from key.csv to specie's name for better readability
@@ -131,7 +130,6 @@ def get_occurences_download(specie, unzip = True):
         print('')
         return occurences_file
     
-
 def unzip_occurence_file(file_path, specie_path):
 
     with ZipFile(file_path, 'r') as zObject: 
@@ -167,4 +165,55 @@ def create_occurences_dataframe(occurences_file):
     return occ_df
 
 
+def read_occurence_data(specie):
+
+    occurences_file = specie.path + specie.name + '.csv'
+
+    if not os.path.exists(occurences_file):
+        occurences_file = create_specie_occurences_data(specie)
+    else:
+        print(' ## Reading occurence dataset for {})'.format(specie.name))
+
+    try:
+        occ_df = create_occurences_dataframe(occurences_file)
+        return occ_df
+    except:
+        occ_df = pd.DataFrame()
+        print("Can't read occurence data")
+        return occ_df
+
+def create_specie_occurences_data(specie):
+    print(' ## Creating occurence dataset for {} '.format(specie.name))
+
+    # Check if process already made 
+    request_key_path = specie.path + specie.name + '_request_key.txt'
+    # Add path specie instance to re-use later 
+
+    # Create a query to gbif to request species occurence
+    # Request key is returned 
+    request_key_path, request_key  = create_occurences_request(specie)
     
+    # Set request key to specie's instance to reuse later
+    specie.set_request_key(request_key)
+
+    # Download occurences data requested to disk 
+    try:
+        occurences_file = get_occurences_download(specie, unzip= True)
+
+        # Create dataframe from downloaded occurence data 
+        return occurences_file
+    except:
+        print(' *** Failed to download {} occurences data to disk, try again later *** '. format(specie.name))
+        return None
+    
+
+
+
+        
+
+
+
+
+
+
+
