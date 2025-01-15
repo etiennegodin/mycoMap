@@ -2,23 +2,51 @@
 
 # Goals
 
-## 1. (New) Find actors that exlains mushroom species diveristy 
+# Main flaws current
+
+## ****Can't predict count with linear regression
+### Would instead need to predict probaility / likelyhood based on counts
+### Not counts based on type of soil like now ****** 
+
+
+## 1. (New) Find actors that explains mushroom species diveristy 
+
+## ****** First explore if plausbile to get mutiple occurence on same geo_point???? *********
+Find 20 species with most observations 
 
 Download multiple species of same group (sapotrophic, mycrorrhizal)
 X Independant variable remain same as previous
-Y Dependant variable is number of species found ( instead of count) 
+
+### Make meta dataframe from individual species df
+Merge on geoc_maj
+#### Ideally would find some geo_point with multiple species occurences on it ??  
+Otherwise could merge from similar env_factors, ex all geo points with cl_haut = 1 etc 
+
+Store species found (key)
+Store count of each species (value)
+### Can calculate diversity index and shannon inex on meta dataframe 
+On this data point, basedo n number of speices found = diversity index 
+On this datat point based on proability of each species , calculate shannon index
+Both could become Y depenant variable 
+
+Y Dependant variable is number of species found ( instead of count)  ?
 
 ### Create map of species diversity index of forest 
 
 ## 2. Predict likelihood of finding species base on factors 
 
+
+
 Count of occurences for given factors
 Logistic regression with multiple inputs 
+https://www.youtube.com/watch?v=vN5cNN2-HWE&ab_channel=StatQuestwithJoshStarmer
 Maybe create data points without occurence 
 
 ### Create map of specific specie likelyhood 
 
 # Main ideas to improve scripts 
+
+## 1. Calculate metrics of occurence to create sub-groups of study 
 
 ### Webscrap mycoquebec 
 Get infos like 

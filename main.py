@@ -1,10 +1,8 @@
-from  occurences import search_occurences, occurences_request, get_occurences_download, create_occurences_dataframe
+from  occurences import read_occurence_data, create_occurences_dataframe
 from specie import create_specie
 from  geodata import geo 
 import tools
 from data_analysis import prepare_data, exploratory_data_analysis
-from data_analysis_old import lnr_reg
-import pprint
 
 
 import pandas as pd
@@ -15,105 +13,86 @@ pd.set_option('display.max_colwidth', 1000)
 
 # Path to story gbif queries
 gbif_queries_path = 'data/gbifQueries/'
+species_list_file = 'data/input/species_list.csv'
 
-# Used to check if occurence file exists
-occurences_file = None
-geo_data_file_path = None
+def create_species_list(species_list_file, length = None):
 
-specie_query = 'Trametes versicolor'
+    df_species = pd.read_csv(species_list_file)
 
-#Create specie object based on query name - Using gbif specie module
-specie = create_specie(specie_query, rank = 'Species')
+    if length != None:
+        df_species = df_species.head(length)
 
-# xxxxxxxxxxxxxx Could be in one main function running from occurences.py and returning dataframe for rest xxxxxxxxxxxx
+    species_list = list(df_species['Species'])
+    print(species_list)
 
-# Check if occurence download has already been made for specific specie
-specie_path = gbif_queries_path + specie.name + '/'
-download = True
+    return species_list
 
+def create_species_instances(species_list):
 
-if download == True:
+    species_instances = []
+    for specie_name in species_list:
+        specie = create_specie(specie_name, rank = 'Species')
+        species_instances.append(specie)
 
-    # Create folder for species data
+    return species_instances
+
+def create_species_data(specie):
+    # Define path for specie data
+    specie_path = gbif_queries_path + specie.name + '/'
+
+    # Create folder for specie data
     path = tools.create_folder(specie_path)
 
     # Add path specie instance to re-use later 
     specie.set_path(path)
 
-    # Create a query to gbif to download species occurence
-    # Download query key is returned 
+
+    # Create occurences data
+    occ_df = read_occurence_data(specie)
+
+
+    # Create dataframe 
+    if not occ_df.empty:
+        print(' ### Processing geo_data for {}'.format(specie.name))
+        # Assign geodata to occurences 
+        occ_df = geo(occ_df, specie)
+        pass
     
-    download_key_path, download_key  = occurences_request(specie)
-
-    # Add path specie instance to re-use later 
-    specie.set_download_key(download_key)
-
-    # Download occurences data requested to disk 
-
-    occurences_file = get_occurences_download(specie, unzip= True)
-
-    # Create dataframe from downloaded occurence data 
-    occ_df = create_occurences_dataframe(occurences_file)
-
-    # Assign geodata to occurences 
-    occ_df = geo(occ_df, specie)
-
-    print(occ_df.head())
-    df = prepare_data(occ_df)
-    exploratory_data_analysis(df)
-
-    # Prepare data for analysis 
-    '''data = prepare_data(occ_df)
-
-    print(data.keys())
+    elif occ_df.empty:
+        print(' ### {} occurence data not on file skipping geo_processing '.format(specie.name))
+        pass
+    
 
 
-    key = 'richness_index'
-    x = lnr_reg(data[key],key, plot = True )
-
-    '''
-
-    # categorical terrain rough translate to ph 
-
-    # multi linear regression 
 
 
-    #data_analysis.lnr_reg(occ_df, parameter = 'cl_drai')
+
+species_list = create_species_list(species_list_file, length = 10)
+
+species_instances = create_species_instances(species_list)
+
+for idx, specie in enumerate(species_instances):
+    specie.set_loop_index(idx)
+    print(' ############################## {} ############################## '.format(specie.name))
+    occ_df = create_species_data(specie)
+
+
+
+'''
+
+
+
+print(occ_df.head())
+df = prepare_data(occ_df)
+exploratory_data_analysis(df)
+
+'''
+
+
+
 
         
-else: 
-
-    search_occurences(specie)
-
-
-# Create dataframe based on occurences
-
-
-# Could split in separate scripts
-
-# 0 find species 
-#find species with most occurence, create list ( exploaratory in this script)
-
-#1 download data ( first portion of this main.py)
-#make iterable if fed list of species from exploratory phase
-
-#2 get data run only when confirmation of gbif , could make fancy trigger, like query email of gbif account 
-# include geo data anylissis in get_data script)
-#iterable too
-
-
-#account for fact thta occurens are human and flaws ( only in cities or near centers 
-#entropy concept ???
 
 
 
-#3 analysis only - could include iterating over acquired species ( by group) 
-# list of all dirs in gbifQueries an iterate over to do stats and find multiple ocrelation 
-# could help define most influencal factors fro groups of mushroom instaed of juste one specifc
 
-
-#4 if null hypothesis rejected 
-
-#proceed to do map visual 
-#from linear fit, 
-#  
