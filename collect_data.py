@@ -60,7 +60,7 @@ def create_species_data(specie):
 if __name__ == '__main__':
 
     # Create species_name list 
-    species_name_list = create_species_name_list(species_list_file, length = 30)
+    species_name_list = create_species_name_list(species_list_file, length = 37)
 
     # Create final dataframe to output all species occurences
     meta_occ_df = pd.DataFrame()
