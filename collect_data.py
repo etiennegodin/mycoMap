@@ -1,8 +1,9 @@
 from  data_occurences import read_occurence_data, create_occurences_dataframe
-from data_specie import create_specie
+import specie
+from gbif import gbif
 from data_prepare import prepare_data
 from  data_geo import geo 
-import tools
+import utilities
 import os
 import pandas as pd
 
@@ -13,7 +14,7 @@ pd.set_option('display.max_colwidth', 1000)
 gbif_queries_path = 'data/gbifQueries/'
 species_list_file = 'data/input/species_list.csv'
 
-def create_species_list(species_list_file, length = None):
+def create_species_name_list(species_list_file, length = None):
 
     df_species = pd.read_csv(species_list_file)
 
@@ -32,7 +33,7 @@ def create_species_data(specie):
     specie_path = gbif_queries_path + specie.name + '/'
 
     # Create folder for specie data
-    path = tools.create_folder(specie_path)
+    path = utilities.create_folder(specie_path)
 
     # Add path specie instance to re-use later 
     specie.set_path(path)
@@ -53,27 +54,27 @@ def create_species_data(specie):
         print(' ### {} occurence data not on file skipping geo_processing '.format(specie.name))
         pass
     
+
+
+
 if __name__ == '__main__':
 
-    species_name_list = create_species_list(species_list_file, length = 30)
+    # Create species_name list 
+    species_name_list = create_species_name_list(species_list_file, length = 30)
 
-    species_instances = []
-
+    # Create final dataframe to output all species occurences
     meta_occ_df = pd.DataFrame()
 
-    idx = 0 
+    # Create list of species object
+    species_instances = specie.create_species(species_name_list)
 
-    for idx, specie_name in enumerate(species_name_list):
+    # Handle gbif download and get queries 
+    gbif(species_instances)
 
-        specie = create_specie(specie_name, rank = 'Species')
-        print(' ############################## {} ############################## '.format(specie.name))
 
-        occ_df = None
-        specie.set_loop_index(idx)
-        species_instances.append(specie)
 
-    print('Created {} species instances'.format(len(species_instances)))
 
+    '''
     idx = 0 
     while idx < len(species_instances):
         for idx, specie_instance in enumerate(species_instances):
@@ -105,12 +106,6 @@ if __name__ == '__main__':
 '''
 
 
-
-print(occ_df.head())
-df = prepare_data(occ_df)
-exploratory_data_analysis(df)
-
-'''
 
 
 

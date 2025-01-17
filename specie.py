@@ -18,12 +18,17 @@ class Specie:
 
         print(" # Created specie object for {}".format(name))
     
-    def set_path(self, path):
-        self.path = path
+    def set_specie_folder(self, path):
+        self.folder = path
+
+    def set_specie_occurence_file(self, file):
+        self.specie_occurence_file = file
+    
+    def set_request_key_path(self, path):
+        self.request_key_path = path
 
     def set_request_key(self,key):
         self.request_key = key
-
     
     def set_loop_index(self,idx):
         self.loop_index = idx
@@ -43,7 +48,7 @@ def find_ecology_data(path, queryName):
         ecology = NaN
 
 
-def create_specie(queryName, rank = 'species'):
+def create_specieObject(queryName, rank = 'species'):
     #gbif_specie object
     try:
         gbif_species = gSpecie.name_suggest(q=queryName, rank = rank, limit = 1)
@@ -77,6 +82,20 @@ def create_specie(queryName, rank = 'species'):
     specie = Specie(name,key,taxonomic_rank, order, family, genus, ecology)
     return specie 
 
+def create_species(species_name_list):
+
+    species_instances = []
+    for idx, specie_name in enumerate(species_name_list):
+
+        specie = create_specieObject(specie_name, rank = 'Species')
+        print(' ############################## {} ############################## '.format(specie.name))
+
+        occ_df = None
+        specie.set_loop_index(idx)
+        species_instances.append(specie)
+
+    print('Created {} species instances'.format(len(species_instances)))
+    return species_instances
 
 #specie = create_specie('Cantharellus', rank = 'Genus')
 #print(specie.__dict__)

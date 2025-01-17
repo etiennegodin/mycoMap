@@ -1,5 +1,5 @@
 import pandas as pd
-import tools
+import utilities
 import numpy as np
 
 import seaborn as sns
@@ -110,7 +110,7 @@ def prepare_data(df):
     
 
 
-    tools.explore_df(df)
+    utilities.explore_df(df)
 
 
     return df
