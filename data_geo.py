@@ -6,7 +6,7 @@ from scipy.spatial import cKDTree
 from shapely.geometry import Point
 import re
 
-import tools 
+import utilities 
 
 
 def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
@@ -257,7 +257,7 @@ def geo(occ_df, specie):
         occ_df = ecology_factors(occ_df)
 
         # Save df to file 
-        tools.saveDfToCsv(occ_df, geodata_file)
+        utilities.saveDfToCsv(occ_df, geodata_file)
 
         return occ_df
 
@@ -266,6 +266,6 @@ def geo(occ_df, specie):
         print('Geodata already processed for occurences and saved to ')
         print(geodata_file)
         occ_df = pd.read_csv(geodata_file)
-        tools.convert_string_to_numeral(occ_df)
+        utilities.convert_string_to_numeral(occ_df)
 
         return occ_df
