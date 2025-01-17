@@ -76,3 +76,9 @@ def random_number_generator(count, min, max):
 
     return random_values 
         # Example: Adding the mapping back to DataFrame (Optional)
+
+def explore_df(df):
+
+    df.shape
+    print(df.describe())
+    print(df.dtypes)
