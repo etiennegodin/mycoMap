@@ -29,13 +29,19 @@ def create_occurences_request(specie):
             
         #Create json query to send to gbif, also writes json
         query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie.path )
-        request_key = request_occurences(query)
+        try:
+            request_key = request_occurences(query)
+        except:
+            print('Reached max simultaneous downloads, waiting 1mim')
+            print('data_occurence, line 36')
+            time.sleep(60)
+        
+        else:
+            # Write download key to disk
+            with open(request_key_path, mode="w", encoding="utf-8") as write_file:
+                    write_file.write(request_key)
 
-        # Write download key to disk
-        with open(request_key_path, mode="w", encoding="utf-8") as write_file:
-                write_file.write(request_key)
-
-        return request_key_path, request_key
+            return request_key_path, request_key
     
     elif os.path.exists(request_key_path):
         print(' ## Occurences request already made to gbif')
@@ -208,6 +214,7 @@ def create_specie_occurences_data(specie):
         return occurences_file
     except:
         print(' *** Failed to download {} occurences data to disk, try again later *** '. format(specie.name))
+        print('data_occurences, line 216')
         #time.sleep(60)
         return None
         

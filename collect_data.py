@@ -26,6 +26,8 @@ def create_species_list(species_list_file, length = None):
     return species_list
 
 def create_species_data(specie):
+
+    print('Creating data for {}'.format(specie.name))
     # Define path for specie data
     specie_path = gbif_queries_path + specie.name + '/'
 
@@ -53,11 +55,13 @@ def create_species_data(specie):
     
 if __name__ == '__main__':
 
-    species_name_list = create_species_list(species_list_file, length = 15)
+    species_name_list = create_species_list(species_list_file, length = 30)
 
     species_instances = []
 
     meta_occ_df = pd.DataFrame()
+
+    idx = 0 
 
     for idx, specie_name in enumerate(species_name_list):
 
@@ -68,14 +72,31 @@ if __name__ == '__main__':
         specie.set_loop_index(idx)
         species_instances.append(specie)
 
-        geodata_file = gbif_queries_path + '{}/{}_geodata.csv'.format(specie.name, specie.name)
+    print('Created {} species instances'.format(len(species_instances)))
 
-        if not os.path.exists(geodata_file):
-            occ_df = create_species_data(specie)
-        else:
-            occ_df = pd.read_csv(geodata_file)s
+    idx = 0 
+    while idx < len(species_instances):
+        for idx, specie_instance in enumerate(species_instances):
+
+            print('Looping through species')
+            print('{} with index {}'.format(specie.name, idx))
+
+            geodata_file = gbif_queries_path + '{}/{}_geodata.csv'.format(specie.name, specie.name)
+
+            if not os.path.exists(geodata_file):
+                occ_df = create_species_data(specie)
+            else:
+                print('Data for {} already on file, adding to all occurences'.format(specie.name))
+                occ_df = pd.read_csv(geodata_file)
+            
+            meta_occ_df = pd.concat([meta_occ_df, occ_df])
+            idx += 1
+
+            if idx == len(species_instances):
+                break
         
-        meta_occ_df = pd.concat([meta_occ_df, occ_df])
+        
+        
 
 
     print(meta_occ_df)

@@ -145,23 +145,25 @@ encoding_dictionnary = { 'cl_pent':
 
 }
 
-
-path = 'data/output/allOccurences.csv'
-
-df = pd.read_csv(path)
-
-# Calculate ecology index from mushroom species
-df = fungi_ecology_index(df)
-# Clean, prepare, encode data
-df = prepare_data(df)
-print(df.head())
-
-df2 = df[['tree_diversity_index', 'tree_shannon_index','fungi_diversity_index','fungi_shannon_index']]
-df3 = df[['ty_couv_et','cl_age_et','densite','fungi_diversity_index','fungi_shannon_index']]
-df4 = df[['cl_pent','cl_drai','cl_haut','fungi_diversity_index','fungi_shannon_index']]
+if __name__ == '__main__':
 
 
+    path = 'data/output/allOccurences.csv'
 
-sns.pairplot(df)
-plt.show()
+    df = pd.read_csv(path)
+
+    # Calculate ecology index from mushroom species
+    df = fungi_ecology_index(df)
+    # Clean, prepare, encode data
+    df = prepare_data(df)
+    print(df.head())
+
+    df2 = df[['tree_diversity_index', 'tree_shannon_index','fungi_diversity_index','fungi_shannon_index']]
+    df3 = df[['ty_couv_et','cl_age_et','densite','fungi_diversity_index','fungi_shannon_index']]
+    df4 = df[['cl_pent','cl_drai','cl_haut','fungi_diversity_index','fungi_shannon_index']]
+
+
+
+    sns.pairplot(df)
+    plt.show()
 
