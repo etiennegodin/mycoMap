@@ -88,7 +88,7 @@ def create_species(species_name_list):
     for idx, specie_name in enumerate(species_name_list):
 
         specie = create_specieObject(specie_name, rank = 'Species')
-        print(' ############################## {} ############################## '.format(specie.name))
+        print(' ############################## {} ############################## {}'.format(specie.name, idx))
 
         occ_df = None
         specie.set_loop_index(idx)

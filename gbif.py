@@ -202,6 +202,7 @@ def prepare_species_gbif(species_instances):
         request_key_path = specie.folder + specie.name + '_request_key.txt'
         specie.set_request_key_path(request_key_path)
 
+#https://stackoverflow.com/questions/52126524/retry-for-loop-in-python
 
 def gbif(species_instances):
 
@@ -211,13 +212,14 @@ def gbif(species_instances):
     print('x')
     species_queried = []
     species_downloaded = []
+    active_queries = []
 
     print(species_count)
     while (len(species_queried) < species_count) and (len(species_downloaded) < species_count):
         for idx, specie in enumerate(species_instances):
+
             print(len(species_queried), len(species_downloaded))
 
-            active_queries = []
 
             if skip_gbif(specie):
                 species_queried.append(specie)
@@ -229,31 +231,35 @@ def gbif(species_instances):
             if os.path.exists(specie.request_key_path):
 
                 # Read request key 
-                print(' ## Occurences request already made to gbif')
+                print(' ## Occurences request already made to gbif {}'.format(specie.name))
                 with open(specie.request_key_path) as write_file:
                     request_key = write_file.read()
 
                 specie.set_request_key(request_key)
 
-                species_queried.append(specie)
+                try:
+                    get_occurences_download(specie)
+                    active_queries.remove(specie.request_key)
+                    species_downloaded.append(specie)
+                except:
+                    print('{} requested already but still active and not downloadable '.format(specie.name))
 
-                if specie.request_key in active_queries:
-                    try:
-                        get_occurences_download(specie)
-                        active_queries.remove(specie.request_key)
-                        species_downloaded.append(specie)
-                    except:
-                        print('Specie requested already but still active and not downloadable')
-                        pass
+                    if len(active_queries) < 3: 
+                        print('Less than 3 active requests appending')
+                        active_queries.append(specie.request_key)
+                    pass
 
             
+            print(active_queries)
+
             if len(active_queries) == 3:
                     print('Already 3 actives queries, waiting 1min')
                     time.sleep(5)
+                    pass
 
-            if specie.request_key not in active_queries and not os.path.exists(specie.request_key_path):
+            if not os.path.exists(specie.request_key_path) and len(active_queries) < 3 :
         
-                print('Creating gbif query for specie')
+                print('Creating gbif query for {}'.format(specie.name))
                 #Handle json request formatting
                 query = create_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie.folder )
                 request_key = request_occurences(query)
