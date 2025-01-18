@@ -56,29 +56,13 @@ def construct_gbif_occurence_query(*args):
 
 def skip_gbif_process(specie):
 
-    if os.path.exists(specie.specie_occurence_file):
+    if os.path.exists(specie.occurence_file):
         print(f'{specie.index} | {specie} occurence data already requested and downloaded to disk')
         return True
 
     else:
 
         return False
-    
-def prepare_species_gbif(species_instances):
-    for specie in species_instances:
-        specie_folder = gbif_queries_path + specie.name + '/'
-
-        # Create folder for specie data, if already created returns path 
-        specie_folder = utilities.create_folder(specie_folder)
-        specie.set_specie_folder(specie_folder)
-
-        #Set expected file for occurence data 
-        specie_occurence_file = specie.folder + specie.name + '.csv'
-        specie.set_specie_occurence_file(specie_occurence_file)
-
-        #Set expected file for request key 
-        request_key_path = specie.folder + specie.name + '_request_key.txt'
-        specie.set_request_key_path(request_key_path)
 
 def unzip_occurence_file(file_path, specie_path):
 
@@ -179,13 +163,11 @@ async def process_gbif_occurences(specie, semaphore, max_retries = 15, delay = 2
 
 async def main(species_instances):
 
-    # Set parameters and vars for seach specie 
-    prepare_species_gbif(species_instances)
-
     # Check if occurence already downloaded, if so remove from list
     filtered_species_instances = []
 
     for specie in species_instances:
+        print(specie.__dict__)
 
         if not skip_gbif_process(specie):
             filtered_species_instances.append(specie)
