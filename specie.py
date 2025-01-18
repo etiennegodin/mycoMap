@@ -1,9 +1,8 @@
 from pygbif import species as gSpecie
-import csv
 from numpy import NaN 
+import pandas as pd
 
-
-# Create specie object from gbif specie_obejct with relevant informations 
+# Create specie object from gbif specie_object with relevant informations 
 class Specie:
     def __init__(self, name, key, taxonomic_rank, order, family, genus, ecology):
         
@@ -30,23 +29,11 @@ class Specie:
     def set_request_key(self,key):
         self.request_key = key
     
-    def set_loop_index(self,idx):
-        self.loop_index = idx
+    def set_index(self,idx):
+        self.index = idx
       
     def __str__(self):
         return self.name
-
-def find_ecology_data(path, queryName):
-    
-    try:
-        reader = csv.DictReader(open(path))
-        for row in reader:
-            ecology = row['ecology']
-
-    except:
-        print("Couldn't find additionnal info file for {}".format(queryName))
-        ecology = NaN
-
 
 def create_specieObject(queryName, rank = 'species'):
     #gbif_specie object
@@ -82,20 +69,30 @@ def create_specieObject(queryName, rank = 'species'):
     specie = Specie(name,key,taxonomic_rank, order, family, genus, ecology)
     return specie 
 
-def create_species(species_name_list):
+def create_species(species_file, length = None):
 
+    species_name_list = read_species_name_list(species_file, length)
     species_instances = []
     for idx, specie_name in enumerate(species_name_list):
 
         specie = create_specieObject(specie_name, rank = 'Species')
         print(' ############################## {} ############################## {}'.format(specie.name, idx))
 
-        occ_df = None
-        specie.set_loop_index(idx)
+        specie.set_index(idx)
         species_instances.append(specie)
 
     print('Created {} species instances'.format(len(species_instances)))
     return species_instances
 
-#specie = create_specie('Cantharellus', rank = 'Genus')
-#print(specie.__dict__)
+def read_species_name_list(species_list_file, length):
+
+
+    df_species = pd.read_csv(species_list_file)
+
+    if length != None:
+        df_species = df_species.head(length)
+
+    species_list = list(df_species['Species'])
+    print(species_list)
+
+    return species_list
