@@ -1,6 +1,7 @@
 from pygbif import species as gSpecie
 from numpy import NaN 
 import pandas as pd
+import utilities
 
 # Create specie object from gbif specie_object with relevant informations 
 class Specie:
@@ -15,16 +16,23 @@ class Specie:
         self.family = family
         self.genus = genus
 
-        print(" # Created specie object for {}".format(name))
-    
-    def set_specie_folder(self, path):
-        self.folder = path
+        # From prepare_species_gbif funct 
+        self.folder = 'data/gbifQueries/' + name + '/'
+        # Create folder for specie data, if already created returns path 
+        utilities.create_folder(self.folder)
 
-    def set_specie_occurence_file(self, file):
-        self.specie_occurence_file = file
-    
-    def set_request_key_path(self, path):
-        self.request_key_path = path
+        #Set expected file for occurence data 
+        self.occurence_file = self.folder + name + '.csv'
+
+        #Set expected file for request key 
+        self.request_key_path = self.folder + name + '_request_key.txt'
+
+        #Set expected file for occurences geodata  
+        self.geodata_file = self.folder + name + '_geodata.csv'
+
+
+        print(" # Created specie object for {}".format(name))
+
 
     def set_request_key(self,key):
         self.request_key = key
@@ -88,9 +96,16 @@ def create_specieObject(queryName, rank = 'species'):
     specie = Specie(name,key,taxonomic_rank, order, family, genus, ecology)
     return specie 
 
-def create_species(species_file, length = None):
+def create_species(species_file, length = None, species_list_range = None):
 
-    species_name_list = read_species_name_list(species_file, length)
+    if species_list_range != None:
+        species_name_list = read_species_name_list(species_file, species_list_range)
+    elif length != None:
+        species_list_range = [0,length]
+        species_name_list = read_species_name_list(species_file, species_list_range)
+    
+    
+
     species_instances = []
     for idx, specie_name in enumerate(species_name_list):
 
@@ -103,13 +118,14 @@ def create_species(species_file, length = None):
     print('Created {} species instances'.format(len(species_instances)))
     return species_instances
 
-def read_species_name_list(species_list_file, length):
+def read_species_name_list(species_list_file, species_list_range):
 
+    min = species_list_range[0]
+    max = species_list_range[1]
 
     df_species = pd.read_csv(species_list_file)
 
-    if length != None:
-        df_species = df_species.head(length)
+    df_species = df_species.iloc[min:max]
 
     species_list = list(df_species['Species'])
     print(species_list)

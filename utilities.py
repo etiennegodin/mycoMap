@@ -82,3 +82,23 @@ def explore_df(df):
     df.shape
     print(df.describe())
     print(df.dtypes)
+
+def interpret_args_range(input_range):
+
+    split = input_range.split('-',1)
+
+    if len(split) != 2:
+        print('Range entered incorrectly, please use "min-max" syntax')  
+    else:  
+        try:
+            min = int(split[0])-1
+            max = int(split[-1])
+        except ValueError as e:
+            print('Please enter range as min-max using a dash to separate')
+            min = None
+            max = None
+
+        output_range = [min,max]
+        print(output_range)    
+        return output_range
+
