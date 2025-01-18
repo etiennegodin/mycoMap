@@ -141,7 +141,7 @@ def assign_geodata_to_occurences(occ_gdf, specie):
             # Check if any occurence in this region, otherwise skip to next
             if len(region_occ_gdf) != 0:
 
-                print('{} {} occurences in {} (Species index {})'.format(len(region_occ_gdf), specie.name, region_code, specie.loop_index))
+                print('{} {} occurences in {} (Species index {})'.format(len(region_occ_gdf), specie.name, region_code, specie.index))
                 print(region_code + ' ({}/{})'.format(idx+1, len(region_code_list)))
                 # Build path to read env factors data of region
                 region_env_factors_path = regions_env_factors_path + region_code +'.csv'
@@ -193,6 +193,32 @@ def interpet_env_factors(df):
     #data/DICTIONNAIRE_CARTE_ECO_MAJ.xlsx
     pass
 
+def create_occurences_dataframe(occurences_file):
+
+    occ_df = pd.read_csv(occurences_file, sep='\t')
+    # Cleaning dataframe with only relevant info from occurence query
+
+    occ_df = occ_df[['gbifID', 
+                    'decimalLongitude', 
+                    'decimalLatitude', 
+                    'eventDate',
+                    'year',
+                    'stateProvince',
+                    'species',
+                    'occurrenceID']]
+    
+    # Removing rows not in quebec
+
+    # Specified Canada only but Lat/ Long might make it in Ontario
+    occ_df = occ_df[occ_df.stateProvince == 'Québec']
+
+    # Reseting index from removed rows not in qc
+    occ_df = occ_df.reset_index(drop=True)
+
+    # Message printing how many occurences were in quebec
+    print('From downloaded occurences {} were in Quebec and kept for analysis'.format(len(occ_df)))
+    return occ_df
+
 
 def richnessIndex(tree_cover):
     #indice de ricnesse (nb especes)
@@ -242,9 +268,9 @@ def process_specie_geodata(specie):
         # Check if geodata file already processed
         if not os.path.exists(specie.geodata_file):
             print(f'Processing geodata for {specie} {specie.index}')
+
             # Read occurences data as dataframe 
-            print(specie.occurence_file)
-            occ_df = pd.read_csv(specie.occurence_file)
+            occ_df = create_occurences_dataframe(specie.occurence_file)
 
             # Transform df in geopandas using Lat/Long info
             occ_gdf = df_to_gdf(occ_df)

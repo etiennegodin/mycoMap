@@ -167,8 +167,6 @@ async def main(species_instances):
     filtered_species_instances = []
 
     for specie in species_instances:
-        print(specie.__dict__)
-
         if not skip_gbif_process(specie):
             filtered_species_instances.append(specie)
 
@@ -179,6 +177,9 @@ async def main(species_instances):
     tasks = [process_gbif_occurences(specie, semaphore) for specie in filtered_species_instances]
     await asyncio.gather(*tasks)  # Wait for all tasks to complete
 
+    print('All occurences data on disk')
+    return True
+
 if __name__ == '__main__':
 
     import argparse
@@ -187,13 +188,21 @@ if __name__ == '__main__':
                                      )
     parser.add_argument('-f', '--file', help = 'Location of species list', type = str, default = 'data/input/species_list.csv')
     parser.add_argument('-l', '--length', help = 'Number of species to request from list', type = int, default = 5 )       
+    parser.add_argument('--range', help = 'Specify species_list range to load ', default = None )       
 
     args = parser.parse_args()
+
+
+    # Interpret arguments
+    if args.range != None:
+        species_list_range = utilities.interpret_args_range(args.range)
+    else: 
+        species_list_range = None
 
     print('## No arguments specified, reverting to defaults ##')
     print(f'Species list location : {args.file}')
     print(f'Requesting {args.length} species')
-    species_instances = sp.create_species(species_file= args.file,length = args.length)
+    species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
     asyncio.run(main(species_instances))
 
 
