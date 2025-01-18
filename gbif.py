@@ -155,7 +155,7 @@ async def gbif_occurences_get(specie, unzip = True):
         print('Downloaded zip file to {}'.format(occurences_dict['path']))
         return (occurences_dict['path'])
 
-async def process_gbif_occurences(specie, semaphore, max_retries = 15, delay = 30):
+async def process_gbif_occurences(specie, semaphore, max_retries = 15, delay = 20):
 
     async with semaphore:
         # Set 
@@ -165,10 +165,11 @@ async def process_gbif_occurences(specie, semaphore, max_retries = 15, delay = 3
         while retries < max_retries:
             try:
                 await gbif_occurences_get(specie)
+                print(f'Took {retries}')
                 break  # Exit loop if download is successful
 
             except:
-                print(f"Retry {retries + 1}/{max_retries} for {specie}: ")
+                print(f"Retry {retries + 1}/{max_retries} for {specie} {specie.index}")
                 retries += 1
                 await asyncio.sleep(delay) 
         else:
