@@ -50,11 +50,30 @@ def create_specieObject(queryName, rank = 'species'):
     name = gbif_specie['canonicalName']
     name = name.replace(" ", "_")
 
-    key = gbif_specie['key']
-    taxonomic_rank = gbif_specie['rank']
-    order = gbif_specie['order']
-    family = gbif_specie['family']
-    genus = gbif_specie['genus']
+
+
+    try:
+        key = gbif_specie['key']
+    except:
+        key = None
+    try:
+        taxonomic_rank = gbif_specie['rank']
+    except:
+        taxonomic_rank = None
+    try:
+        order = gbif_specie['order']
+    except:
+        order = None
+    try:
+        family = gbif_specie['family']
+    except:
+        family = None
+    try:
+        genus = gbif_specie['genus']
+    except:
+        genus = None
+
+
 
     ecology = None
     # Defin ecology type from specie file

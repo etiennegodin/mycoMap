@@ -97,10 +97,10 @@ async def gbif_occurences_request(specie):
             
         #Create json query to send to gbif, also writes json
         query = construct_gbif_occurence_query(specie,decimal_longitude,decimal_latitude, specie.folder )
-        print(f"Starting API request for {specie}")
+        print(f"Starting API request for {specie} {specie.index}")
         downloadQuery = occ.download(queries= query, format= 'SIMPLE_CSV', user = 'egodin', pwd = '4AWkTW8_4D$8q7.', email = 'etiennegodin@duck.com', pred_type='and')
         request_key = downloadQuery[0]
-        print(f"Completed API request for {specie}")
+        print(f"Completed API request for {specie} {specie.index}")
 
         # Set request key to specie object 
         specie.set_request_key(request_key)
@@ -123,7 +123,7 @@ async def gbif_occurences_request(specie):
         return specie.request_key
 
 async def gbif_occurences_get(specie, unzip = True):
-    print(f"Attempting to download data for {specie}")
+    print(f"Attempting to download data for {specie} {specie.index}")
     print(specie.request_key)
     occurences_dict = occ.download_get(specie.request_key, path = specie.folder)
 
