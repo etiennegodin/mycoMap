@@ -91,16 +91,10 @@ def interpret_env_factors_data(path):
 
 def interpret_region_data(path):
 
-    print('Debug flag for interpet_region_data(). See comments')
-
-    #debug - could make loading region cv faster, complaining about columns (11,30) datatype 
-    # -Specify dtype option on import
-    df = pd.read_csv(path)
-
-    #Keep only relevant collumns
-    df = df[['geoc_maj', #id
+    collumns = ['geoc_maj', #id
                 'cl_pent', # classe de pente
-                'dep_sur', # depot surface
+                'dep_sur',
+                 'cl_age', # depot surface
                 'cl_drai', # classe drainage
                 'cl_haut', # classe hauteur
                  'type_couv', #ype couvert
@@ -109,7 +103,10 @@ def interpret_region_data(path):
                 'perturb', # Perturbation partielle
                 'an_perturb', # Année de la perturbation partielle
                 'X',
-                'Y']]
+                'Y']
+    #debug - could make loading region cv faster, complaining about columns (11,30) datatype 
+    # -Specify dtype option on import
+    df = pd.read_csv(path, usecols= collumns)
     
     return df
 
@@ -162,7 +159,7 @@ def assign_geodata_to_occurences(occ_gdf, specie):
                 region_gdf = df_to_gdf(df, xy = ['X','Y'])
 
                 #Remove redundant XY columns
-                region_gdf = region_gdf.drop(columns=['X','Y'])
+                #region_gdf = region_gdf.drop(columns=['X','Y'])
 
 
 
@@ -217,8 +214,10 @@ def create_occurences_dataframe(occurences_file):
 
     # Message printing how many occurences were in quebec
     print('From downloaded occurences {} were in Quebec and kept for analysis'.format(len(occ_df)))
-    return occ_df
 
+    if len(occ_df) == 0:
+        pass
+    return occ_df
 
 def richnessIndex(tree_cover):
     #indice de ricnesse (nb especes)
@@ -255,39 +254,49 @@ def shannonIndex(tree_cover):
     return(shannon_index)
 
 def ecology_factors(df):
-    df['richness_index'] = df['tree_cover'].apply(richnessIndex) 
-    df['shannon_index'] = df['tree_cover'].apply(shannonIndex)
+    df['tree_diversity_index'] = df['tree_cover'].apply(richnessIndex) 
+    df['tree_shannon_index'] = df['tree_cover'].apply(shannonIndex)
 
     return df 
 
-def process_specie_geodata(specie):
+def process_specie_geodata(specie,use_processed_geo_only):
     
     # First check if occurences are dwownloaded for this specie
     if os.path.exists(specie.occurence_file):
 
         # Check if geodata file already processed
         if not os.path.exists(specie.geodata_file):
-            print(f'Processing geodata for {specie} {specie.index}')
 
-            # Read occurences data as dataframe 
-            occ_df = create_occurences_dataframe(specie.occurence_file)
+            if not use_processed_geo_only:
+                occ_df = create_occurences_dataframe(specie.occurence_file)
+                if len(occ_df) == 0:
+                    print(f'-- No occurence available for {specie}, skipping --')
+                    return pd.DataFrame()
+                else:
+                    print(f'Processing geodata for {specie} {specie.index}')
 
-            # Transform df in geopandas using Lat/Long info
-            occ_gdf = df_to_gdf(occ_df)
-            # Assign region based on geo coordinate
-            occ_gdf = gpd_assign_region(occ_gdf)
-            # Find closest data point and assign geo data to occurence
-            occ_gdf = assign_geodata_to_occurences(occ_gdf, specie)
-            # Convert back to standard dataframe
-            occ_df = gdf_to_df(occ_gdf)
+                    # Read occurences data as dataframe 
+                    
 
-            # Calculate ecology data such as shannon Index and richness Index
-            occ_df = ecology_factors(occ_df)
+                    # Transform df in geopandas using Lat/Long info
+                    occ_gdf = df_to_gdf(occ_df)
+                    # Assign region based on geo coordinate
+                    occ_gdf = gpd_assign_region(occ_gdf)
+                    # Find closest data point and assign geo data to occurence
+                    occ_gdf = assign_geodata_to_occurences(occ_gdf, specie)
+                    # Convert back to standard dataframe
+                    #occ_df = gdf_to_df(occ_gdf)
 
-            # Save df to file 
-            utilities.saveDfToCsv(occ_df, specie.geodata_file)
+                    # Calculate ecology data such as shannon Index and richness Index
+                    occ_gdf = ecology_factors(occ_gdf)
 
-            return occ_df
+                    # Save df to file 
+                    utilities.saveDfToCsv(occ_gdf, specie.geodata_file)
+
+                    return occ_gdf
+            else:
+                return pd.DataFrame()
+
 
         elif os.path.exists(specie.geodata_file):
 
@@ -302,22 +311,28 @@ def process_specie_geodata(specie):
         print('Use the gbif module to get this data ')
         
 
-def main(species_instances, override):
+def main(species_instances, dry_run, overwrite, use_processed_geo_only):
     # Create temp df for final export
     meta_occ_df = pd.DataFrame()
 
-    # Get processed dataframe of all occurences, append to final df
-    for specie in species_instances:
-        occ_df = process_specie_geodata(specie)
-        meta_occ_df = pd.concat([meta_occ_df, occ_df])
-    
-    print(meta_occ_df)
+    if os.path.exists('data/output/allOccurences.csv'):
+        print('AllOccurences already on disk')
+        if overwrite:
+            print('Overriding AllOccurences')
+            # Get processed dataframe of all occurences, append to final df
+            for specie in species_instances:
+                occ_df = process_specie_geodata(specie,use_processed_geo_only)
+                if occ_df.empty:
+                    pass
+                meta_occ_df = pd.concat([meta_occ_df, occ_df])
+            
+            if not dry_run:
+                utilities.saveDfToCsv(meta_occ_df, 'data/output/allOccurences.csv')
+            elif dry_run:
+                print(meta_occ_df)
+        else:
+            print('Not overwritting, keeping current file ')
 
-    if override:
-        print('Saving all occurences data')
-        utilities.saveDfToCsv(meta_occ_df, 'data/output/allOccurences.csv')
-    else:
-        print('Set as dry run, not saving final agllomerated occurences data to disk')
 
 if __name__ == '__main__':
 
@@ -327,7 +342,8 @@ if __name__ == '__main__':
                                      )
     parser.add_argument('-f', '--file', help = 'Location of species list', type = str, default = 'data/input/species_list.csv')
     parser.add_argument('-l', '--length', help = 'Number of species to request from list', type = int, default = 5 )
-    parser.add_argument('--dry_run', help = 'Run but do not save the final data', action ='store_true', default = False )  
+    parser.add_argument('--dry_run', help = 'Run but do not save the final data', action ='store_true', default = False ) 
+    parser.add_argument('-ow', '--overwrite', help = 'Overwrite final df', action ='store_true', default = True ) 
     parser.add_argument('--range', help = 'Specify species_list range to load ', default = None )       
      
     args = parser.parse_args()
@@ -345,3 +361,4 @@ if __name__ == '__main__':
 
     species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
     main(species_instances,override)
+    plt.show()

@@ -2,6 +2,8 @@ import pandas as pd
 import os
 import ast
 import numpy as np
+import glob
+import pprint
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
@@ -77,11 +79,17 @@ def random_number_generator(count, min, max):
     return random_values 
         # Example: Adding the mapping back to DataFrame (Optional)
 
-def explore_df(df):
+def explore_df(df, describe = True, dtype = False, corr = False):
 
     df.shape
-    print(df.describe())
-    print(df.dtypes)
+    if describe:
+        print(df.describe())
+    if dtype:
+        print(df.dtypes)
+
+    if corr:
+        numeric_df = df.select_dtypes(include=['float64', 'int64', 'int32'])
+        print(numeric_df.corr())
 
 def interpret_args_range(input_range):
 
@@ -102,3 +110,33 @@ def interpret_args_range(input_range):
         print(output_range)    
         return output_range
 
+
+def delete_files_with_suffix(parent_folder, suffix, length, dry_run = True):
+    """
+    Delete all files that end with a specified suffix in the parent folder and its subdirectories.
+
+    Parameters:
+    - parent_folder: The path to the parent folder to search in.
+    - suffix: The suffix the target files should end with (e.g., '.txt').
+    """
+    # Recursively search for files ending with the specified suffix
+    pattern = os.path.join(parent_folder, "**", "*"+suffix)
+    files_to_delete = glob.glob(pattern, recursive=True)
+    # Delete each file found
+    if dry_run:
+        pprint.pprint(files_to_delete)
+    elif not dry_run:
+        files_to_delete = files_to_delete[:length]
+        for file_path in files_to_delete:
+            try:
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
+    
+if __name__ == '__main__':
+    # Specify the parent folder and file suffix
+    parent_folder = 'data/gbifQueries'  # Replace with your parent folder path
+    suffix = "geodata.csv"  
+
+    #delete_files_with_suffix(parent_folder, suffix, length = 10, dry_run = False)

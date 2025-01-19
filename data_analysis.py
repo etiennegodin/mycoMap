@@ -7,33 +7,27 @@ import matplotlib.pyplot as plt
 
 # https://chatgpt.com/c/67842692-c814-800d-aa2f-627792370f2d
 
-def lnr_reg(df, key, plot = False):
+def lnr_reg(df, x, y):
 
     # Features (X) and target (y)
-    X = df[key].values
-    y = df["count"].values
+    X = df[x].values
+    Y = df[y].values
     # Add a constant term for the intercept
     X_with_const = sm.add_constant(X)
 
     # Fit the linear regression model
-    model = sm.OLS(y, X_with_const).fit()
+    results = sm.OLS(Y, X_with_const).fit()
 
-    # Print the model summary
-    print(model.summary())
+    # Print the results summary
+    #print(results.summary())
 
+    print(results.rsquared)
+    print(results.f_pvalue)
     # Predictions
-    df["predicted_frequency"] = model.predict(X_with_const)
+    df["predicted_frequency"] = results.predict(X_with_const)
 
-    # Plot the data and regression line
-    plt.scatter(df[key], df["count"], color='blue', label='Actual data')
-    plt.plot(df[key], df["predicted_frequency"], color='red', label='Regression line')
-    plt.xlabel(key)
-    plt.ylabel('Count')
-    plt.title('Linear Regression: {} vs Frequency'.format(key))
-    plt.legend()
+    return df
 
-    if plot == True:
-        plt.show()
 
 def exploratory_data_analysis(df):
     print('')
