@@ -65,8 +65,11 @@ def ckdnearest(gdA, gdB):
     return gdf
 
 def interpret_tree_cover_string(code):
+    print(code)
     # change tree cover infor from string to dict of percentage
     result = re.findall(r'([A-Z]+)(\d+)', code)
+    print(result)
+
     result = dict(result)
     # value from string to %
     for key in result:
@@ -178,17 +181,7 @@ def assign_geodata_to_occurences(occ_gdf, specie):
             
     return final_gdf
  
-def interpet_env_factors(df):
 
-
-    #interpet and gives value from columns of df referring to env_factors 
-    # ex: cl_age_et : JIN = 80 years something something
-    # cl_pente : A = pente 40 degrees etc 
-
-    #create list of dicts for each columns using modified csv file from:
-
-    #data/DICTIONNAIRE_CARTE_ECO_MAJ.xlsx
-    pass
 
 def create_occurences_dataframe(occurences_file):
 

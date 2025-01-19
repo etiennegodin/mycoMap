@@ -24,10 +24,12 @@ def saveDfToCsv(df, output_path):
     
 def pdToCsv(df, speciesFolder, filename = "occ.csv" ):
     outputpath = speciesFolder + filename 
-
-    df.to_csv(outputpath)
-    print('Writting pd as csv')
-    print('{}'.format(outputpath))
+    try:
+        df.to_csv(outputpath)
+        print('Writting pd as csv')
+        print('{}'.format(outputpath))
+    except:
+        print(f'Error saving {outputpath}')
     return outputpath
 
 
