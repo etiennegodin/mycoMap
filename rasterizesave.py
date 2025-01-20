@@ -21,7 +21,7 @@ df = pd.read_csv(csv_file)
 geometry = [Point(xy) for xy in zip(df['X'], df['Y'])]
 gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")  # Adjust CRS if necessary
 
-buffer_size = 0.002  # Example buffer size in degrees
+buffer_size = 0.00125  # Example buffer size in degrees
 gdf['geometry'] = gdf.geometry.buffer(buffer_size)
 
 
@@ -46,12 +46,12 @@ raster = rasterize(
     shapes,
     out_shape=(height, width),
     transform=transform,
-    fill=0,  # No-data value
+    fill=-9999,  # No-data value
     dtype="float32",
 )
 
 # Save raster to file
-output_raster = "output_raster2.tif"
+output_raster = "output_raster.tif"
 with rasterio.open(
     output_raster,
     "w",

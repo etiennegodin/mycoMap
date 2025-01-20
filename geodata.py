@@ -65,10 +65,8 @@ def ckdnearest(gdA, gdB):
     return gdf
 
 def interpret_tree_cover_string(code):
-    print(code)
     # change tree cover infor from string to dict of percentage
     result = re.findall(r'([A-Z]+)(\d+)', code)
-    print(result)
 
     result = dict(result)
     # value from string to %
