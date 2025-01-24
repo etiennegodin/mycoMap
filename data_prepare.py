@@ -1,6 +1,7 @@
 import pandas as pd
 import utilities
 import numpy as np
+import os
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -80,7 +81,7 @@ def prepare_test_data(file1, factors):
 
     df_test = df[factors]
 
-    cols = ['X','Y']
+    cols = ['X','Y', 'geoc_maj']
 
     df_coords = df[cols]
     
@@ -300,6 +301,14 @@ def filter_single_specie_point(df, col, count = 1):
     filtered_df = df[(df[col] > count)]
     return filtered_df
 
+def plot_auto_rows(df_cols):
+    df_cols = 8 
+    for i in range(4,1, -1):
+        x = df_cols % i 
+        print(i ,x)
+
+
+
 def plot_lnr_reg(df):
     fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))  # Adjust figsize as needed
     axs = axs.flat
@@ -362,7 +371,10 @@ def plot_iter(df, Y):
 
 def plot_iter_counts(df):
 
-    
+    col_count = df_model.shape[1]
+
+
+
     fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(12, 6))  # Adjust figsize as needed
     axs = axs.flat
     # Iterate through the DataFrame columns (excluding the independent variable)
@@ -379,7 +391,7 @@ def plot_iter_counts(df):
     plt.tight_layout()
     plt.show()
 
-def plot_scatter_3d_factors(df, factors, jitter = 0.1):
+def plot_scatter_3d_factors(df, factors, value = None ,jitter = 0.1):
 
     jitter_strength = jitter
     df[factors[0]] = df[factors[0]] + np.random.uniform(-jitter_strength, jitter_strength, len(df))
@@ -390,12 +402,12 @@ def plot_scatter_3d_factors(df, factors, jitter = 0.1):
     y = df[factors[1]]
     z = df[factors[2]]
 
-    occurrences = df['occurrences']  # Or use 'num_individual_species' or 'diversity'
+    c = df[value]  # Or use 'num_individual_species' or 'diversity'
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection='3d')
 
-    sc = ax.scatter(x, y, z, c=occurrences, cmap='viridis', s=50, edgecolor='k', alpha=0.7)
+    sc = ax.scatter(x, y, z, c=c, cmap='viridis', s=50, edgecolor='k', alpha=0.7)
 
     #print(occurences_counts['occurrences'].sum())
     ax.set_xlabel(f'{factors[0]}')
@@ -403,11 +415,10 @@ def plot_scatter_3d_factors(df, factors, jitter = 0.1):
     ax.set_zlabel(f'{factors[2]}')
     ax.set_title('3D Scatter Plot of Abiotic Factors')
 
-    plt.colorbar(sc, label='Occurrences')
+    plt.colorbar(sc, label=value)
 
     plt.show()
  
-
 def plot_kde_3d_factors(df, factors):
 
     x = df[factors[0]]
@@ -464,23 +475,32 @@ def shannon_diversity(species_counts):
 def derive_abiotic_factors(df_model,factors):
 
 
-    grouped = df_model.groupby(factors)
+    max_species = df_model['species'].nunique()
+    max_occurences = len(df_model)
 
+    grouped = df_model.groupby(factors)
+    
+    print(f'Analysing {max_occurences} occurences of {max_species} species')
     print(f'Deriving model based on {len(factors)} factors')
-    print(f'{len(grouped)} possibled combinations of factors')
+    print(f'{len(grouped)} possible combinations of factors')
 
     diversity_values = grouped['species'].value_counts().unstack().apply(shannon_diversity, axis=1).reset_index(name='shannon_index_fungi')
-    species_count_values = grouped['species'].nunique() 
+    species_count_values = grouped['species'].nunique().reset_index(name='fungi_diversity_index')
+    species_count_values['sp_prop'] = species_count_values.apply(lambda row: row['fungi_diversity_index'] /max_species, axis = 1)
+    
+    counts = grouped.size().reset_index(name='occurrences')
+    proportion = counts.apply(lambda row: row['occurrences'] / max_occurences, axis = 1 ).reset_index(name = 'occ_prop')
+    print(counts)
+    #diversity_values = diversity_values.reset_index()
+    #species_count_values = species_count_values.reset_index()
 
-    diversity_values = diversity_values.reset_index()
-    species_count_values = species_count_values.reset_index()
-
-
+    temp = pd.merge(diversity_values,species_count_values, on=factors, how='inner')
 
     model = pd.merge(diversity_values,species_count_values, on=factors, how='inner')
-    model = model.drop(columns=['index'])
-    print('model')
-    print(model)
+    model = pd.merge(model, counts, on=factors, how='inner' )
+    model = model.join(proportion)
+    model.drop(columns=['index'], inplace = True)
+    #model.sort_values(by=['fungi_diversity_index', 'shannon_index_fungi'], ascending=False, inplace= True)
     return model
 
 
@@ -491,9 +511,38 @@ def apply_model(dfmodel,df_test,factors):
     return result
 
 
+def main_iter(region_list):
 
 
+    for region in region_list:
 
+        file1 = f'data/geodata/regions_data/{region}/{region}.csv'
+
+        df_model = pd.read_csv(path)
+
+        factors = ['tree_diversity_index', 'tree_shannon_index','densite','cl_pent','cl_drai','cl_haut']
+
+        # Clean, prepare, encode data
+        df_model = prepare_model_data(df_model)
+
+        df_model = derive_abiotic_factors(df_model, factors)
+
+
+        '''
+        df_test, df_coords = prepare_test_data(file1, factors)
+
+        df_test_mapped = apply_model(df_model, df_test, factors)
+
+        #Reapply X Y coords ( eviter de le faire dans le apply model )
+        df_out = pd.merge(df_test_mapped,df_coords,  left_index=True, right_index=True)
+
+        print('output')
+        print(df_out)
+
+        file1_name = file1[-7:]
+
+        utilities.saveDfToCsv(df_out, f'data/output/regions/derivedRegion{region}.csv')
+        '''
     
 geodata_dictionnary = pd.read_csv('data/geodata_dictionnary.csv', header = 0 )
 
@@ -537,51 +586,34 @@ encoding_dictionnary = { 'cl_pent':
 
 if __name__ == '__main__':
 
-
+    
     path = 'data/output/allOccurences.csv'
-    region = '21M'
-    file1 = f'data/geodata/regions_data/{region}/{region}.csv'
-    #path = 'data/gbifQueries/Cerioporus_squamosus/Cerioporus_squamosus_geodata.csv'
+
+    regions_list = os.listdir('data/geodata/regions_data')    
+    #main_iter(regions_list)
 
     df_model = pd.read_csv(path)
 
-    #_print_geoc_maj_duplicates(df)
+    factors = ['tree_diversity_index', 'tree_shannon_index','densite','cl_pent','cl_drai','cl_haut']
 
-    factors = ['tree_diversity_index', 'densite','cl_haut']
+
+
+    factors = ['tree_diversity_index', 'densite', 'cl_haut']
+
+    #factors = [ 'tree_diversity_index','cl_pent','cl_drai']
 
     # Clean, prepare, encode data
-    df_model = prepare_model_data(df_model)
+    #df_model = prepare_model_data(df_model)
 
-    df_model = derive_abiotic_factors(df_model, factors)
-
-    df_test, df_coords = prepare_test_data(file1, factors)
-
-    print('input')
-    print(df_test)
-
-    df_test_mapped = apply_model(df_model, df_test, factors)
-
-    print('mapped')
-    print(df_test_mapped)
-
-    #Reapply X Y coords ( eviter de le faire dans le apply model )
-    df_out = pd.merge(df_test_mapped,df_coords,  left_index=True, right_index=True)
-
-    print('output')
-    print(df_out)
-    file1_name = file1[-7:]
-
-    utilities.saveDfToCsv(df_out, f'data/output/regions/derivedRegion{file1_name}.csv')
-
-
-    #factors = ['tree_diversity_index','cl_age_et', 'densite','cl_pent','cl_drai','cl_haut']
-
-
-
-
+    #df_model = derive_abiotic_factors(df_model, factors)
     
 
-    #utilities.saveDfToCsv(df_with_diversity, 'data/output/AllOccurences_withFungidata.csv')
+    col_count = df_model.shape[1]
+
+    plot_auto_rows(8)
+
+    #plot_scatter_3d_factors(df_model, factors, value = ['sp_prop'] )
+
 
 '''
     occurences_counts = df.groupby(factors)['species'].count().reset_index(name='occurrences')
