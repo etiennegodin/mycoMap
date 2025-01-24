@@ -1,0 +1,2 @@
+gbifID,eventDate,year,stateProvince,species,occurrenceID,geometry,region_code,X,Y,geoc_maj,origine,an_origine,perturb,an_perturb,type_couv,cl_haut,cl_age,cl_pent,dep_sur,cl_drai,ty_couv_et,densite,cl_age_et,tree_cover,tree_diversity_index,tree_shannon_index
+617553925,2003-09-18,2003,Québec,Cortinarius collinitus,CMMF003821,POINT (-74.216667 46.316667),31J,-74.2176555420538,46.3131796005233,"-439695,20+275157,12",,,,,R,2,JIR,B,2BE,40,R,65.0,70,"{'SB': 0.5, 'EU': 0.2, 'EB': 0.1, 'PE': 0.2}",4,1.2206072645530175
