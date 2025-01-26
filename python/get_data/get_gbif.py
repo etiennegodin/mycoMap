@@ -1,9 +1,9 @@
 from pygbif import occurrences as occ
-import utilities
+import utilities as utilities
 import json, os
 from zipfile import ZipFile
 import pandas as pd
-import specie as sp 
+import get_specie as sp 
 
 import argparse
 
@@ -179,44 +179,3 @@ async def main(species_instances):
 
     print('All occurences data on disk')
     return True
-
-if __name__ == '__main__':
-
-    import argparse
-    parser = argparse.ArgumentParser(prog = 'Gbif species occurence wrapper',
-                                     description= 'Request and downdload gbif occurence data from provided species list'
-                                     )
-    parser.add_argument('-f', '--file', help = 'Location of species list', type = str, default = 'data/input/species_list.csv')
-    parser.add_argument('-l', '--length', help = 'Number of species to request from list', type = int, default = 5 )       
-    parser.add_argument('--range', help = 'Specify species_list range to load ', default = None )       
-
-    args = parser.parse_args()
-
-
-    # Interpret arguments
-    if args.range != None:
-        species_list_range = utilities.interpret_args_range(args.range)
-    else: 
-        species_list_range = None
-
-    print('## No arguments specified, reverting to defaults ##')
-    print(f'Species list location : {args.file}')
-    print(f'Requesting {args.length} species')
-    species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
-    asyncio.run(main(species_instances))
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-

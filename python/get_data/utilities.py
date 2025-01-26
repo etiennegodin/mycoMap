@@ -20,8 +20,6 @@ def saveDfToCsv(df, output_path):
     
     df.to_csv(output_path, index=False)
 
-          
-    
 def pdToCsv(df, speciesFolder, filename = "occ.csv" ):
     outputpath = speciesFolder + filename 
     try:
@@ -32,11 +30,9 @@ def pdToCsv(df, speciesFolder, filename = "occ.csv" ):
         print(f'Error saving {outputpath}')
     return outputpath
 
-
 def csvToPandas(csv):
     df = pd.read_csv(csv, index_col = 0)
     return(df)
-
 
 def regions_folders(parent_folder_path):
 
@@ -141,4 +137,4 @@ if __name__ == '__main__':
     parent_folder = 'data/gbifQueries'  # Replace with your parent folder path
     suffix = "geodata.csv"  
 
-    #delete_files_with_suffix(parent_folder, suffix, length = 10, dry_run = False)
+    #delete_files_with_suffix(parent_folder, suffix, length = 400, dry_run = False)

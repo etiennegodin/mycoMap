@@ -14,7 +14,7 @@ from scipy.stats import gaussian_kde
 
 import data_analysis as da
 
-import geodata
+import python.data_geodata as data_geodata
 
 def prepare_test_data(file1, factors):
 
@@ -47,7 +47,7 @@ def prepare_test_data(file1, factors):
     df2 = utilities.convert_string_to_numeral(df2)
     #df2['tree_cover'] = df2['tree_cover'].apply(geodata.interpret_tree_cover_string)
 
-    df2 = geodata.ecology_factors(df2)
+    df2 = data_geodata.ecology_factors(df2)
 
     df = pd.merge(df1,df2, on='geoc_maj')
 
