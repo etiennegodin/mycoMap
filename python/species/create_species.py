@@ -1,8 +1,7 @@
 from pygbif import species as gSpecie
 from numpy import NaN 
 import pandas as pd
-import utilities
-
+import python.utils as utils
 # Create specie object from gbif specie_object with relevant informations 
 class Specie:
     def __init__(self, name, key, taxonomic_rank, order, family, genus, ecology):
@@ -19,7 +18,7 @@ class Specie:
         # From prepare_species_gbif funct 
         self.folder = 'data/gbifQueries/' + name + '/'
         # Create folder for specie data, if already created returns path 
-        utilities.create_folder(self.folder)
+        utils.create_folder(self.folder)
 
         #Set expected file for occurence data 
         self.occurence_file = self.folder + name + '.csv'

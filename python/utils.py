@@ -1,9 +1,20 @@
+import os 
+
+def create_folder(path):
+
+    if not os.path.exists(path):
+        print('Requested folder do not exists, creating:')
+        os.makedirs(path)
+        print(path)
+
+        return path
+    else:
+        return path
+    
+
 import pandas as pd
-import os
-import ast
 import numpy as np
-import glob
-import pprint
+import os, ast, glob, pprint
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
@@ -44,22 +55,11 @@ def regions_folders(parent_folder_path):
     for code in regions_codes:
         os.makedirs(parent_folder_path + code)
 
-
 def convert_string_to_numeral(df, collumn = 'tree_cover'):
     df[collumn] = df[collumn].apply(ast.literal_eval)
     
     return df
 
-def create_folder(path):
-
-    if not os.path.exists(path):
-        print('Requested folder do not exists, creating:')
-        os.makedirs(path)
-        print(path)
-
-        return path
-    else:
-        return path
 
 
 def random_number_generator(count, min, max):
@@ -89,24 +89,6 @@ def explore_df(df, describe = True, dtype = False, corr = False):
         numeric_df = df.select_dtypes(include=['float64', 'int64', 'int32'])
         print(numeric_df.corr())
 
-def interpret_args_range(input_range):
-
-    split = input_range.split('-',1)
-
-    if len(split) != 2:
-        print('Range entered incorrectly, please use "min-max" syntax')  
-    else:  
-        try:
-            min = int(split[0])-1
-            max = int(split[-1])
-        except ValueError as e:
-            print('Please enter range as min-max using a dash to separate')
-            min = None
-            max = None
-
-        output_range = [min,max]
-        print(output_range)    
-        return output_range
 
 
 def delete_files_with_suffix(parent_folder, suffix, length, dry_run = True):
@@ -131,7 +113,74 @@ def delete_files_with_suffix(parent_folder, suffix, length, dry_run = True):
                 print(f"Deleted: {file_path}")
             except Exception as e:
                 print(f"Failed to delete {file_path}: {e}")
-    
+
+def merge_raw_geodata():
+
+    # Merge two datasets in one 
+
+    # Merge region based geodata from 2 different datasets
+    # CARTE ECO_MAJ + 
+
+    env_factors_path = 'data/raw/region_env_factors/CARTE_ECO_MAJ_'
+    region_data_path = 'data/raw/regions_data'
+
+    regions_list = os.listdir('data/raw/regions_data')
+
+    output_path = 'data/input/geodata/forest_composition'
+    regions_data_cols = ['geoc_maj', #id
+                    'cl_pent', # classe de pente
+                    'dep_sur',# depot surface
+                    'cl_age', # classe d'age 
+                    'cl_drai', # classe drainage
+                    'cl_haut', # classe hauteur
+                    'type_couv', #ype couvert
+                    'origine', # Perturbation d'origine
+                    'an_origine', # annee pertrubation
+                    'perturb', # Perturbation partielle
+                    'an_perturb', # Année de la perturbation partielle
+                    'X',
+                    'Y']
+
+    env_factors_cols = ['geoc_maj',
+                        'ty_couv_et',
+                        'densite',
+                        'cl_age_et',
+                        'tree_cover',
+                        'hauteur',
+                        ]
+
+    for region in regions_list:
+
+        regions_data_df = pd.read_csv(f'{region_data_path}/{region}/{region}.csv', usecols= regions_data_cols)
+
+        env_factors_df = pd.read_csv(f'{env_factors_path}{region}.csv', usecols= env_factors_cols)
+
+        merged_df = pd.merge(regions_data_df, env_factors_df, on='geoc_maj')
+
+        utilities.saveDfToCsv(merged_df, f'{output_path}/{region}.csv')
+
+        print(merged_df.head())
+
+
+def interpret_args_range(input_range):
+
+    split = input_range.split('-',1)
+
+    if len(split) != 2:
+        print('Range entered incorrectly, please use "min-max" syntax')  
+    else:  
+        try:
+            min = int(split[0])-1
+            max = int(split[-1])
+        except ValueError as e:
+            print('Please enter range as min-max using a dash to separate')
+            min = None
+            max = None
+
+        output_range = [min,max]
+        print(output_range)    
+        return output_range
+
 if __name__ == '__main__':
     # Specify the parent folder and file suffix
     parent_folder = 'data/gbifQueries'  # Replace with your parent folder path

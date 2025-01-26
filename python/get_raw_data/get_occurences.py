@@ -1,13 +1,17 @@
-from pygbif import occurrences as occ
-import utilities as utilities
 import json, os
 from zipfile import ZipFile
-import pandas as pd
-import get_specie as sp 
 
 import argparse
-
 import asyncio
+import sys 
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from python.species import create_species as sp
+import python.utils as utils
+from pygbif import occurrences as occ
+
+
+
 gbif_queries_path = 'data/gbifQueries/'
 
 decimal_longitude = '-79.3439314990000071,-63.9999979090000011'
@@ -179,3 +183,34 @@ async def main(species_instances):
 
     print('All occurences data on disk')
     return True
+
+
+
+if __name__ == '__main__':
+
+
+    import argparse
+    parser = argparse.ArgumentParser(prog = 'Geo data procesing',
+                                     description= "Assigns environmental variables to specie's occurences"
+                                     )
+    parser.add_argument('-f', '--file', help = 'Location of species list', type = str, default = 'data/input/table/species_list.csv')
+    parser.add_argument('-l', '--length', help = 'Number of species to request from list', type = int, default = 5 )
+    parser.add_argument('--range', help = 'Specify species_list range to load ', default = None )       
+     
+    args = parser.parse_args()
+
+    # Interpret arguments
+    if args.range != None:
+        print('Using range')
+        species_list_range = utils.interpret_args_range(args.range) 
+    else: 
+        species_list_range = None
+
+    print(f'Species list location : {args.file}')
+
+    print(f'Requesting {args.length} species')
+    species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
+    
+    gbif_complete = asyncio.run(main(species_instances))
+
+   
