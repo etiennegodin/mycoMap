@@ -12,7 +12,7 @@ import statsmodels.api as sm
 from scipy.stats import entropy
 from scipy.stats import gaussian_kde
 
-import data_analysis as da
+import python.data_analysis.data_analysis as da
 
 import python.data_geodata as data_geodata
 

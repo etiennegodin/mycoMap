@@ -1,11 +1,13 @@
-import os, re
+import os, re, sys
 import pandas as pd
 import geopandas as gpd
 import numpy as np
 from scipy.spatial import cKDTree
 import rasterio 
 
-import utilities
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from python.species import create_species as sp
+import python.utils as utils
 
 def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
 
@@ -189,7 +191,7 @@ def shannonIndex(tree_cover):
 def processs_forest_ecology_indexes(df):
 
     # Convert tree cover string to dictS
-    utilities.convert_string_to_numeral(df)
+    utils.convert_string_to_numeral(df)
 
     df['tree_diversity_index'] = df['tree_cover'].apply(richnessIndex) 
     df['tree_shannon_index'] = df['tree_cover'].apply(shannonIndex)
@@ -241,7 +243,7 @@ def get_all_occurence_geodata(specie,use_processed_geo_only):
                     occ_gdf = sample_bioclim(occ_gdf)
 
                     # Save df to file 
-                    utilities.saveDfToCsv(occ_gdf, specie.geodata_file)
+                    utils.saveDfToCsv(occ_gdf, specie.geodata_file)
 
                     return occ_gdf
             else:
@@ -253,32 +255,65 @@ def get_all_occurence_geodata(specie,use_processed_geo_only):
             print('Geodata already processed for occurences and saved to ')
             print(specie.geodata_file)
             occ_df = pd.read_csv(specie.geodata_file)
-            utilities.convert_string_to_numeral(occ_df)
+            utils.convert_string_to_numeral(occ_df)
 
             return occ_df
     else:
         print(f'Occurences not downloaded for {specie}')
         print('Use the gbif module to get this data ')
         
-
 def main(species_instances, dry_run, overwrite, use_processed_geo_only):
     # Create temp df for final export
     meta_occ_df = pd.DataFrame()
-
-    if os.path.exists('data/output/allOccurences.csv'):
+    print('Checking if all species occurences are already on disk')
+    if not os.path.exists('data/occurences/sampledOccurences.csv'):
         print('All Species occurences already on disk')
-        if overwrite:
-            print('Overriding All Oocurences')
-            # Get processed dataframe of all occurences, append to final df
-            for specie in species_instances:
-                occ_df = get_all_occurence_geodata(specie,use_processed_geo_only)
-                if occ_df.empty:
-                    pass
-                meta_occ_df = pd.concat([meta_occ_df, occ_df])
-            
-            if not dry_run:
-                utilities.saveDfToCsv(meta_occ_df, 'data/output/allOccurences.csv')
-            elif dry_run:
+        # Get processed dataframe of all occurences, append to final df
+        for specie in species_instances:
+            occ_df = get_all_occurence_geodata(specie,use_processed_geo_only)
+            if occ_df.empty:
+                pass
+            meta_occ_df = pd.concat([meta_occ_df, occ_df])
+        
+        if not dry_run:
+            utils.saveDfToCsv(meta_occ_df, 'data/occurences/sampledOccurences.csv')
+        elif dry_run:
                 print(meta_occ_df)
-        else:
-            print('Not overwritting, keeping current file ')
+    
+
+        
+
+
+if __name__ == '__main__':
+
+    import argparse
+    parser = argparse.ArgumentParser(prog = 'Geo data procesing',
+                                     description= "Assigns environmental variables to specie's occurences"
+                                     )
+    parser.add_argument('-f', '--file', help = 'Location of species list', type = str, default = 'data/input/table/species_list.csv')
+    parser.add_argument('-l', '--length', help = 'Number of species to request from list', type = int, default = 5 )
+    parser.add_argument('--dry_run', help = 'Run but do not save the final data', action ='store_true', default = False ) 
+    parser.add_argument('-ow', '--overwrite', help = 'Overwrite final df', action ='store_true', default = True ) 
+    parser.add_argument( '--redo_species_geo', help = 'Delete and reprocess each species geodata', action ='store_true', default = False )
+    parser.add_argument( '--use_processed_geo_only', help = 'Use already processed geo data only', action ='store_true', default = False ) 
+
+    parser.add_argument('--range', help = 'Specify species_list range to load ', default = None )       
+     
+    args = parser.parse_args()
+
+    # Interpret arguments
+    if args.range != None:
+        print('Using range')
+        species_list_range = utils.interpret_args_range(args.range) 
+    else: 
+        species_list_range = None
+
+    dry_run = args.dry_run
+    overwrite = args.overwrite
+
+    print(f'Species list location : {args.file}')
+
+    print(f'Requesting {args.length} species')
+    species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
+    print('running main')
+    main(species_instances,dry_run, overwrite, args.use_processed_geo_only)
