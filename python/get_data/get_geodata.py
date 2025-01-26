@@ -1,11 +1,11 @@
-import os, re, utilities
+import os, re
 import pandas as pd
 import geopandas as gpd
 import numpy as np
 from scipy.spatial import cKDTree
-from shapely.geometry import Point
+import rasterio 
 
-import specie as sp 
+import utilities
 
 def df_to_gdf(df, xy = ['decimalLongitude', 'decimalLatitude']):
 
@@ -22,15 +22,7 @@ def gdf_to_df(gdf):
 
 def gpd_assign_region(occ_gdf):
 
-
-    print('Debug flag for gpd_assign_region(). See comments')
-
-        # debug
-    #loosing some occurences in asign regions ??
-    # check which by assigning new index collumns and compare with previous gdf
-    # check if occurence just too far from forest points 
-    
-    regions_perimetre_file = 'data/geodata/regions_perimetre/regions_perimetre.shp'
+    regions_perimetre_file = 'data/input/geodata/regions_perimetre/regions_perimetre.shp'
 
     # Creat gdf from regions perimetre
     regions_gdf = gpd.read_file(regions_perimetre_file)
@@ -74,54 +66,21 @@ def interpret_tree_cover_string(code):
         result[key] = int(result[key]) / 100
     return(result)
 
-def interpret_env_factors_data(path):
+def sample_forest_composition(occ_gdf, specie):
 
-    # Read csv as df 
-    df = pd.read_csv(path)
-
-    # Interpret string descirption of tree composition as dict of {tree_kind : cover_percentage} 
-    df['tree_cover'] = df['eta_ess_pc'].apply(interpret_tree_cover_string)
-    
-
-    #Keep only geoc_maj, typ_couv_et, densite, cl_age, tree_cover data
-    df = df.iloc[:, [1,3,4,-3,-1]]
-
-
-
-    return df 
-
-def interpret_region_data(path):
-
-    collumns = ['geoc_maj', #id
-                'cl_pent', # classe de pente
-                'dep_sur',
-                 'cl_age', # depot surface
-                'cl_drai', # classe drainage
-                'cl_haut', # classe hauteur
-                 'type_couv', #ype couvert
-                'origine', # Perturbation d'origine
-                'an_origine', # annee pertrubation
-                'perturb', # Perturbation partielle
-                'an_perturb', # Année de la perturbation partielle
-                'X',
-                'Y']
-    #debug - could make loading region cv faster, complaining about columns (11,30) datatype 
-    # -Specify dtype option on import
-    df = pd.read_csv(path, usecols= collumns)
-    
-    return df
-
-def assign_geodata_to_occurences(occ_gdf, specie):
-
-    regions_data_path = 'data/geodata/regions_data/'
-    regions_env_factors_path = 'data/geodata/region_env_factors/CARTE_ECO_MAJ_'
+    forest_composition_path = 'data/input/geodata/forest_composition'
 
     print('')
-    print('Feeding {} occurences to populate'.format(len(occ_gdf)))
+    print('Feeding {} occurences to populate with forest composition geodata'.format(len(occ_gdf)))
     final_gdf = gpd.GeoDataFrame()
 
     #list all regions to iterate over
-    region_code_list = os.listdir(regions_data_path)
+    region_code_list = []
+
+    for region in os.listdir(forest_composition_path):
+        region_code = region.split('.')[0]
+        region_code_list.append(region_code)
+
     # create int var for number of regions to check against loop index
     region_codes_amount = len(region_code_list)
 
@@ -134,41 +93,26 @@ def assign_geodata_to_occurences(occ_gdf, specie):
             break
         else:
             # From full occurence geodataframe, keep only occurences from current region
-            region_occ_gdf = occ_gdf[(occ_gdf['region_code']==region_code)]
+            local_occurrences = occ_gdf[(occ_gdf['region_code']==region_code)]
 
             # Check if any occurence in this region, otherwise skip to next
-            if len(region_occ_gdf) != 0:
+            if len(local_occurrences) != 0:
 
-                print('{} {} occurences in {} (Species index {})'.format(len(region_occ_gdf), specie.name, region_code, specie.index))
+                print('{} {} occurences in {} (Species index {})'.format(len(local_occurrences), specie.name, region_code, specie.index))
                 print(region_code + ' ({}/{})'.format(idx+1, len(region_code_list)))
                 # Build path to read env factors data of region
-                region_env_factors_path = regions_env_factors_path + region_code +'.csv'
 
                 # Create dataframe from forest composition data of region 
-                env_df = interpret_env_factors_data(region_env_factors_path)
 
-                # Build path to read point data of region 
-                region_gdf_path = regions_data_path + region_code + '/' + '{}.csv'.format(region_code)
-
-                # Create dataframe from point data of region 
-                df = interpret_region_data(region_gdf_path)
-
-                #merge env_factors & point df based on geoc_maj index
-                df = df.merge(env_df, on='geoc_maj')
-            
+                df = pd.read_csv(f'{forest_composition_path}/{region_code}.csv')
                 # Reformat as gdf using xy as geometry
-                region_gdf = df_to_gdf(df, xy = ['X','Y'])
-
-                #Remove redundant XY columns
-                #region_gdf = region_gdf.drop(columns=['X','Y'])
-
-
+                local_gdf = df_to_gdf(df, xy = ['X','Y'])
 
                 # Find nearest point from occurence localisation and merge data
-                gdf = ckdnearest(region_occ_gdf, region_gdf)
+                gdf = ckdnearest(local_occurrences, local_gdf)
                
                 #remove distance collumn from ckdnearest function, could be used for debug but not necessary in final 
-                gdf = gdf.drop(columns=['dist'])
+                #gdf = gdf.drop(columns=['dist'])
 
                 #return region gdf as partial gdf to final_gdf
                 final_gdf = pd.concat([final_gdf, gdf])
@@ -179,8 +123,6 @@ def assign_geodata_to_occurences(occ_gdf, specie):
             
     return final_gdf
  
-
-
 def create_occurences_dataframe(occurences_file):
 
     occ_df = pd.read_csv(occurences_file, sep='\t')
@@ -244,15 +186,34 @@ def shannonIndex(tree_cover):
     # SUm of surprise for each of elements
     return(shannon_index)
 
-def ecology_factors(df):
+def processs_forest_ecology_indexes(df):
+
+    # Convert tree cover string to dictS
+    utilities.convert_string_to_numeral(df)
+
     df['tree_diversity_index'] = df['tree_cover'].apply(richnessIndex) 
     df['tree_shannon_index'] = df['tree_cover'].apply(shannonIndex)
 
     return df 
 
-def process_specie_geodata(specie,use_processed_geo_only):
+def sample_bioclim(gdf):
+    # 19 bioclim layers
+    biolcim_layers = range(1,20)
+    # create coordinate list for occurences
+    coord_list = [(x,y) for x,y in zip(gdf['geometry'].x, gdf['geometry'].y)]
+
+    for layer in biolcim_layers:
+        layer = str(layer)
+        layer = layer.zfill(2)
+        raster= rasterio.open(f'data/input/geodata/bioclim/QC_bio_{layer}.tif')
+
+        gdf[f'bioclim_{layer}'] = [x for x in raster.sample(coord_list)]
+
+    return gdf
+
+def get_all_occurence_geodata(specie,use_processed_geo_only):
     
-    # First check if occurences are dwownloaded for this specie
+    # First check if occurences are downloaded for this specie
     if os.path.exists(specie.occurence_file):
 
         # Check if geodata file already processed
@@ -266,20 +227,18 @@ def process_specie_geodata(specie,use_processed_geo_only):
                 else:
                     print(f'Processing geodata for {specie} {specie.index}')
 
-                    # Read occurences data as dataframe 
                     
-
                     # Transform df in geopandas using Lat/Long info
                     occ_gdf = df_to_gdf(occ_df)
                     # Assign region based on geo coordinate
                     occ_gdf = gpd_assign_region(occ_gdf)
-                    # Find closest data point and assign geo data to occurence
-                    occ_gdf = assign_geodata_to_occurences(occ_gdf, specie)
-                    # Convert back to standard dataframe
-                    #occ_df = gdf_to_df(occ_gdf)
+                    # Find closest data point and assign forest composition data to occurence
+                    occ_gdf = sample_forest_composition(occ_gdf, specie)
 
-                    # Calculate ecology data such as shannon Index and richness Index
-                    occ_gdf = ecology_factors(occ_gdf)
+                    # Calculate tree stand ecology index (shannon Index and richness Index)
+                    occ_gdf = processs_forest_ecology_indexes(occ_gdf)
+
+                    occ_gdf = sample_bioclim(occ_gdf)
 
                     # Save df to file 
                     utilities.saveDfToCsv(occ_gdf, specie.geodata_file)
@@ -307,12 +266,12 @@ def main(species_instances, dry_run, overwrite, use_processed_geo_only):
     meta_occ_df = pd.DataFrame()
 
     if os.path.exists('data/output/allOccurences.csv'):
-        print('AllOccurences already on disk')
+        print('All Species occurences already on disk')
         if overwrite:
-            print('Overriding AllOccurences')
+            print('Overriding All Oocurences')
             # Get processed dataframe of all occurences, append to final df
             for specie in species_instances:
-                occ_df = process_specie_geodata(specie,use_processed_geo_only)
+                occ_df = get_all_occurence_geodata(specie,use_processed_geo_only)
                 if occ_df.empty:
                     pass
                 meta_occ_df = pd.concat([meta_occ_df, occ_df])
@@ -323,33 +282,3 @@ def main(species_instances, dry_run, overwrite, use_processed_geo_only):
                 print(meta_occ_df)
         else:
             print('Not overwritting, keeping current file ')
-
-
-if __name__ == '__main__':
-
-    import argparse
-    parser = argparse.ArgumentParser(prog = 'Geo data procesing',
-                                     description= "Assigns environmental variables to specie's occurences"
-                                     )
-    parser.add_argument('-f', '--file', help = 'Location of species list', type = str, default = 'data/input/species_list.csv')
-    parser.add_argument('-l', '--length', help = 'Number of species to request from list', type = int, default = 5 )
-    parser.add_argument('--dry_run', help = 'Run but do not save the final data', action ='store_true', default = False ) 
-    parser.add_argument('-ow', '--overwrite', help = 'Overwrite final df', action ='store_true', default = True ) 
-    parser.add_argument('--range', help = 'Specify species_list range to load ', default = None )       
-     
-    args = parser.parse_args()
-
-    print('## No arguments specified, reverting to defaults ##')
-    print(f'Species list location : {args.file}')
-    print(f'Processing occurences data for {args.length} species')
-
-    if args.range != None:
-        species_list_range = utilities.interpret_args_range(args.range)
-    else: 
-        species_list_range = None
-
-    override = not args.dry_run
-
-    species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
-    main(species_instances,override)
-    plt.show()

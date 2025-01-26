@@ -1,11 +1,11 @@
-import specie as sp
-import geodata
-import gbif
+
+import sys
+import get_specie as sp
+import get_geodata as get_geodata
+import get_gbif as get_gbif
 import asyncio
-
-import utilities
 import pandas as pd
-
+import utilities
 #Readable inaturalist links
 pd.set_option('display.max_colwidth', 1000)
 
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     print(f'Requesting {args.length} species')
     species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
     
-    gbif_complete = asyncio.run(gbif.main(species_instances))
+    gbif_complete = asyncio.run(get_gbif.main(species_instances))
 
     if gbif_complete:
         print(f'Processing occurences data for {args.length} species')
@@ -50,5 +50,5 @@ if __name__ == '__main__':
             print('Reprocess geo data argument triggered')
             utilities.delete_files_with_suffix('data/gbifQueries', "geodata.csv", length = args.length, dry_run = False)
 
-        geodata.main(species_instances,dry_run, overwrite, args.use_processed_geo_only)
+        get_geodata.main(species_instances,dry_run, overwrite, args.use_processed_geo_only)
         
