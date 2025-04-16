@@ -1,44 +1,49 @@
 # mycoMap
 
-maybe un peu de machine learning pour tweak le strength des parametres dimportance pour final value 
-necessite targte training 
-maybe use inat observations to validate model ??
-tensorflow??
-
-make sure mycoValue similar for both mycorrhizal & sapotrophic
+# **Goals**
 
 
-The primary abiotic variables that impact mushroom production are temperature, humidity, light,
+# Examples of Hypotheses to Test
+Fungi species richness increases with tree stand diversity index.
+Fungi species X is more likely to occur on soils of type A than type B.
+Higher tree height classes are associated with lower fungi diversity.
+Slope class has a significant impact on fungi community composition.
+Tree density class predicts the presence of specific fungi species.
 
 
-https://www.sciencedirect.com/science/article/pii/S0378112722004455
+## Ecological Niche
 
-The interaction between precipitation and temperature modulated mushroom production.
-•
-Mushroom production was enhanced by mushrooms species richness.
-•
-Ectomycorrhizal species richness was mainly affected by stand characteristics.
-•
-Species richness of saprotrophic mushrooms was affected by pH of the soil.
+Identify the niche preferences of fungi species by studying the abiotic conditions associated with their occurrences.
+Species Distribution Models (SDMs)
 
-Ambient temperature, soil humidity, and especially precipitation in the summer and autumn seem to be the most important factors explaining differences in mushroom production
+Use statistical models (e.g., logistic regression, MaxEnt, or random forests) to predict species distributions based on abiotic factors.
+## Biodiversity Indices
 
-Among other environmental characteristics, nitrogen concentration, pH, type of soil, slope, and elevation are listed as main predictors of mushroom production
+Assess diversity (species richness, evenness) and how it relates to environmental variables like Shannon index or tree density.
+## Community Assembly Rules
 
-The type of soil also matters, as fewer mushrooms are observed in soils with decreasing proportion of sand
+Examine whether species assembly is influenced more by abiotic filtering (environmental constraints) or biotic interactions (e.g., competition).
+Gradient Analysis
 
-Among basic tree stand characteristics, stand age, stand basal area, and canopy cover are most commonly reported to have the greatest impact on mushroom production. Mushroom yield is higher in younger stands, due to the faster growth rate of young trees
+Study how species composition changes across gradients such as slope or tree density (beta diversity).
 
+## Species-Habitat Associations
 
-Tree identity and tree species richness influence the fungal biomass and species composition of fungi.
+Which abiotic factors are most strongly associated with the presence of specific fungi species?
+Are certain fungi species more common in specific soil types, slope classes, or areas with particular tree stand diversity?
+Biodiversity Patterns
 
+How does fungi species richness (number of species) vary with tree stand diversity or Shannon index?
+Is there a correlation between fungi diversity and tree stand diversity?
+## Environmental Gradients
 
+How do environmental gradients (e.g., slope, tree height, soil type) influence fungi distribution and abundance?
+Are there threshold effects where certain conditions favor or inhibit fungi occurrences?
+Co-occurrence Patterns
 
-They also revealed that tree composition can explain a large proportion of variation in the species composition of fungal communities, even greater than soil properties
+Do certain fungi species co-occur in the same areas, and what abiotic conditions favor these co-occurrences?
+Are there signs of niche partitioning among species?
+Predictive Modeling
 
-________________
-Statistics
-
-This is the simplest form, where we have one thing we’re trying to predict and one thing we think might influence it. For example, We are perform a predictive analysis where are trying to predict someone’s weight based on their height.
-
-Multiple Linear Regression: Here, things get a bit more complex. We’re still predicting one thing, but now we’re considering multiple factors that might influence it. For instance, we might predict a person’s weight based on their height, age, and maybe even their diet habits.
+Can you predict the occurrence of specific fungi species based on abiotic variables?
+  
