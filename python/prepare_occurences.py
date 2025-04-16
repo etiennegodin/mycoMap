@@ -4,6 +4,8 @@ import numpy as np
 import rasterio
 import utils
 
+
+# Utils
 def get_regionCodeList():
 
     regionCodes = 'data/input/table/qc_regions.csv'
@@ -28,6 +30,48 @@ def gdf_to_df(gdf):
     df = pd.DataFrame(gdf.drop(columns='geometry'))
     return df
 
+# Clean existing data 
+def stack_CARTE_ECO_MAJ(df):
+
+    columns = [
+            'ty_couv_et',
+            'densite',
+            'hauteur',
+            'cl_age_et',
+            'tree_cover']
+    for col in columns:
+        pattern = fr'^CARTE_ECO_MAJ_\w+_{col}$'
+        for column in df.filter(regex=pattern).columns:
+            #print(f"\nProcessing column: {column}")
+
+            # Example operation: You can merge them or perform other operations
+            # Here, we are stacking the selected columns and keeping the first non-null value for each row
+            df[col] = df.filter(regex=pattern).stack().groupby(level=0).first()
+            #df.drop(columns=df.filter(regex=pattern).columns, inplace=True)
+
+    return df
+
+def cleanOccurences(df):
+
+    df = df.dropna(subset=['densite'])
+    df = df.rename(columns={'HubDist': 'roadDist'})    
+    df = df.drop_duplicates()
+    # removes columns with less than 20% rows with data
+    df = df.dropna(thresh=df.shape[0]*0.20, axis=1)
+
+    return df
+
+def filterColumns(df):
+
+    occurences_cols = ['X','Y','gbifID','occurrence','kingdom','phylum','class','order','family','genus','species','eventDate','speciesKey']
+    geodata_cols = ['id','HubDist', 'pop_densit','et_domi','type_couv','gr_ess','cl_dens','cl_haut','cl_age','cl_pent','dep_sur','cl_drai','type_eco','ty_couv_et','densite','hauteur','cl_age_et','tree_cover']
+    df_occ = df[occurences_cols]
+    df_geo = df[geodata_cols]
+    
+    out_df = pd.DataFrame.merge(df_occ, df_geo, left_index= True, right_index= True)
+    return out_df
+
+# Sampling new data
 def sample_bioclim(gdf):
     # 19 bioclim layers
     biolcim_layers = range(1,20)
@@ -85,6 +129,7 @@ def sample_regionCode(occ_gdf):
 
     return occ_gdf
 
+# Derive new data from existing columns
 def richnessIndex(tree_cover):
     #indice de ricnesse (nb especes)
     n = len(tree_cover)
@@ -129,51 +174,118 @@ def processs_forest_ecology_indexes(df):
 
     return df
 
-def cleanOccurences(df):
-
-    df = df.dropna(subset=['densite'])
-    df = df.rename(columns={'HubDist': 'roadDist'})    
-    df = df.drop_duplicates()
-    df = df.dropna(thresh=df.shape[0]*0.20, axis=1)
-
-    return df
-
-def filterColumns(df):
-
-    occurences_cols = ['X','Y','gbifID','occurrence','kingdom','phylum','class','order','family','genus','species','eventDate','speciesKey']
-    geodata_cols = ['id','HubDist', 'pop_densit','et_domi','type_couv','gr_ess','cl_dens','cl_haut','cl_age','cl_pent','dep_sur','cl_drai','type_eco','ty_couv_et','densite','hauteur','cl_age_et','tree_cover']
-    df_occ = df[occurences_cols]
-    df_geo = df[geodata_cols]
-    
-    out_df = pd.DataFrame.merge(df_occ, df_geo, left_index= True, right_index= True)
-    return out_df
-
+# Geo 
 def spatial_filtering(df, count = 1):
+
+    #from group check if worse occurence than other 
+    # in a lake, bad valeus sampled, etc 
+
 
     # Keep one random row per group using a fixed seed
     df_random = df.groupby('id', group_keys=False).apply(lambda g: g.sample(n=min(len(g), count)))
 
     return df_random   
 
-def stack_CARTE_ECO_MAJ(df):
+# Prepare data 
 
-    columns = [
-            'ty_couv_et',
-            'densite',
-            'hauteur',
-            'cl_age_et',
-            'tree_cover']
-    for col in columns:
-        pattern = fr'^CARTE_ECO_MAJ_\w+_{col}$'
-        for column in df.filter(regex=pattern).columns:
-            #print(f"\nProcessing column: {column}")
+def encode_categoricalData(df):
+        
+    #geodata_dictionnary = pd.read_csv('data/geodata_dictionnary.csv', header = 0 )
 
-            # Example operation: You can merge them or perform other operations
-            # Here, we are stacking the selected columns and keeping the first non-null value for each row
-            df[col] = df.filter(regex=pattern).stack().groupby(level=0).first()
-            #df.drop(columns=df.filter(regex=pattern).columns, inplace=True)
+    encoding_dictionnary = { 'cl_pent':
+                            {
+                                'A' : 6,
+                                'B' : 5,
+                                'C' : 4,
+                                'D' : 3,
+                                'E' : 2,
+                                'F' : 1,
+                                'S' : 10
+                            },
 
+                            'cl_drai' : 10,
+                            'densite' : 10,
+                            'cl_haut' : {
+                                    1 : 7,
+                                    2 : 6,
+                                    3 : 5,
+                                    4 : 4,
+                                    5 : 3,
+                                    6 : 2,
+                                    7 : 1},
+    
+                            'cl_age_et': 
+                            {
+                                '10' : 10,
+                                '30' : 30,
+                                '50' : 50,
+                                '70' : 70,
+                                '90' : 90,
+                                '110' : 110,
+                                '120' : 120,
+                                '130' : 130,
+                                'VIN' : 40, # 30 a 50
+                                'JIN' : 95 # 70 a 120
+                            },
+                            'cl_age': 
+                            {
+                                '10' : 10,
+                                '30' : 30,
+                                '50' : 50,
+                                '70' : 70,
+                                '90' : 90,
+                                '110' : 110,
+                                '120' : 120,
+                                '130' : 130,
+                                'VIN' : 40, # 30 a 50
+                                'JIN' : 95 # 70 a 120
+                            }
+
+    }
+
+    # Encode ordinal data 
+    for series_name, series in df.items():
+        try:
+            df[series_name] = df[series_name].map(encoding_dictionnary[series_name])
+        except:
+            pass
+
+    # Describe depot surface categorical data
+    df['dep_sur'] = df['dep_sur'].apply(dep_sur_map_category)
+
+    # Chnage datatypes from floats to int 
+    df = df.astype({"cl_drai": 'int',
+                    'densite' : 'int',
+                    'speciesKey' : 'int',
+                    
+                     })
+    
     return df
+
+def dep_sur_map_category(value):
+    value = str(value)
+    if value.startswith('1'):
+        return 'Depot Glaciaire'
+    elif value.startswith('2'):
+        return 'Depot fluvio-glaciaire'
+    elif value.startswith('3'):
+        return 'Depot fluviatile'
+    elif value.startswith('4'):
+        return 'Depot lacustre'
+    elif value.startswith('5'):
+        return 'Depot marin'
+    elif value.startswith('6'):
+        return 'Depot litoral marin'
+    elif value.startswith('7'):
+        return 'Depot organique'
+    elif value.startswith('8'):
+        return 'Depot de pente'
+    elif value.startswith('9'):
+        return 'Depot eolien'
+    elif value.startswith('R'):
+        return 'Rocheux'
+    else:
+        return 'Autre depot'
 
 if __name__ == '__main__':
 
@@ -198,6 +310,8 @@ if __name__ == '__main__':
 
     df = processs_forest_ecology_indexes(df)
 
+    df = encode_categoricalData(df)
+
     gdf = df_to_gdf(df)
 
     gdf = sample_regionCode(gdf)
@@ -209,7 +323,7 @@ if __name__ == '__main__':
     #convert back to simple df
     df = gdf_to_df(gdf)
 
-    df = spatial_filtering(df)
+    df = spatial_filtering(df, count = 1)
 
     print(df.shape)
     print(df.columns)
