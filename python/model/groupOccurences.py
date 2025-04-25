@@ -130,9 +130,7 @@ def create_grid(gdf, grid_size_km = 1):
 
 occurences = 'data/occurences/processedOccurencesCleanup.csv'
 output_path = 'data/occurences/groupedOccurences.csv'
-grid_size = 50
-
-
+grid_size = 2
 
 df = pd.read_csv(occurences)
 print(df.shape)
@@ -163,6 +161,7 @@ occurences_in_grid.rename(columns={'index_right':'site_id'}, inplace = True)
 #richness
 # as df
 richness_df = occurences_in_grid.groupby('site_id').size().to_frame(name='fungi_richness')
+print(richness_df.describe())
 print(f'Found occurences in  {richness_df.shape[0]} grid cells')
 print('%', richness_df.shape[0]/grid.shape[0])
 #as series
@@ -173,16 +172,22 @@ print('%', richness_df.shape[0]/grid.shape[0])
 numerical_vars, ordered_vars, categorical_vars = groupEnvVars(df)
 
 numerical_vars.append('site_id')
-
+ordered_vars.append('site_id')
 # numerical 
 
 numerical_vars_df = occurences_in_grid[numerical_vars]
 numerical_vars_df = numerical_vars_df.groupby('site_id').mean()
 
-site_df = grid.join(richness_df, how='left', lsuffix='_grid').fillna(0)
+#ordered
+ordered_vars_df = occurences_in_grid[numerical_vars]
+ordered_vars_df = ordered_vars_df.groupby('site_id').mean()
 
-site_df1 = grid.join(numerical_vars_df, how='left', lsuffix='_grid').fillna(0)
-print(site_df1)
+site_df = grid.join(richness_df, how='left', lsuffix='_grid').fillna(0)
+site_df = site_df.join(numerical_vars_df, how='left', lsuffix='_grid').fillna(0)
+site_df = site_df.join(ordered_vars_df, how='left', lsuffix='_grid').fillna(0)
+
+site_df = gdf_to_df(site_df)
+print(site_df)
 """
  
 grid_with_counts = grid.join(point_counts, how='left', lsuffix='_grid').fillna(0)
