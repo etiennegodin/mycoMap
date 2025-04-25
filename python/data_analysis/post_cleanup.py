@@ -1,12 +1,25 @@
 # cleanup occurences data after process
-import pandas as pd 
 import sys, os
+import pandas as pd 
+
+import seaborn as sns 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import utils 
 
 pd.set_option('display.max_colwidth', 1000)
 
+def df_to_gdf(df, xy = ['X', 'Y']):
+
+    # Creates goepandas from dataframe with lat/long columns
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df[xy[0]], df[xy[1]]), crs="EPSG:4326"
+    )
+    return gdf
+
+def gdf_to_df(gdf):
+    df = pd.DataFrame(gdf.drop(columns='geometry'))
+    return df
 
 def _zscore(df, column, std = 3):
     from scipy import stats
@@ -27,11 +40,11 @@ def _zscore(df, column, std = 3):
 
     return df_out
 
+occurences = 'data/occurences/processedOccurencesCleanup.csv'
+
 output_path = 'data/occurences/processedOccurencesCleanup.csv'
-occurences = 'data/occurences/processedOccurences.csv'
 
 df = pd.read_csv(occurences)
-print(df.shape)
 
 # remove bad samples in bioclim_data
 df = _zscore(df,'bioclim_01')
