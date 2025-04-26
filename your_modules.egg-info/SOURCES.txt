@@ -1,0 +1,15 @@
+README.md
+setup.py
+python/__init__.py
+python/_utils.py
+python/prepare_occurences.py
+python/weather_prediction.py
+python/customMetrics/__init__.py
+python/model/__init__.py
+python/model/groupOccurences.py
+python/model/model.py
+python/process_raw_data/__init__.py
+your_modules.egg-info/PKG-INFO
+your_modules.egg-info/SOURCES.txt
+your_modules.egg-info/dependency_links.txt
+your_modules.egg-info/top_level.txt

@@ -282,13 +282,13 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "4127c69bfaebfb36",
+  "active": "3e91eebff4941910",
   "lastOpenFiles": [
+    "project_outline.canvas",
     "_root.md",
     "modules/data_cleaning.md",
     "modules/data_cleaning",
     "modules/data_cleaning/mergeTwiRasters.md",
-    "project_outline.canvas",
     "data/inputs/qc_regions.md",
     "data/inputs",
     "data",

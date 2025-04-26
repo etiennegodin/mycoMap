@@ -1,0 +1,16 @@
+README.md
+setup.py
+mycoMap.egg-info/PKG-INFO
+mycoMap.egg-info/SOURCES.txt
+mycoMap.egg-info/dependency_links.txt
+mycoMap.egg-info/requires.txt
+mycoMap.egg-info/top_level.txt
+python/__init__.py
+python/_utils.py
+python/prepare_occurences.py
+python/weather_prediction.py
+python/customMetrics/__init__.py
+python/model/__init__.py
+python/model/groupOccurences.py
+python/model/model.py
+python/process_raw_data/__init__.py
