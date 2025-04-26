@@ -1,7 +1,14 @@
 {
 	"nodes":[
-		{"id":"218b2c9331a550ee","x":11,"y":-523,"width":400,"height":400,"type":"file","file":"modules/data_gathering.md"},
-		{"id":"5bffe7b305d30efa","type":"file","file":"modules/species.md","x":-40,"y":80,"width":400,"height":400}
+		{"id":"218b2c9331a550ee","type":"file","file":"modules/env_data_gathering.md","x":200,"y":-360,"width":400,"height":400,"color":"3"},
+		{"id":"5bffe7b305d30efa","type":"file","file":"modules/species.md","x":200,"y":160,"width":400,"height":400,"color":"3"},
+		{"id":"2fb3ab9297f0d77d","type":"file","file":"modules/data_cleaning/mergeTwiRasters.md","x":1060,"y":-715,"width":340,"height":220,"color":"4"},
+		{"id":"ca2d59e1e9a4eaa8","x":275,"y":-525,"width":250,"height":60,"color":"3","type":"text","text":"data_gathering"},
+		{"id":"d571a6f9bac13070","type":"file","file":"data/inputs/qc_regions.md","x":125,"y":-999,"width":400,"height":109,"color":"6"},
+		{"id":"cfde13eb2d5aff64","x":1120,"y":-940,"width":220,"height":100,"color":"4","type":"text","text":"Data Cleaning"}
 	],
-	"edges":[]
+	"edges":[
+		{"id":"7f7235fc5e756c3b","fromNode":"218b2c9331a550ee","fromSide":"right","toNode":"2fb3ab9297f0d77d","toSide":"left"},
+		{"id":"cd915b80b389294b","fromNode":"d571a6f9bac13070","fromSide":"right","toNode":"2fb3ab9297f0d77d","toSide":"left"}
+	]
 }

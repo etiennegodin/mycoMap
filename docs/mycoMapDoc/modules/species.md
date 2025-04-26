@@ -4,6 +4,10 @@ takes in simple species list, queries gbif species module and creates a list wit
 #query 
 uses previously created list to query gbif occurences of each species 
 
+creates .csv files with occurences for eaches species
+
+#mergeAllOccurences
+merges all species occurences in one csv 
 
 
 

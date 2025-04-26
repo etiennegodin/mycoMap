@@ -213,7 +213,7 @@ if __name__ == '__main__':
     print(f'Species list location : {args.file}')
 
     print(f'Requesting {args.length} species')
-    species_instances = sp.create_species(species_file= args.file,length = args.length, species_list_range = species_list_range)
+    species_instances = sp.create_species_instances(species_file= args.file,length = args.length, species_list_range = species_list_range)
     
     gbif_complete = asyncio.run(main(species_instances))
 

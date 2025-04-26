@@ -1,10 +1,7 @@
-from numpy import NaN 
 import pandas as pd
 import python.utils as utils
 
 # Species class based on gbif 
-
-
 class Specie:
     def __init__(self, name, key, taxonomic_rank, order, family, genus):
         
@@ -72,14 +69,16 @@ def create_specieObject(specie_row, rank = 'species'):
     specie = Specie(name,key,taxonomic_rank, order, family, genus)
     return specie 
 
-def create_species(species_file, length = None, species_list_range = None):
+def create_species_instances(species_file, length = None, species_list_range = None):
 
     if species_list_range != None:
         df_species = create_species_list_df(species_file, species_list_range)
     elif length != None:
         species_list_range = [0,length]
         df_species = create_species_list_df(species_file, species_list_range)
-    
+    else:
+        df_species = create_species_list_df(species_file)
+
     species_instances = []
     for idx, specie_row in df_species.iterrows():
 
@@ -92,13 +91,14 @@ def create_species(species_file, length = None, species_list_range = None):
     print('Created {} species instances'.format(len(species_instances)))
     return species_instances
 
-def create_species_list_df(species_list_file, species_list_range):
-
-    min = species_list_range[0]
-    max = species_list_range[1]
+def create_species_list_df(species_list_file, species_list_range = None):
 
     df_species = pd.read_csv(species_list_file)
 
-    df_species = df_species.iloc[min:max]
+    if species_list_range != None:
+        min = species_list_range[0]
+        max = species_list_range[1]
+
+        df_species = df_species.iloc[min:max]
 
     return df_species
