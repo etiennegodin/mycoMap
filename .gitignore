@@ -1,4 +1,5 @@
 data/raw/geodata/
+data/interim/
 data/occurences/processed/
 *.shp
 *.zip
