@@ -1,6 +1,9 @@
-takes in list of species
-queries gbif and return a list of occurences for this species 
+#create_species_list 
+takes in simple species list, queries gbif species module and creates a list with data about each specie (mainly to get taxon id)
 
-data/
+#query 
+uses previously created list to query gbif occurences of each species 
+
+
 
 
