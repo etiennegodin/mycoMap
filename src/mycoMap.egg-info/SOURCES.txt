@@ -6,8 +6,6 @@ src/mycoMap.egg-info/PKG-INFO
 src/mycoMap.egg-info/SOURCES.txt
 src/mycoMap.egg-info/dependency_links.txt
 src/mycoMap.egg-info/top_level.txt
-src/mycoMap/_temp/__init__.py
-src/mycoMap/_temp/main.py
 src/mycoMap/data_cleaning/__init__.py
 src/mycoMap/data_cleaning/mergeTwiRasters.py
 src/mycoMap/env_data_gathering/__init__.py
