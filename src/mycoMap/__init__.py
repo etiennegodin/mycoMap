@@ -1,4 +1,3 @@
-print('mycoMap source code')
 
 """
 mycoMap main source code

@@ -1,6 +1,5 @@
 import pandas as pd
-import python.utils as utils
-
+from .. import utils 
 # Species class based on gbif 
 class Specie:
     def __init__(self, name, key, taxonomic_rank, order, family, genus):

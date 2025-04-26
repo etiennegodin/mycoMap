@@ -1,5 +1,4 @@
 import pandas as pd
-import csv
 import requests    
 from zipfile import ZipFile
 import os

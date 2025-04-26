@@ -1,5 +1,4 @@
 import pandas as pd
-import csv
 import requests    
 
 output_folder = 'data/raw/geodata/raster/twi'

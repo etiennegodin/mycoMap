@@ -1,7 +1,6 @@
 # Async script to query gbif occurences of species
 # Input species list 
 
-
 import json, os
 from zipfile import ZipFile
 
@@ -11,8 +10,8 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-import specie as sp
-import python.utils as utils
+from . import specie as sp
+from .. import utils
 from pygbif import occurrences as occ
 
 
