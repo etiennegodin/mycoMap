@@ -16,3 +16,4 @@ src/mycoMap/species/create_species_list.py
 src/mycoMap/species/mergeAllOccurences.py
 src/mycoMap/species/queryGbif.py
 src/mycoMap/species/specie.py
+src/mycoMap/species/test.py

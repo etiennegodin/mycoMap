@@ -1,6 +1,5 @@
 import os 
 
-print('utils')
 def create_folder(path):
 
     if not os.path.exists(path):
@@ -12,7 +11,6 @@ def create_folder(path):
     else:
         return path
     
-
 import pandas as pd
 import numpy as np
 import os, ast, glob, pprint
