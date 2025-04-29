@@ -6,5 +6,6 @@ data/occurences/
 *.shp
 *.zip
 *.dbf
+*.gpkg
 #qgis
 *.qgz

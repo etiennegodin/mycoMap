@@ -1,6 +1,6 @@
 
 
-# open gpkg layers 
+#open gpkg layers 
 #combine layers (3) based on geomaj
 #save combine vector layers on disk 
 # read combined vector layers and filter (urban, lake, etc)

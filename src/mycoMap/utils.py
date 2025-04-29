@@ -3,6 +3,8 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 import os, ast, glob, pprint
+from zipfile import ZipFile
+
 
 def create_folder(path):
 
@@ -15,6 +17,16 @@ def create_folder(path):
     else:
         return path
     
+def unzip_file(input_path, output_path, verbose = True):
+
+    with ZipFile(input_path, 'r') as zObject: 
+        # Extracting all the members of the zip  
+        # into a specific location. 
+        zObject.extractall( 
+            path = output_path)
+        
+        if verbose:
+            print(f'Unziped file {output_path}')
 
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
