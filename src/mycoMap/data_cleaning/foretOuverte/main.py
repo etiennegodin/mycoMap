@@ -2,8 +2,11 @@
 
 #open gpkg layers 
 #combine layers (3) based on geomaj
-#save combine vector layers on disk 
-# read combined vector layers and filter (urban, lake, etc)
+
+#filter relevant fields
+#filter vector objects (urban, lake, etc)
+#save combined vector layers on disk 
+
 # rasterise each field as different files 
 
 # combine all sub rasters to one (like bioclim) (twi script logic)
