@@ -9,9 +9,15 @@ src/mycoMap.egg-info/top_level.txt
 src/mycoMap/data_cleaning/__init__.py
 src/mycoMap/data_cleaning/grid.py
 src/mycoMap/data_cleaning/mergeTwiRasters.py
-src/mycoMap/data_cleaning/rasterizeForetOuvert.py
+src/mycoMap/data_cleaning/foretOuverte/__init__.py
+src/mycoMap/data_cleaning/foretOuverte/combineDataSource.py
+src/mycoMap/data_cleaning/foretOuverte/combineRasters.py
+src/mycoMap/data_cleaning/foretOuverte/export_perimeters.py
+src/mycoMap/data_cleaning/foretOuverte/main.py
+src/mycoMap/data_cleaning/foretOuverte/rasterizeForetOuvert.py
 src/mycoMap/env_data_gathering/__init__.py
 src/mycoMap/env_data_gathering/_download_hydro.py
+src/mycoMap/env_data_gathering/download_foretOuverte.py
 src/mycoMap/env_data_gathering/download_twi.py
 src/mycoMap/species/__init__.py
 src/mycoMap/species/create_species_list.py

@@ -45,7 +45,8 @@ if __name__ == '__main__':
 
 
     occ = 'data/occurences/processedOccurences.csv'
-    grid_size = 1
+    grid_size = 0.5
+    
     output_path = f'data/interim/geodata/vector/grid/{grid_size}km_grid.shp'
     df = pd.read_csv(occ)
     gdf = utils.df_to_gdf(df)

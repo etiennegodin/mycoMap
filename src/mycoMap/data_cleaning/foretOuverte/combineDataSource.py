@@ -7,6 +7,14 @@ input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg'
 output_shp_path = 'data/interim/geodata/vector/CARTE_ECO'
 
 regions_df = pd.read_csv('data/inputs/qc_regions.csv')
+#print(regions_df)
+regions_list = []
+
+for row in regions_df.iterrows():
+    region = row[1]['region']
+    regions_list.append(region)
+
+regions_list = ['21E']
 
 def stack_CARTE_ECO_MAJ(df):
 
@@ -93,35 +101,23 @@ def write_gdf(gdf, output_path):
         # Common Shapefile errors relate to long field names or mixed geometry typ
 
 def filter_gdf(gdf, filters = None):
-    if not filters:
-        filters = { 'type_ter' : "TRF",
-                'co_ter' : None,
-        }
-    print(gdf.shape)
+
     condition = (gdf['type_ter'] == 'TRF') & (gdf['co_ter'].isna())
-    #condition = (gdf['co_ter'].isna())
     filtered_gdf = gdf[condition]
-    print(filtered_gdf.shape)
 
     return filtered_gdf
 
-
 if __name__ == '__main__':
 
-    #print(regions_df)
-    regions_list = []
+    #grid = gpd.read_file('data/interim/geodata/vector/grid/1km_grid.shp')
 
-    for row in regions_df.iterrows():
-        region = row[1]['region']
-        regions_list.append(region)
-    
-    #regions_list = ['21E']
-    
     for r in regions_list:
         print(r)
         gpkg_file = input_gpkg_path + f'/CARTE_ECO_MAJ_{r}.gpkg'
 
         layers = find_gpkg_layers(gpkg_file)
+
+        #region_perimeter_gdf = layers[0]
 
         #layers_to_combine = [layers[1], layers[3], layers[4]]
         layers_to_combine = [layers[1], layers[4]]
@@ -130,7 +126,15 @@ if __name__ == '__main__':
         gdf_combined = combine_gpkg_layers(gpkg_file, layers = layers_to_combine)
 
         filtered_gf = filter_gdf(gdf_combined)
+        
+        #quick clean if duplicates
+        filtered_gf = filtered_gf.drop_duplicates()
         print(filtered_gf)
 
         output_path = output_shp_path + f'/CARTE_ECO_{r}.shp'
         write_gdf(filtered_gf, output_path)
+        
+        perimeter_output_path = 'data/interim/geodata/vector/region_perimeter' + f'/{r}_perimeter.shp'
+        perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
+        write_gdf(perimeter_gdf, perimeter_output_path)
+             
