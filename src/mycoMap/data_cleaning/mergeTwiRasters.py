@@ -5,18 +5,7 @@ from rasterio.warp import calculate_default_transform, reproject
 
 import os
 import pandas as pd
-
-def get_regionCodeList():
-
-    regionCodes = 'data/inputs/qc_regions.csv'
-
-    regionCodeList = []
-    regionCodeDict = pd.read_csv(regionCodes).to_dict()
-    regionCodeDict = regionCodeDict['region']
-    for key, region in regionCodeDict.items():
-        regionCodeList.append(region)
-    print(regionCodeList)
-    return regionCodeList
+from ..utils import get_regionCodeList
 
 
 def resample_raster(src, scale_factor):

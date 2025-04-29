@@ -1,7 +1,7 @@
 import pandas as pd
 import requests    
 
-output_folder = 'data/raw/geodata/raster/twi'
+output_folder = 'data/raw/geodata/twi'
 
 urls = pd.read_csv('data/data_sources/twi_urls.csv', delimiter=';')
 

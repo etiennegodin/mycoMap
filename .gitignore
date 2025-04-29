@@ -1,6 +1,10 @@
+#data folders 
 data/raw/geodata/
 data/interim/
-data/occurences/processed/
+data/occurences/
+#geodata files 
 *.shp
 *.zip
 *.dbf
+#qgis
+*.qgz

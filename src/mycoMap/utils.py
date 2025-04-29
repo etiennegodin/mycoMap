@@ -1,4 +1,8 @@
 import os 
+import pandas as pd
+import geopandas as gpd
+import numpy as np
+import os, ast, glob, pprint
 
 def create_folder(path):
 
@@ -11,9 +15,7 @@ def create_folder(path):
     else:
         return path
     
-import pandas as pd
-import numpy as np
-import os, ast, glob, pprint
+
 
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
@@ -156,7 +158,7 @@ def merge_raw_geodata():
 
         merged_df = pd.merge(regions_data_df, env_factors_df, on='geoc_maj')
 
-        utilities.saveDfToCsv(merged_df, f'{output_path}/{region}.csv')
+        saveDfToCsv(merged_df, f'{output_path}/{region}.csv')
 
         print(merged_df.head())
 
@@ -179,6 +181,37 @@ def interpret_args_range(input_range):
         output_range = [min,max]
         print(output_range)    
         return output_range
+    
+
+
+def get_regionCodeList():
+
+    regionCodes = 'data/inputs/qc_regions.csv'
+
+    regionCodeList = []
+    regionCodeDict = pd.read_csv(regionCodes).to_dict()
+    regionCodeDict = regionCodeDict['region']
+    for key, region in regionCodeDict.items():
+        regionCodeList.append(region)
+    print(regionCodeList)
+    return regionCodeList
+
+
+def df_to_gdf(df, xy = ['X', 'Y']):
+
+    # Creates goepandas from dataframe with lat/long columns
+    gdf = gpd.GeoDataFrame(
+        df, geometry=gpd.points_from_xy(df[xy[0]], df[xy[1]]), crs="EPSG:4326"
+    )
+    return gdf
+
+def gdf_to_df(gdf):
+    df = pd.DataFrame(gdf.drop(columns='geometry'))
+    return df
+
+
+def unpackGPK(inputfile = '', output_file = ''):
+    pass
 
 if __name__ == '__main__':
     # Specify the parent folder and file suffix

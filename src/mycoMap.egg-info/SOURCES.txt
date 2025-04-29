@@ -7,7 +7,9 @@ src/mycoMap.egg-info/SOURCES.txt
 src/mycoMap.egg-info/dependency_links.txt
 src/mycoMap.egg-info/top_level.txt
 src/mycoMap/data_cleaning/__init__.py
+src/mycoMap/data_cleaning/grid.py
 src/mycoMap/data_cleaning/mergeTwiRasters.py
+src/mycoMap/data_cleaning/rasterizeForetOuvert.py
 src/mycoMap/env_data_gathering/__init__.py
 src/mycoMap/env_data_gathering/_download_hydro.py
 src/mycoMap/env_data_gathering/download_twi.py
@@ -16,4 +18,3 @@ src/mycoMap/species/create_species_list.py
 src/mycoMap/species/mergeAllOccurences.py
 src/mycoMap/species/queryGbif.py
 src/mycoMap/species/specie.py
-src/mycoMap/species/test.py
