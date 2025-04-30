@@ -21,23 +21,39 @@ for row in regions_df.iterrows():
     region = row[1]['region']
     regions_list.append(region)
 
-regions_list = ['21E']
+#regions_list = ['21E']
 
 ordinal_columns = ['ty_couv_et','cl_dens','cl_haut','cl_age_et','etagement','cl_pent','hauteur']
 categorical_columns = ['dep_sur','cl_drai', 'eta_ess_pc']
 gdf_columns = ['geoc_maj', 'geometry']
 all_columns = ordinal_columns + categorical_columns + gdf_columns
 
-aggregate_dict = { 'ty_couv_et': 'median',
-                        'cl_dens' : 'median',
-                        'cl_haut' : 'median',
+aggregate_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty else np.nan,
+                        'cl_dens' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
+                        'cl_haut' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
                         'cl_age_et' : 'mean',
-                        'etagement' : 'median',
-                        'cl_pent' : 'median',
+                        'etagement' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
+                        'cl_pent' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
                         'hauteur' : 'mean',
                         'dep_sur' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
                         'cl_drai' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
 
+}
+
+pre_aggregate_encoding_dict = {
+                        'cl_age_et': 
+                        {
+                            '10' : 10,
+                            '30' : 30,
+                            '50' : 50,
+                            '70' : 70,
+                            '90' : 90,
+                            '110' : 110,
+                            '120' : 120,
+                            '130' : 130,
+                            'VIN' : 40, # 30 a 50
+                            'JIN' : 95 # 70 a 120
+                        },
 }
 
 encoding_dictionnary = { 'ty_couv_et': 
@@ -67,21 +83,6 @@ encoding_dictionnary = { 'ty_couv_et':
                             '6' : 2,
                             '7' : 1,
                         },
-
-                        'cl_age_et': 
-                        {
-                            '10' : 10,
-                            '30' : 30,
-                            '50' : 50,
-                            '70' : 70,
-                            '90' : 90,
-                            '110' : 110,
-                            '120' : 120,
-                            '130' : 130,
-                            'VIN' : 40, # 30 a 50
-                            'JIN' : 95 # 70 a 120
-                        },
-
                         'etagement': 
                         {
                             'BI' : 2,
@@ -130,11 +131,11 @@ def remap_dep_sur(value):
     else:
         return 'Autre depot'
 
-def encode_vector_fields(gdf):
+def encode_vector_fields(gdf, encoding_dict = None):
 
     for series_name, series in gdf.items():
         try:
-            gdf[series_name] = gdf[series_name].map(encoding_dictionnary[series_name])
+            gdf[series_name] = gdf[series_name].map(encoding_dict[series_name])
             print(f'Encoded {series_name}')
         except Exception as e:
             print(e)
@@ -154,7 +155,7 @@ def encode_vector_fields(gdf):
 
 if __name__ == '__main__':
 
-    grid = gpd.read_file('data/interim/geodata/vector/grid/1km_grid.shp')
+    grid = gpd.read_file('data/interim/geodata/vector/grid/0.5km_grid.shp')
     #print(grid.head())
     print(grid.shape)
     for region in regions_list:
@@ -185,7 +186,7 @@ if __name__ == '__main__':
         gdf = gdf[all_columns]
 
         #encode field to aggregate 
-        gdf = encode_vector_fields(gdf)
+        gdf = encode_vector_fields(gdf, pre_aggregate_encoding_dict)
         print('-'*100)
         print('Encoded gdf')
         print(gdf.head())
@@ -198,6 +199,9 @@ if __name__ == '__main__':
 
         #aggregate field values grouped by cell id 
         aggregated_gdf = joined_gdf.groupby('FID').agg(aggregate_dict).reset_index()
+        #re-encode gdf after aggregate on categorical values to get ordinal values for raster
+        aggregated_gdf = encode_vector_fields(aggregated_gdf, encoding_dictionnary)
+
         print('-'*100)
         print('Agg gdf')
         print(aggregated_gdf.head())
