@@ -15,7 +15,7 @@ output_path = 'data/interim/geodata/vector/sampled_grid/'
 bioclim_path = 'data/raw/geodata/bioclim/'
 perimeter_path = 'data/interim/geodata/vector/region_perimeter/'
 geoUtils_path = 'data/interim/geodata/vector/geoUtils/'
-
+sampled_bioclim_path = 'data/interim/geodata/vector/sampledBioclim/'
 
 
 cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty else np.nan,
@@ -30,8 +30,6 @@ cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty els
                         'tree_cover' : lambda dicts : len(set(itertools.chain.from_iterable(d.keys() for d in dicts))),
                         'tree_shann' : 'mean'
 }
-
-
 
 def sample_bioclim_to_grid(gdf):
     # 19 bioclim layers
@@ -76,6 +74,17 @@ def main(grid_size = 1, debug = False):
 
         clipped_grid = geoUtils.clip_grid_per_region(perimeter_gdf,grid, debug= True)
 
+        if grid_size == 0.5:
+            # read sampled rasters 
+            bioclim_gdf = gpd.read_file(sampled_bioclim_path + f'{grid_size}km_bioclim.shp')
+            bioclim_gdf = geoUtils.clip_grid_per_region(perimeter_gdf,bioclim_gdf, debug= True, keep_cols= True)
+            bioclim_gdf = bioclim_gdf.drop(['geometry'], axis = 1)
+
+        if debug:
+            print('-'*100)
+            print('Bioclim gdf')
+            print(bioclim_gdf.head())
+
         # spatial join with grid 
         joined_gdf = gpd.sjoin(gdf, clipped_grid, how ='inner', predicate= 'intersects')
         joined_gdf = joined_gdf.drop(['index_right'], axis = 1)
@@ -103,15 +112,7 @@ def main(grid_size = 1, debug = False):
             print('Counts vector items')
             print(counts.head())
 
-        # sample rasters 
-        centroid_gdf = gpd.read_file(geoUtils_path + f'{grid_size}km_centroid.shp')
 
-        bioclim_gdf = sample_bioclim_to_grid(centroid_gdf)
-
-        if debug:
-            print('-'*100)
-            print('Bioclim gdf')
-            print(bioclim_gdf.head())
 
         #spatial join occurences 
         #sampleOccurences_to_grid()
@@ -122,7 +123,8 @@ def main(grid_size = 1, debug = False):
         #merge back aggregated values in grid gdf
         result_gdf = clipped_grid.merge(aggregated_gdf, on = 'FID',how = 'left')
         result_gdf = result_gdf.merge(counts, on = 'FID',how = 'left')
-        result_gdf = result_gdf.merge(bioclim_gdf, on = 'FID',how = 'left')
+        if grid_size == 0.5:
+            result_gdf = result_gdf.merge(bioclim_gdf, on = 'FID',how = 'left')
 
         print('Final gdf')
         print(result_gdf.head())
@@ -137,4 +139,4 @@ def main(grid_size = 1, debug = False):
             print(e)
 
 if __name__ == '__main__':
-    main(grid_size = 2, debug = True)
+    main(grid_size = 0.5, debug = True)

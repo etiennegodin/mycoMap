@@ -1,6 +1,6 @@
 import geopandas as gpd 
 
-def clip_grid_per_region(perimeter_gdf, grid, debug = False):
+def clip_grid_per_region(perimeter_gdf, grid, debug = False, keep_cols = False):
 
     if debug:
         print('-'*100)
@@ -21,17 +21,19 @@ def clip_grid_per_region(perimeter_gdf, grid, debug = False):
     # clip operation
     try:
         clipped_grid = gpd.sjoin(gdf_l,gdf_r, how ='inner')
+        clipped_grid = clipped_grid.drop(['index_right'], axis = 1)
     except Exception as e:
         print(e)
 
-    try:
-        clipped_grid = clipped_grid[['FID','geometry']]
-    except Exception as e:
-        print(e)
+    if not keep_cols:
+        try:
+            clipped_grid = clipped_grid[['FID','geometry']]
+        except Exception as e:
+            print(e)
 
     if debug:
         print('-'*100)
-        print('Clipped grid gdf')
+        print('Clipped gdf')
         print(clipped_grid.head())
 
     if not clipped_grid.empty:
