@@ -3,9 +3,10 @@ from shapely.geometry import Polygon, Point
 import geopandas as gpd
 import pandas as pd 
 
-from .. import utils 
+from .src.mycoMap import utils 
+gdf = gpd.GeoDataFrame()
 
-def create_grid(gdf, grid_cell_size = 1, output_path = '', verbose = False):
+def main(gdf = gdf, grid_cell_size = 1, verbose = False):
     """
     Returns gdf grid based on input gdf bounds and grid cell size (in km)
     """
@@ -34,20 +35,26 @@ def create_grid(gdf, grid_cell_size = 1, output_path = '', verbose = False):
             grid_cells.append(grid_cell)
 
     grid_gdf = gpd.GeoDataFrame({'geometry': grid_cells}, crs=gdf.crs)
+    print(grid_gdf)
 
     #save grid to disk 
-    if output_path != '':
-        grid_gdf.to_file(output_path)
+    grid_output_path = f'data/interim/geodata/vector/geoUtils/{grid_cell_size}km_grid.shp'
+    grid_gdf.to_file(grid_output_path)
         
-    return grid_gdf
+    grid_centroid = grid_gdf.centroid
+    print(grid_centroid)
+    centroid_output_path = f'data/interim/geodata/vector/geoUtils/{grid_cell_size}km_centroid.shp'
+    grid_centroid.to_file(centroid_output_path)
+
+    return grid_gdf, grid_centroid
 
 if __name__ == '__main__':
 
-
     occ = 'data/occurences/processedOccurences.csv'
-    grid_size = 0.5
+    grid_sizes = [10,5,2,1,0.5]
+    #grid_size = 10
     
-    output_path = f'data/interim/geodata/vector/grid/{grid_size}km_grid.shp'
     df = pd.read_csv(occ)
     gdf = utils.df_to_gdf(df)
-    create_grid(gdf , grid_cell_size= grid_size, output_path = output_path, verbose= True)
+    for size in grid_sizes:
+        main(gdf = gdf, grid_cell_size= size, verbose= True)

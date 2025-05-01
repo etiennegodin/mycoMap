@@ -17,12 +17,6 @@ input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg'
 
 output_path = 'data/interim/geodata/vector/aggregated'
 
-for row in regions_df.iterrows():
-    region = row[1]['region']
-    regions_list.append(region)
-
-#regions_list = ['21E']
-
 ordinal_columns = ['ty_couv_et','cl_dens','cl_haut','cl_age_et','etagement','cl_pent','hauteur']
 categorical_columns = ['dep_sur','cl_drai', 'eta_ess_pc']
 gdf_columns = ['geoc_maj', 'geometry']
@@ -103,7 +97,7 @@ encoding_dictionnary = { 'ty_couv_et':
 }
 
 
-def remap_dep_sur(value):
+def dep_sur_dict(value):
     """
     remap sub-categories of depot surface values to main categories of soil
     """
@@ -140,19 +134,13 @@ def encode_vector_fields(gdf, encoding_dict = None):
         except Exception as e:
             print(e)
 
-    #remap sub-categories of depot surface values to main categories of soil
-    gdf['dep_sur'] = gdf['dep_sur'].apply(remap_dep_sur)
-    print("Encoded 'dep_sur;")
-
-    """
-    gdf = gdf.astype({"cl_drai": 'int',
-                'densite' : 'int',
-                'speciesKey' : 'int',
-                
-                    })
-    """
     return gdf
 
+def encode_dep_sur(gdf):
+    #remap sub-categories of depot surface values to main categories of soil
+    gdf['dep_sur'] = gdf['dep_sur'].apply(dep_sur_dict)
+    print("Encoded 'dep_sur;")
+    return gdf
 if __name__ == '__main__':
 
     grid = gpd.read_file('data/interim/geodata/vector/grid/0.5km_grid.shp')
@@ -199,8 +187,9 @@ if __name__ == '__main__':
 
         #aggregate field values grouped by cell id 
         aggregated_gdf = joined_gdf.groupby('FID').agg(aggregate_dict).reset_index()
+
         #re-encode gdf after aggregate on categorical values to get ordinal values for raster
-        aggregated_gdf = encode_vector_fields(aggregated_gdf, encoding_dictionnary)
+        #aggregated_gdf = encode_vector_fields(aggregated_gdf, encoding_dictionnary)
 
         print('-'*100)
         print('Agg gdf')

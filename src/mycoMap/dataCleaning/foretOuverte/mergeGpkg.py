@@ -2,19 +2,12 @@
 import pandas as pd
 import geopandas as gpd 
 import fiona
+from ... import utils
 
 input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg' 
-output_shp_path = 'data/interim/geodata/vector/CARTE_ECO'
+output_shp_path = 'data/interim/geodata/vector/mergedGpkg/'
 
-regions_df = pd.read_csv('data/inputs/qc_regions.csv')
-#print(regions_df)
-regions_list = []
-
-for row in regions_df.iterrows():
-    region = row[1]['region']
-    regions_list.append(region)
-
-regions_list = ['21E']
+regions_list = utils.get_regionCodeList()
 
 def stack_CARTE_ECO_MAJ(df):
 
@@ -107,34 +100,49 @@ def filter_gdf(gdf, filters = None):
 
     return filtered_gdf
 
-if __name__ == '__main__':
-
-    #grid = gpd.read_file('data/interim/geodata/vector/grid/1km_grid.shp')
-
+def export_perimeter(regions_list = regions_list):
     for r in regions_list:
-        print(r)
         gpkg_file = input_gpkg_path + f'/CARTE_ECO_MAJ_{r}.gpkg'
 
         layers = find_gpkg_layers(gpkg_file)
-
-        #region_perimeter_gdf = layers[0]
-
-        #layers_to_combine = [layers[1], layers[3], layers[4]]
-        layers_to_combine = [layers[1], layers[4]]
-        #layers_to_combine = [layers[1]]
-
-        gdf_combined = combine_gpkg_layers(gpkg_file, layers = layers_to_combine)
-
-        filtered_gf = filter_gdf(gdf_combined)
-        
-        #quick clean if duplicates
-        filtered_gf = filtered_gf.drop_duplicates()
-        print(filtered_gf)
-
-        output_path = output_shp_path + f'/CARTE_ECO_{r}.shp'
-        write_gdf(filtered_gf, output_path)
         
         perimeter_output_path = 'data/interim/geodata/vector/region_perimeter' + f'/{r}_perimeter.shp'
         perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
         write_gdf(perimeter_gdf, perimeter_output_path)
+
+def merge_region_gpkg(region, write = False):
+    print(region)
+    gpkg_file = input_gpkg_path + f'/CARTE_ECO_MAJ_{region}.gpkg'
+
+    layers = find_gpkg_layers(gpkg_file)
+
+    #layers_to_combine = [layers[1], layers[3], layers[4]]
+    layers_to_combine = [layers[1], layers[4]]
+    #layers_to_combine = [layers[1]]
+
+    gdf_combined = combine_gpkg_layers(gpkg_file, layers = layers_to_combine)
+
+    filtered_gf = filter_gdf(gdf_combined)
+    
+    #quick clean if duplicates
+    filtered_gf = filtered_gf.drop_duplicates()
+    
+    perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
+
+    print(filtered_gf)
+
+    if write:
+        output_path = output_shp_path + f'{region}_raw_merge.shp'
+        write_gdf(filtered_gf, output_path)
+    
+    if write:
+        perimeter_output_path = 'data/interim/geodata/vector/region_perimeter/' + f'{region}_perimeter.shp'
+        write_gdf(perimeter_gdf, perimeter_output_path)
+
+    return filtered_gf, perimeter_gdf
+
+if __name__ == '__main__':
+    for r in regions_list:
+        merge_region_gpkg(r, write = True)
+
              

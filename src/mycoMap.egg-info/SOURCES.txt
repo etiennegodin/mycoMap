@@ -7,13 +7,11 @@ src/mycoMap.egg-info/SOURCES.txt
 src/mycoMap.egg-info/dependency_links.txt
 src/mycoMap.egg-info/top_level.txt
 src/mycoMap/data_cleaning/__init__.py
-src/mycoMap/data_cleaning/grid.py
+src/mycoMap/data_cleaning/createGrid.py
 src/mycoMap/data_cleaning/mergeTwiRasters.py
+src/mycoMap/data_cleaning/sampleGrid.py
 src/mycoMap/data_cleaning/foretOuverte/__init__.py
-src/mycoMap/data_cleaning/foretOuverte/combineDataSource.py
-src/mycoMap/data_cleaning/foretOuverte/combineRasters.py
-src/mycoMap/data_cleaning/foretOuverte/export_perimeters.py
-src/mycoMap/data_cleaning/foretOuverte/main.py
+src/mycoMap/data_cleaning/foretOuverte/combineGpkg.py
 src/mycoMap/data_cleaning/foretOuverte/rasterizeForetOuvert.py
 src/mycoMap/env_data_gathering/__init__.py
 src/mycoMap/env_data_gathering/_download_hydro.py
