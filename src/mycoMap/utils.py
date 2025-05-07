@@ -27,7 +27,6 @@ def unzip_file(input_path, output_path, verbose = True):
         if verbose:
             print(f'Unziped file {output_path}')
 
-
 def mergeDfFromCsv(file1,file2,collumn = 'geoc_maj'):
     df1 = pd.read_csv(file1)
     df2 = pd.read_csv(file2)
@@ -72,8 +71,6 @@ def convert_string_to_numeral(df, collumn = 'tree_cover'):
     
     return df
 
-
-
 def random_number_generator(count, min, max):
     max = max + 1
 
@@ -100,8 +97,6 @@ def explore_df(df, describe = True, dtype = False, corr = False):
     if corr:
         numeric_df = df.select_dtypes(include=['float64', 'int64', 'int32'])
         print(numeric_df.corr())
-
-
 
 def delete_files_with_suffix(parent_folder, suffix, length, dry_run = True):
     """
@@ -193,6 +188,10 @@ def interpret_args_range(input_range):
         print(output_range)    
         return output_range
     
+def shannonIndex(group):
+    counts = group.value_counts()
+    proportions = counts / counts.sum()
+    return -np.sum(proportions * np.log(proportions))
 
 
 def get_regionCodeList(range = (0,17)):

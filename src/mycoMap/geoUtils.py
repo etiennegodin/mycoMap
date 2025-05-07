@@ -38,5 +38,5 @@ def clip_grid_per_region(perimeter_gdf, grid, debug = False, keep_cols = False):
         print('Clipped gdf')
         print(clipped_grid.head())
 
-    if clipped_grid:
+    if not clipped_grid.empty:
         return clipped_grid
