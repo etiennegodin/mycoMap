@@ -195,14 +195,16 @@ def interpret_args_range(input_range):
     
 
 
-def get_regionCodeList():
+def get_regionCodeList(range = (0,17)):
 
     regionCodes = 'data/inputs/qc_regions.csv'
 
     regionCodeList = []
     regionCodeDict = pd.read_csv(regionCodes).to_dict()
+    
     regionCodeDict = regionCodeDict['region']
-    for key, region in regionCodeDict.items():
+
+    for i,(key, region) in enumerate(regionCodeDict.items()):
         regionCodeList.append(region)
     print(regionCodeList)
     return regionCodeList

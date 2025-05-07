@@ -21,10 +21,12 @@ def clip_grid_per_region(perimeter_gdf, grid, debug = False, keep_cols = False):
     # clip operation
     try:
         clipped_grid = gpd.sjoin(gdf_l,gdf_r, how ='inner')
-        clipped_grid = clipped_grid.drop(['index_right'], axis = 1)
     except Exception as e:
         print(e)
 
+    if not clipped_grid.empty:
+        clipped_grid = clipped_grid.drop(['index_right'], axis = 1)
+    
     if not keep_cols:
         try:
             clipped_grid = clipped_grid[['FID','geometry']]
@@ -36,5 +38,5 @@ def clip_grid_per_region(perimeter_gdf, grid, debug = False, keep_cols = False):
         print('Clipped gdf')
         print(clipped_grid.head())
 
-    if not clipped_grid.empty:
+    if clipped_grid:
         return clipped_grid

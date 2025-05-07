@@ -55,9 +55,11 @@ def sampleOccurences_to_grid(grid, occurences_gdf):
 def process_fungi_ecology_index():
     pass
 
-def main(grid_size = 1, debug = False):
+def main(grid_size = 1, debug = False, range = (0,17)):
 
     regions_list = utils.get_regionCodeList()
+    regions_list = regions_list[-1:]
+    print(regions_list)
     grid = gpd.read_file(geoUtils_path + f'{grid_size}km_grid.shp')
     print(grid.shape)
 
@@ -77,8 +79,11 @@ def main(grid_size = 1, debug = False):
         if grid_size == 0.5:
             # read sampled rasters 
             bioclim_gdf = gpd.read_file(sampled_bioclim_path + f'{grid_size}km_bioclim.shp')
-            bioclim_gdf = geoUtils.clip_grid_per_region(perimeter_gdf,bioclim_gdf, debug= True, keep_cols= True)
-            bioclim_gdf = bioclim_gdf.drop(['geometry'], axis = 1)
+            if not bioclim_gdf.empty:
+                bioclim_gdf = geoUtils.clip_grid_per_region(perimeter_gdf,bioclim_gdf, debug= True, keep_cols= True)
+
+            if bioclim_gdf:
+                bioclim_gdf = bioclim_gdf.drop(['geometry'], axis = 1)
 
         if debug:
             print('-'*100)
@@ -123,7 +128,8 @@ def main(grid_size = 1, debug = False):
         #merge back aggregated values in grid gdf
         result_gdf = clipped_grid.merge(aggregated_gdf, on = 'FID',how = 'left')
         result_gdf = result_gdf.merge(counts, on = 'FID',how = 'left')
-        if grid_size == 0.5:
+
+        if not bioclim_gdf.empty:
             result_gdf = result_gdf.merge(bioclim_gdf, on = 'FID',how = 'left')
 
         print('Final gdf')
@@ -134,7 +140,7 @@ def main(grid_size = 1, debug = False):
         try: 
             result_gdf.to_file(output_file, driver='ESRI Shapefile')
             print(f'Saved {output_file}')
-            print('#'*50, f'{i}/{len(regions_list)}', '#'*50)
+            print('#'*50, f'{i+1}/{len(regions_list)}', '#'*50)
         except Exception as e:
             print(e)
 
