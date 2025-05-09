@@ -35,6 +35,8 @@ cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty els
                         'tree_shann' : 'mean'
 }
 
+tree_diversity_agg = {'tree_cover' : lambda dicts : len(set(itertools.chain.from_iterable(d.keys() for d in dicts))),}
+
 encoding_dictionnary = {
                         'cl_dens':
                         {

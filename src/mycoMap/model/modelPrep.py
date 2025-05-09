@@ -13,3 +13,6 @@ Zero-Inflated Models (ZIP/ZINB): Useful if you have far more zero-richness cells
 """
 Robustness of Tree Models: Often, tree-based ensemble models like Random Forest handle count-like data quite well without explicitly assuming a distribution, making them a good default choice.
 """
+
+
+# bias covariate 
