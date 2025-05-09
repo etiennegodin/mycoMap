@@ -12,12 +12,15 @@ importlib.reload(geoUtils)
 
 #paths 
 foretOuverte_path = 'data/interim/geodata/vector/CARTE_ECO/'
-output_path = 'data/interim/geodata/vector/sampled_grid/'
+output_shp_path = 'data/interim/geodata/vector/sampled_grid/'
+output_csv_path = 'data/interim/geodata/vector/sampled_grid/csv/'
+
+gridded_occurences_path = 'data/interim/occurences/griddedOccurences.csv'
+
 bioclim_path = 'data/raw/geodata/bioclim/'
 perimeter_path = 'data/interim/geodata/vector/region_perimeter/'
 geoUtils_path = 'data/interim/geodata/vector/geoUtils/'
 sampled_bioclim_path = 'data/interim/geodata/vector/sampledBioclim/'
-occurences_path = 'data/interim/species/allOcurrences.csv'
 
 cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty else np.nan,
                         'cl_dens' : lambda x : x.mode()[0] if not x.mode().empty else np.nan,
@@ -32,15 +35,7 @@ cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty els
                         'tree_shann' : 'mean'
 }
 
-encoding_dictionnary = { 'ty_couv_et': 
-                        {
-                            'F' : 1,
-                            'MF' : 2,
-                            'MM' : 3,
-                            'MR' : 4,
-                            'R' : 5
-                        },
-
+encoding_dictionnary = {
                         'cl_dens':
                         {
                             'A' : 4,
@@ -59,13 +54,7 @@ encoding_dictionnary = { 'ty_couv_et':
                             '6' : 2,
                             '7' : 1,
                         },
-                        'etagement': 
-                        {
-                            'BI' : 2,
-                            'MO' : 1,
-                            'MU' : 3,
 
-                        },
                         'cl_pent':
                         {
                             'A' : 1,
@@ -96,10 +85,10 @@ def sample_bioclim_to_grid(gdf):
     gdf = gdf.drop(['geometry'], axis = 1)
     return gdf
 
-def process_fungi_ecology_index(gdf, grid):
-    #spatial join with grid 
-    joined_gdf = gpd.sjoin(gdf, grid, how ='inner', predicate= 'intersects')
-    joined_gdf = joined_gdf.drop(['index_right'], axis = 1)
+def process_fungi_ecology_index(gridded_occurences_path, grid):
+
+    df = pd.read_csv(gridded_occurences_path)
+    joined_gdf = utils.df_to_gdf(df, xy = ['decimalLongitude','decimalLatitude'])
 
     #aggregate field values grouped by cell id 
     try:
@@ -109,10 +98,10 @@ def process_fungi_ecology_index(gdf, grid):
             print(e)
 
     result_gdf = grid.merge(richness_gdf, on = 'FID',how = 'left')
-    fungi_ecology = result_gdf.merge(shannon_gdf, on = 'FID',how = 'left')
-    fungi_ecology = fungi_ecology.drop(['geometry'], axis = 1)
-
-    return fungi_ecology
+    fungi_ecology_gdf = result_gdf.merge(shannon_gdf, on = 'FID',how = 'left')
+    fungi_ecology_gdf = fungi_ecology_gdf.drop(['geometry'], axis = 1)
+    fungi_ecology_gdf = fungi_ecology_gdf.fillna(0)
+    return fungi_ecology_gdf
 
 def encode_vector_fields(gdf, encoding_dict = None):
 
@@ -125,8 +114,6 @@ def encode_vector_fields(gdf, encoding_dict = None):
 
     return gdf
 
-def encode_categorical(gdf):
-    pass
 def create_occurences_gdf(occurences_path):
 
     col_to_keep = ['gbifID', 'order','family', 'genus','species','decimalLatitude','decimalLongitude','eventDate']
@@ -135,7 +122,6 @@ def create_occurences_gdf(occurences_path):
     df = df[col_to_keep]
     gdf = utils.df_to_gdf(df, xy = ['decimalLongitude','decimalLatitude'])
     return gdf 
-
 
 
 def main(grid_size = 1, debug = False, range = (0,17)):
@@ -192,11 +178,9 @@ def main(grid_size = 1, debug = False, range = (0,17)):
             print('Counts vector items')
             print(counts.head())
 
-        #Load occurences, spatial join on grid
-        occurences_gdf = create_occurences_gdf(occurences_path)
-
         #process fungi_ecology indexes with spatially joined occurences
-        fungi_ecology_gdf = process_fungi_ecology_index(occurences_gdf, clipped_grid)
+        fungi_ecology_gdf = process_fungi_ecology_index(gridded_occurences_path, clipped_grid)
+
         if debug:
             print('-'*100)
             print('Fungi_ecology_gdf')
@@ -204,7 +188,7 @@ def main(grid_size = 1, debug = False, range = (0,17)):
 
         # Grid sampled bioclims only vectorised in 0.5km grid
         if grid_size == 0.5:
-            # read sampled rasters 
+            # read sampled rasters
             bioclim_gdf = gpd.read_file(sampled_bioclim_path + f'{grid_size}km_bioclim.shp')
             if not bioclim_gdf.empty:
                 bioclim_gdf = geoUtils.clip_grid_per_region(perimeter_gdf,bioclim_gdf, debug= True, keep_cols= True)
@@ -222,6 +206,7 @@ def main(grid_size = 1, debug = False, range = (0,17)):
         result_gdf = result_gdf.merge(counts, on = 'FID',how = 'left')
         result_gdf = result_gdf.merge(fungi_ecology_gdf, on = 'FID',how = 'left')
 
+
         # check if bioclim gdf is available 
         if not bioclim_gdf.empty:
             result_gdf = result_gdf.merge(bioclim_gdf, on = 'FID',how = 'left')
@@ -229,14 +214,24 @@ def main(grid_size = 1, debug = False, range = (0,17)):
         print('Final gdf')
         print(result_gdf.head())
 
-        output_file = output_path + f'{region}_grid.shp'
+        output_file = output_shp_path + f'{region}_grid.shp'
 
         try: 
             result_gdf.to_file(output_file, driver='ESRI Shapefile')
             print(f'Saved {output_file}')
             print('#'*50, f'{i+1}/{len(regions_list)}', '#'*50)
         except Exception as e:
+            print("Failed to export shp")
             print(e)
 
+        #export as csv
+        output_csv = output_csv_path + f'{region}_grid.csv'
+        df = utils.gdf_to_df(result_gdf)
+        try:
+            df.to_csv(output_csv, index = False)
+        except Exception as e:
+            print("Failed to export csv")
+            print(e)
+            
 if __name__ == '__main__':
     main(grid_size = 0.5, debug = True)

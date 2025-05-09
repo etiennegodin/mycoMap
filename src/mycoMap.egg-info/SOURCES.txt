@@ -1,6 +1,7 @@
 README.md
 setup.py
 src/mycoMap/__init__.py
+src/mycoMap/createGrids.py
 src/mycoMap/geoUtils.py
 src/mycoMap/utils.py
 src/mycoMap.egg-info/PKG-INFO
@@ -14,12 +15,12 @@ src/mycoMap/dataCleaning/foretOuverte/__init__.py
 src/mycoMap/dataCleaning/foretOuverte/_old.py
 src/mycoMap/dataCleaning/foretOuverte/main.py
 src/mycoMap/dataCleaning/foretOuverte/mergeGpkg.py
-src/mycoMap/dataCleaning/occurences/__init__.py
-src/mycoMap/dataCleaning/occurences/main.py
 src/mycoMap/env_data_gathering/__init__.py
 src/mycoMap/env_data_gathering/_download_hydro.py
 src/mycoMap/env_data_gathering/download_foretOuverte.py
 src/mycoMap/env_data_gathering/download_twi.py
+src/mycoMap/model/__init__.py
+src/mycoMap/model/modelPrep.py
 src/mycoMap/species/__init__.py
 src/mycoMap/species/create_species_list.py
 src/mycoMap/species/mergeAllOccurences.py

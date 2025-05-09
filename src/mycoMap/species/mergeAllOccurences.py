@@ -15,10 +15,8 @@ if __name__ == '__main__':
         print(specie.occurence_file)
         try:
             ocurrences_df = pd.read_csv(specie.occurence_file, delimiter = '\t')
-            ocurrences_df = ocurrences_df[ocurrences_df.countryCode == 'CA']
-            ocurrences_df = ocurrences_df[ocurrences_df.stateProvince == 'Québec']
             allOcurrences_df = pd.concat([allOcurrences_df, ocurrences_df])
         except:
             pass
     print(allOcurrences_df)
-    utils.saveDfToCsv(allOcurrences_df, 'data/interim/species/allOcurrences.csv')
+    utils.saveDfToCsv(allOcurrences_df, 'data/raw/occurences/allOcurrences.csv')
