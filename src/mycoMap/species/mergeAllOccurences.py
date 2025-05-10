@@ -1,8 +1,8 @@
 import pandas as pd 
 import os, sys
 
-from . import specie as sp 
-from .. import utils 
+from mycoMap.species import specie as sp 
+from mycoMap import utils 
 if __name__ == '__main__':
 
     species_list_file = 'data/species/output/species_list.csv'

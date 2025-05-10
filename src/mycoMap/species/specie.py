@@ -1,5 +1,5 @@
 import pandas as pd
-from .. import utils 
+from mycoMap import utils 
 # Species class based on gbif 
 class Specie:
     def __init__(self, name, key, taxonomic_rank, order, family, genus):

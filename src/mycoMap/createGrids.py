@@ -3,7 +3,7 @@ from shapely.geometry import Polygon, Point
 import geopandas as gpd
 import pandas as pd 
 
-from .src.mycoMap import utils 
+from mycoMap import utils 
 gdf = gpd.GeoDataFrame()
 
 def main(gdf = gdf, grid_cell_size = 1, verbose = False):

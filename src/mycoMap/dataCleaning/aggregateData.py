@@ -17,7 +17,6 @@ output_csv_path = 'data/interim/geodata/vector/sampled_grid/csv/'
 
 gridded_occurences_path = 'data/interim/occurences/griddedOccurences.csv'
 
-
 bioclim_path = 'data/raw/geodata/bioclim/'
 perimeter_path = 'data/interim/geodata/vector/region_perimeter/'
 grid_path = 'data/interim/geodata/vector/geoUtils/clustered_0.5km_grid.shp'
@@ -102,7 +101,7 @@ def process_fungi_ecology_index(gridded_occurences_path, grid):
 
     result_gdf = grid.merge(richness_gdf, on = 'FID',how = 'left')
     fungi_ecology_gdf = result_gdf.merge(shannon_gdf, on = 'FID',how = 'left')
-    fungi_ecology_gdf = fungi_ecology_gdf.drop(['geometry'], axis = 1)
+    fungi_ecology_gdf = fungi_ecology_gdf.drop(['geometry', 'block_id'], axis = 1)
     fungi_ecology_gdf = fungi_ecology_gdf.fillna(0)
     return fungi_ecology_gdf
 
@@ -130,9 +129,9 @@ def create_occurences_gdf(occurences_path):
 def main(grid_size = 1, debug = False, range = (0,17)):
 
     regions_list = utils.get_regionCodeList()
-    regions_list = regions_list[10:]
+    #regions_list = regions_list[10:]
     print(regions_list)
-    grid = gpd.read_file(grid_path + f'{grid_size}km_grid.shp')
+    grid = gpd.read_file(grid_path)
     print(grid.shape)
 
     for i, region in enumerate(regions_list):
@@ -150,7 +149,7 @@ def main(grid_size = 1, debug = False, range = (0,17)):
         # Load perimeter gdf 
         perimeter_gdf = gpd.read_file(perimeter_path+f'{region}_perimeter.shp')
         # Clip full grid by perimeter 
-        clipped_grid = geoUtils.clip_grid_per_region(perimeter_gdf,grid, debug= True)
+        clipped_grid = geoUtils.clip_grid_per_region(perimeter_gdf,grid, debug= True, keep_cols= ['FID', 'geometry', 'block_id'])
 
         # foret ouvert gdf spatial join with clipped grid 
         joined_gdf = gpd.sjoin(gdf, clipped_grid, how ='inner', predicate= 'intersects')

@@ -2,7 +2,7 @@ import pandas as pd
 import requests    
 import asyncio
 import os, sys 
-from ..utils import unzip_file
+from mycoMap.utils import unzip_file
 
 zip_output_folder = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/zip'
 gpkg_output_folder = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg'

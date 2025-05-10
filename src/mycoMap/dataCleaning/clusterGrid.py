@@ -17,3 +17,4 @@ kmeans = KMeans(n_clusters=k, random_state=42).fit(coords)
 grid['block_id'] = kmeans.labels_
 
 grid.to_file('data/interim/geodata/vector/geoUtils/clustered_0.5km_grid.shp', driver='ESRI Shapefile')
+print('Exported')

@@ -32,6 +32,12 @@ def clip_grid_per_region(perimeter_gdf, grid, debug = False, keep_cols = False):
             clipped_grid = clipped_grid[['FID','geometry']]
         except Exception as e:
             print(e)
+    else:
+        if isinstance(keep_cols, list):
+            try:
+                clipped_grid = clipped_grid[keep_cols]
+            except Exception as e:
+                print(e)   
 
     if debug:
         print('-'*100)

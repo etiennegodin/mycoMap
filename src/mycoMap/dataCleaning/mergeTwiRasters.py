@@ -5,7 +5,7 @@ from rasterio.warp import calculate_default_transform, reproject
 
 import os
 import pandas as pd
-from ..utils import get_regionCodeList
+from mycoMap.utils import get_regionCodeList
 
 
 def resample_raster(src, scale_factor):
