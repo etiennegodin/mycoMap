@@ -1,3 +1,9 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.1
 Name: mycoMap
 Version: 0.1.0
+Requires-Dist: geopandas
+Requires-Dist: pandas
+Requires-Dist: rasterio
+Requires-Dist: fiona
+Requires-Dist: numpy
+Requires-Dist: matplotlib

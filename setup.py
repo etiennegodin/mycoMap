@@ -6,6 +6,13 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=[
-        # ... your dependencies
+        'geopandas',
+        'pandas',
+        'rasterio',
+        'fiona',
+        'numpy',
+        'matplotlib',
+        'scikit-learn',
+        'shapely'
     ],
 )

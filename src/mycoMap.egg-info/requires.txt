@@ -1,0 +1,6 @@
+geopandas
+pandas
+rasterio
+fiona
+numpy
+matplotlib

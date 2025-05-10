@@ -5,8 +5,8 @@ import rasterio
 import importlib
 import itertools
 
-from .. import utils 
-from .. import geoUtils
+from mycoMap import utils 
+from mycoMap import geoUtils
 
 importlib.reload(geoUtils)
 
@@ -17,9 +17,10 @@ output_csv_path = 'data/interim/geodata/vector/sampled_grid/csv/'
 
 gridded_occurences_path = 'data/interim/occurences/griddedOccurences.csv'
 
+
 bioclim_path = 'data/raw/geodata/bioclim/'
 perimeter_path = 'data/interim/geodata/vector/region_perimeter/'
-geoUtils_path = 'data/interim/geodata/vector/geoUtils/'
+grid_path = 'data/interim/geodata/vector/geoUtils/clustered_0.5km_grid.shp'
 sampled_bioclim_path = 'data/interim/geodata/vector/sampledBioclim/'
 
 cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty else np.nan,
@@ -129,8 +130,9 @@ def create_occurences_gdf(occurences_path):
 def main(grid_size = 1, debug = False, range = (0,17)):
 
     regions_list = utils.get_regionCodeList()
-    #regions_list = regions_list[-1:]
-    grid = gpd.read_file(geoUtils_path + f'{grid_size}km_grid.shp')
+    regions_list = regions_list[10:]
+    print(regions_list)
+    grid = gpd.read_file(grid_path + f'{grid_size}km_grid.shp')
     print(grid.shape)
 
     for i, region in enumerate(regions_list):
@@ -166,7 +168,7 @@ def main(grid_size = 1, debug = False, range = (0,17)):
             print(e)
 
         #re-encode gdf after aggregate on categorical values to get ordinal values for raster
-        aggregated_gdf = encode_vector_fields(aggregated_gdf, encoding_dictionnary)
+        #aggregated_gdf = encode_vector_fields(aggregated_gdf, encoding_dictionnary)
 
         if debug:
             print('Agg gdf')
