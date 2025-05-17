@@ -110,7 +110,7 @@ def export_perimeter(regions_list = regions_list):
         perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
         write_gdf(perimeter_gdf, perimeter_output_path)
 
-def merge_region_gpkg(region, write = False):
+def merge_region_gpkg(region, write = False, verbose = False):
     print(region)
     gpkg_file = input_gpkg_path + f'/CARTE_ECO_MAJ_{region}.gpkg'
 
@@ -129,7 +129,8 @@ def merge_region_gpkg(region, write = False):
     
     perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
 
-    print(filtered_gf)
+    if verbose:
+        print(filtered_gf)
 
     if write:
         output_path = output_shp_path + f'{region}_raw_merge.shp'

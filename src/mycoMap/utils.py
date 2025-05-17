@@ -205,6 +205,8 @@ def get_regionCodeList(range = (0,17), verbose = False):
 
     for i,(key, region) in enumerate(regionCodeDict.items()):
         regionCodeList.append(region)
+
+    regionCodeList = regionCodeList[range[0]:range[1]]
     if verbose:
         print(regionCodeList)
     return regionCodeList
