@@ -2,7 +2,7 @@
 import pandas as pd
 import geopandas as gpd 
 import fiona
-from ... import utils
+from mycoMap import utils
 
 input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg' 
 output_shp_path = 'data/interim/geodata/vector/mergedGpkg/'

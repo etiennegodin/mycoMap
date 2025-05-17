@@ -194,7 +194,7 @@ def shannonIndex(group):
     return -np.sum(proportions * np.log(proportions))
 
 
-def get_regionCodeList(range = (0,17)):
+def get_regionCodeList(range = (0,17), verbose = False):
 
     regionCodes = 'data/inputs/qc_regions.csv'
 
@@ -205,7 +205,8 @@ def get_regionCodeList(range = (0,17)):
 
     for i,(key, region) in enumerate(regionCodeDict.items()):
         regionCodeList.append(region)
-    print(regionCodeList)
+    if verbose:
+        print(regionCodeList)
     return regionCodeList
 
 

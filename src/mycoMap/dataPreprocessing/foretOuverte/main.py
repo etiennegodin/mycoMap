@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 import re
 
-from . import mergeGpkg
-from ... import utils 
+from mycoMap import mergeForetOuverteData
+from mycoMap import utils 
 
 # Paths
 input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg' 
@@ -140,7 +140,7 @@ def processs_forest_ecology_indexes(gdf):
 
 def main(region):    
 
-        gdf, perimeter_gdf = mergeGpkg.merge_region_gpkg(region)
+        gdf, perimeter_gdf = mergeForetOuverteData.merge_region_gpkg(region)
 
         #keep only relevant columns
         gdf = gdf[all_columns]
