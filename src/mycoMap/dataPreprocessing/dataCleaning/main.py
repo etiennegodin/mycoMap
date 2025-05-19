@@ -15,7 +15,6 @@ def cleanForetOuverteData(regions_list, overwrite = False, verbose = False):
     
     Output: Dict of {region : gdf}
     """
-    print('Running')
     print(f'#{__name__}.cleanForetOuverteData')
     cleaned_foretOuvert_gdfs = {}
     perimeter_gdfs = {}
@@ -39,7 +38,6 @@ def cleanOccurencesData(csv_occurences_path,cleaned_occurences_path, overwrite =
     Output: Dict {path : Dataframe of cleaned occurences}
     """
 
-    print('#Running')
     print(f'#{__name__}.cleanOccurencesData')
 
     def process():

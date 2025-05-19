@@ -153,7 +153,6 @@ def readExtractedLayersOnDisk(output_path, perimeter_output_path):
 
 
 def importForetOuvertLayers(region, overwrite = False, verbose = False):
-    print('Running')
     print(f'##{__name__}.importForetOuvertLayers')
     #Expected paths 
     output_path = output_shp_path + f'{region}_raw_merge.shp'

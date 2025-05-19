@@ -8,7 +8,6 @@ from mycoMap.dataPreprocessing.dataTransformation import foretOuverte
 CLUSTERED_GRID_OUTPUT_PATH = 'data/interim/geodata/vector/geoUtils/clustered_0.5km_grid.shp'
 
 def encodeForetOuverteData(cleaned_foretOuvert_gdfs, verbose = False):
-    print('Running')
     print(f'#{__name__}.encodeForetOuverteData')
 
     encoded_foretOuvert_gdfs = {}
@@ -24,7 +23,6 @@ def encodeForetOuverteData(cleaned_foretOuvert_gdfs, verbose = False):
     return encoded_foretOuvert_gdfs 
 
 def clusterGrid(grid_path, clusters = 5, overwrite = False):
-    print('Running')
     print(f'#{__name__}.clusterGrid')
 
     def main(grid_path,clusters):
@@ -51,4 +49,6 @@ def clusterGrid(grid_path, clusters = 5, overwrite = False):
             pass
     else:
         main(grid_path,clusters)
+
+    return CLUSTERED_GRID_OUTPUT_PATH
 
