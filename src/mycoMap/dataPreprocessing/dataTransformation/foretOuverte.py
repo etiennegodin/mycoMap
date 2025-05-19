@@ -1,23 +1,8 @@
-# prep foretOuverte data in single region.shp
-import geopandas as gpd
-import pandas as pd 
 import numpy as np
 import re
+import geopandas as gpd
 
-from mycoMap import mergeForetOuverteData
-from mycoMap import utils 
-
-# Paths
-input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg' 
-output_path = 'data/interim/geodata/vector/CARTE_ECO/'
-
-# Global vars 
-ordinal_columns = ['ty_couv_et','cl_dens','cl_haut','cl_age_et','etagement','cl_pent','hauteur']
-categorical_columns = ['dep_sur','cl_drai', 'eta_ess_pc']
-gdf_columns = ['geoc_maj', 'geometry']
-all_columns = ordinal_columns + categorical_columns + gdf_columns
-
-encoding_dictionnary = {
+foretOuverteEncodingDictionnary = {
                         'cl_age_et': 
                         {
                             '10' : 10,
@@ -31,6 +16,35 @@ encoding_dictionnary = {
                             'VIN' : 40, # 30 a 50
                             'JIN' : 95 # 70 a 120
                         },
+                        'cl_dens':
+                        {
+                            'A' : 4,
+                            'B' : 3,
+                            'C' : 2,
+                            'D' : 1,
+                        },
+
+                        'cl_haut':
+                        {
+                            '1' : 7,
+                            '2' : 6,
+                            '3' : 5,
+                            '4' : 4,
+                            '5' : 3,
+                            '6' : 2,
+                            '7' : 1,
+                        },
+
+                        'cl_pent':
+                        {
+                            'A' : 1,
+                            'B' : 2,
+                            'C' : 3,
+                            'D' : 4,
+                            'E' : 5,
+                            'F' : 6,
+                            'S' : 7
+                        }
 }
 
 def dep_sur_map(value):
@@ -61,26 +75,27 @@ def dep_sur_map(value):
     else:
         return 'Autre depot'
 
-def encode_vector_fields(gdf, encoding_dict = None):
+def encode_vector_fields(gdf, verbose = False):
 
     for series_name, series in gdf.items():
         try:
-            gdf[series_name] = gdf[series_name].map(encoding_dict[series_name])
-            print(f'Encoded {series_name}')
+            gdf[series_name] = gdf[series_name].map(foretOuverteEncodingDictionnary[series_name])
+            if verbose:
+                print(f'Encoded {series_name}')
         except Exception as e:
-            print(e)
+            print(f' -Skipped encoding for {e}')
 
     return gdf
 
-def encode_dep_sur(gdf):
+def encode_dep_sur(gdf, verbose  = False):
     #remap sub-categories of depot surface values to main categories of soil
     gdf['dep_sur'] = gdf['dep_sur'].apply(dep_sur_map)
     print("Encoded 'dep_sur;")
     return gdf
 
-def encode_tree_cover(gdf):
+def encode_tree_cover(gdf, verbose  = False):
     gdf['tree_cover'] = gdf['eta_ess_pc'].apply(decode_eta_ess_pc)
-    print("Encoded 'dep_sur;")
+    print("Encoded 'eta_ess_pc' to 'tree_cover' ")
     return gdf
 
 def decode_eta_ess_pc(code):
@@ -129,7 +144,7 @@ def shannonIndex(tree_cover):
     # SUm of surprise for each of elements
     return(shannon_index)
 
-def processs_forest_ecology_indexes(gdf):
+def processs_forest_ecology_indexes(gdf, verbose  = False):
     # Convert tree cover string to dictS
     #utils.convert_string_to_numeral(gdf, collumn='tree_cover')
 
@@ -138,24 +153,4 @@ def processs_forest_ecology_indexes(gdf):
 
     return gdf
 
-def main(region):    
 
-        gdf, perimeter_gdf = mergeForetOuverteData.merge_region_gpkg(region)
-
-        #keep only relevant columns
-        gdf = gdf[all_columns]
-
-        #encode field to aggregate 
-        gdf = encode_vector_fields(gdf, encoding_dictionnary)
-        gdf = encode_dep_sur(gdf)
-        gdf = encode_tree_cover(gdf)
-        gdf = processs_forest_ecology_indexes(gdf)
-
-        gdf.to_file(output_path + f'CARTE_ECO_{region}.shp')
-
-if __name__ == '__main__':
-    regions_list = utils.get_regionCodeList()
-    for region in regions_list:
-        main(region)
-
-                                        

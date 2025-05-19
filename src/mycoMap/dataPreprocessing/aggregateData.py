@@ -37,38 +37,6 @@ cell_agg_dict = { 'ty_couv_et': lambda x : x.mode()[0] if not x.mode().empty els
 
 tree_diversity_agg = {'tree_cover' : lambda dicts : len(set(itertools.chain.from_iterable(d.keys() for d in dicts))),}
 
-encoding_dictionnary = {
-                        'cl_dens':
-                        {
-                            'A' : 4,
-                            'B' : 3,
-                            'C' : 2,
-                            'D' : 1,
-                        },
-
-                        'cl_haut':
-                        {
-                            '1' : 7,
-                            '2' : 6,
-                            '3' : 5,
-                            '4' : 4,
-                            '5' : 3,
-                            '6' : 2,
-                            '7' : 1,
-                        },
-
-                        'cl_pent':
-                        {
-                            'A' : 1,
-                            'B' : 2,
-                            'C' : 3,
-                            'D' : 4,
-                            'E' : 5,
-                            'F' : 6,
-                            'S' : 7
-                        }
-}
-
 def sample_bioclim_to_grid(gdf):
     # 19 bioclim layers
     biolcim_layers = range(1,20)

@@ -44,7 +44,7 @@ def find_gpkg_layers(input_gpkg_path = input_gpkg_path):
 
         # exit()
 
-def combine_gpkg_layers(gpkg_file, layers):
+def combine_gpkg_layers(gpkg_file, layers, verbose = False):
     
     gdf_combined = gpd.GeoDataFrame()
     largest_layer_features = 0
@@ -56,9 +56,12 @@ def combine_gpkg_layers(gpkg_file, layers):
             layer_gdf = gpd.read_file(gpkg_file, layer=layer)
             if len(layer_gdf) > largest_layer_features:
                 largest_layer_features = len(layer_gdf) 
-            print(f"Read {len(layer_gdf)} features.")
+            if verbose:
+                print(f"Read {len(layer_gdf)} features.")
             feature_count_diff = largest_layer_features - len(layer_gdf)
-            print(f'{feature_count_diff} features less than largest layers ')
+            if verbose:
+                print(f"Read {len(layer_gdf)} features.")
+                print(f'{feature_count_diff} features less than largest layers ')
             #print(layer_gdf.head())
 
             if gdf_combined.empty:
@@ -111,7 +114,6 @@ def export_perimeter(regions_list = regions_list):
         write_gdf(perimeter_gdf, perimeter_output_path)
 
 def merge_region_gpkg(region, write = False, verbose = False):
-    print(region)
     gpkg_file = input_gpkg_path + f'/CARTE_ECO_MAJ_{region}.gpkg'
 
     layers = find_gpkg_layers(gpkg_file)
@@ -128,7 +130,6 @@ def merge_region_gpkg(region, write = False, verbose = False):
     filtered_gf = filtered_gf.drop_duplicates()
     
     perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
-
     if verbose:
         print(filtered_gf)
 
