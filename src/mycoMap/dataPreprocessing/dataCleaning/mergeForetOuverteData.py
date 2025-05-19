@@ -3,7 +3,7 @@ import pandas as pd
 import geopandas as gpd 
 import fiona
 from mycoMap import utils
-
+import os 
 input_gpkg_path = 'data/raw/geodata/foretOuverte/PEE_MAJ_PROV/gpkg' 
 output_shp_path = 'data/interim/geodata/vector/mergedGpkg/'
 
@@ -113,7 +113,8 @@ def export_perimeter(regions_list = regions_list):
         perimeter_gdf = combine_gpkg_layers(gpkg_file, layers = [layers[0]])
         write_gdf(perimeter_gdf, perimeter_output_path)
 
-def merge_region_gpkg(region, write = False, verbose = False):
+def merge_region_gpkg(region, main_layers = True, perimeter_layer = True, write = False, verbose = False):
+
     gpkg_file = input_gpkg_path + f'/CARTE_ECO_MAJ_{region}.gpkg'
 
     layers = find_gpkg_layers(gpkg_file)
@@ -135,16 +136,40 @@ def merge_region_gpkg(region, write = False, verbose = False):
 
     if write:
         output_path = output_shp_path + f'{region}_raw_merge.shp'
+        filtered_gf.to_file(output_path, driver='ESRI Shapefile')
         write_gdf(filtered_gf, output_path)
     
     if write:
         perimeter_output_path = 'data/interim/geodata/vector/region_perimeter/' + f'{region}_perimeter.shp'
-        write_gdf(perimeter_gdf, perimeter_output_path)
+        perimeter_gdf.to_file(perimeter_output_path, driver='ESRI Shapefile')
 
     return filtered_gf, perimeter_gdf
 
-if __name__ == '__main__':
-    for r in regions_list:
-        merge_region_gpkg(r, write = True)
+def readExtractedLayersOnDisk(output_path, perimeter_output_path):
+    filtered_gf = gpd.read_file(output_path)
+    perimeter_gdf = gpd.read_file(perimeter_output_path)
 
-             
+    return filtered_gf, perimeter_gdf
+
+
+def importForetOuvertLayers(region, overwrite = False, verbose = False):
+    print('Running')
+    print(f'##{__name__}.importForetOuvertLayers')
+    #Expected paths 
+    output_path = output_shp_path + f'{region}_raw_merge.shp'
+    perimeter_output_path = 'data/interim/geodata/vector/region_perimeter/' + f'{region}_perimeter.shp'
+
+
+    if os.path.isfile(output_path):
+        if overwrite:
+            print(f'{region} gpkg extracted, ### overwriting ###')
+            filtered_gf, perimeter_gdf = merge_region_gpkg(region, write = True)
+        else:
+            print(f'{region} gpkg already extracted reading files ')
+            filtered_gf, perimeter_gdf = readExtractedLayersOnDisk(output_path, perimeter_output_path)
+
+    else:
+        print(f'{region} gpkg not extracted running extraction')
+        filtered_gf, perimeter_gdf = merge_region_gpkg(region, write = True)
+
+    return filtered_gf, perimeter_gdf

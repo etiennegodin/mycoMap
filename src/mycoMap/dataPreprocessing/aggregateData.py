@@ -108,7 +108,6 @@ def main(grid_size = 1, debug = False, range = (0,17)):
         gdf = gpd.read_file(foretOuverte_path + f'CARTE_ECO_{region}.shp') 
         print('Foret Ouvert gdf')
         print(gdf.head())
-        #Convert to WSG84
         gdf = gdf.to_crs(4326)
 
         # Convert tree cover string to dict of species percentage
