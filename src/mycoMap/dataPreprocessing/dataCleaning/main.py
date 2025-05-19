@@ -18,7 +18,7 @@ def cleanForetOuverteData(regions_list, overwrite = False, verbose = False):
     print('Running')
     print(f'#{__name__}.cleanForetOuverteData')
     cleaned_foretOuvert_gdfs = {}
-
+    perimeter_gdfs = {}
     for i, region in enumerate(regions_list):
 
         gdf, perimeter_gdf = mergeForetOuverteData.importForetOuvertLayers(region, overwrite = overwrite, verbose = verbose )
@@ -26,8 +26,12 @@ def cleanForetOuverteData(regions_list, overwrite = False, verbose = False):
         #keep only relevant columns
         gdf = gdf[all_columns]
         cleaned_foretOuvert_gdfs[region] = gdf
-    
-    return cleaned_foretOuvert_gdfs, perimeter_gdf
+        perimeter_gdfs[region] = perimeter_gdf
+
+    print(cleaned_foretOuvert_gdfs == None)
+    print(perimeter_gdfs == None)
+    if not cleaned_foretOuvert_gdfs == None and not perimeter_gdfs  == None:
+        return (cleaned_foretOuvert_gdfs, perimeter_gdfs)
 
 def cleanOccurencesData(csv_occurences_path,cleaned_occurences_path, overwrite = False ):
     """

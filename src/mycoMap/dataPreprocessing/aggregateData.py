@@ -115,6 +115,7 @@ def main(grid_size = 1, debug = False, range = (0,17)):
 
         # Load perimeter gdf 
         perimeter_gdf = gpd.read_file(perimeter_path+f'{region}_perimeter.shp')
+        
         # Clip full grid by perimeter 
         clipped_grid = geoUtils.clip_grid_per_region(perimeter_gdf,grid, debug= True, keep_cols= ['FID', 'geometry', 'block_id'])
 

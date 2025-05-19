@@ -11,7 +11,7 @@ def encodeForetOuverteData(cleaned_foretOuvert_gdfs, verbose = False):
     print('Running')
     print(f'#{__name__}.encodeForetOuverteData')
 
-    encoded_foretOuvert_gdfs = []
+    encoded_foretOuvert_gdfs = {}
     
     for region, gdf in cleaned_foretOuvert_gdfs.items():
         gdf = foretOuverte.encode_vector_fields(gdf, verbose = verbose)
@@ -19,7 +19,7 @@ def encodeForetOuverteData(cleaned_foretOuvert_gdfs, verbose = False):
         gdf = foretOuverte.encode_tree_cover(gdf, verbose = verbose)
         gdf = foretOuverte.processs_forest_ecology_indexes(gdf, verbose = verbose)
 
-        encoded_foretOuvert_gdfs.append(gdf)
+        encoded_foretOuvert_gdfs[region] = gdf
 
     return encoded_foretOuvert_gdfs 
 
