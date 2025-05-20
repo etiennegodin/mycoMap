@@ -119,6 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--overwriteForetOuvert',required=False,action='store_true')
     parser.add_argument('--overwriteOccurences',required=False,action='store_true')
     parser.add_argument('--overwriteGrid',required=False,action='store_true')
+    parser.add_argument('--reprocessAll',required=False,action='store_true')
     parser.add_argument('--subset', type=tuple, required=False)
 
     args = parser.parse_args()

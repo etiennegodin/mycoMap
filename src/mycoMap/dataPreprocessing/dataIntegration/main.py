@@ -136,7 +136,7 @@ def mergeAllDataset(grid: gpd.GeoDataFrame, gdfs :list, output_path: str = None,
     # Removing all grid cells without value
     # (Mainly explained from grid covering whole area and foretOuverte data only in forested areas and in Qc boundaries )
     # 'cl_dens' used as 
-    final_gdf = final_gdf.dropna(subset=['cl_dens'])
+    final_gdf = final_gdf.dropna()
     print(final_gdf.shape)
 
     if write and output_path:
