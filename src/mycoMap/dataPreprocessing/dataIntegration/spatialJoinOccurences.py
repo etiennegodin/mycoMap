@@ -5,7 +5,6 @@ import os
 from mycoMap import utils 
 
 def main(cleaned_occurences_path, grid_path, sjoin_occurence_path, overwrite = False):
-    print('Running')
     print(f'#{__name__}.main')
     
     def process():
@@ -14,13 +13,10 @@ def main(cleaned_occurences_path, grid_path, sjoin_occurence_path, overwrite = F
 
         #load occurences
         df = pd.read_csv(cleaned_occurences_path)
-        print(df.shape)
         gdf = utils.df_to_gdf(df, xy = ['decimalLongitude','decimalLatitude'])
-        print(gdf.shape)
         #spatial join
         joined_gdf = gpd.sjoin(gdf, grid, how ='inner', predicate= 'intersects')
         joined_gdf = joined_gdf.drop(['index_right'], axis = 1)
-        print(joined_gdf.shape)
 
         df = utils.gdf_to_df(joined_gdf)
         df.to_csv(sjoin_occurence_path, index  = False)

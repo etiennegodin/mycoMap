@@ -9,28 +9,21 @@ categorical_columns = ['dep_sur','cl_drai', 'eta_ess_pc']
 gdf_columns = ['geoc_maj', 'geometry']
 all_columns = ordinal_columns + categorical_columns + gdf_columns
 
-def cleanForetOuverteData(regions_list, overwrite = False, verbose = False):
+
+
+def cleanForetOuverteData(region, overwrite = False, verbose = False):
     """
-    Input : Takes in a list of region subsets, reads and cleans them
+    Input : Takes in a region subsets, reads and cleans it
     
-    Output: Dict of {region : gdf}
+    Output: Cleaned gdf, region perimeter gdf
     """
     print(f'#{__name__}.cleanForetOuverteData')
-    cleaned_foretOuvert_gdfs = {}
-    perimeter_gdfs = {}
-    for i, region in enumerate(regions_list):
 
-        gdf, perimeter_gdf = mergeForetOuverteData.importForetOuvertLayers(region, overwrite = overwrite, verbose = verbose )
-        print(f'Cleaning {region} ({i+1}/{len(regions_list)})')
-        #keep only relevant columns
-        gdf = gdf[all_columns]
-        cleaned_foretOuvert_gdfs[region] = gdf
-        perimeter_gdfs[region] = perimeter_gdf
+    gdf, perimeter_gdf = mergeForetOuverteData.importForetOuvertLayers(region, overwrite = overwrite, verbose = verbose )
+    #keep only relevant columns
+    gdf = gdf[all_columns]
 
-    print(cleaned_foretOuvert_gdfs == None)
-    print(perimeter_gdfs == None)
-    if not cleaned_foretOuvert_gdfs == None and not perimeter_gdfs  == None:
-        return (cleaned_foretOuvert_gdfs, perimeter_gdfs)
+    return (gdf, perimeter_gdf)
 
 def cleanOccurencesData(csv_occurences_path,cleaned_occurences_path, overwrite = False ):
     """
@@ -82,3 +75,10 @@ def cleanOccurencesData(csv_occurences_path,cleaned_occurences_path, overwrite =
 
 if __name__ == '__main__':
     print('Running dataCleaning module only')
+    from mycoMap import utils 
+    regions_list = utils.get_regionCodeList(range = (-2,17), verbose= True)
+    cleaned_foretOuvert_gdfs, perimeter_gdfs = cleanForetOuverteData(regions_list)
+
+    print(cleaned_foretOuvert_gdfs)
+    print(perimeter_gdfs)
+

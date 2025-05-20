@@ -164,7 +164,7 @@ def importForetOuvertLayers(region, overwrite = False, verbose = False):
             print(f'{region} gpkg extracted, ### overwriting ###')
             filtered_gf, perimeter_gdf = merge_region_gpkg(region, write = True)
         else:
-            print(f'{region} gpkg already extracted reading files ')
+            print(f'{region} gpkg already extracted reading file ')
             filtered_gf, perimeter_gdf = readExtractedLayersOnDisk(output_path, perimeter_output_path)
 
     else:
@@ -172,3 +172,10 @@ def importForetOuvertLayers(region, overwrite = False, verbose = False):
         filtered_gf, perimeter_gdf = merge_region_gpkg(region, write = True)
 
     return filtered_gf, perimeter_gdf
+
+if __name__ == '__main__':
+    print('Running mergeForetOuverteData module only')
+    from mycoMap import utils 
+    regions_list = utils.get_regionCodeList(range = (-4,17), verbose= True)
+    for region in regions_list:
+        importForetOuvertLayers(region, overwrite= True)

@@ -212,7 +212,8 @@ def get_regionCodeList(range = (0,17), verbose = False):
     return regionCodeList
 
 
-def df_to_gdf(df, xy = ['X', 'Y']):
+def df_to_gdf(df:pd.DataFrame,
+               xy: list = ['decimalLongitude','decimalLatitude']):
 
     # Creates goepandas from dataframe with lat/long columns
     gdf = gpd.GeoDataFrame(
