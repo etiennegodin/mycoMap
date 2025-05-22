@@ -102,8 +102,8 @@ def process_fungi_ecology_index(sjoin_occurences_df: pd.DataFrame,
 def mergeAllDataset(grid: gpd.GeoDataFrame, gdfs :list, output_path: str = None, write =True):
     print(f'#{__name__}.mergeAllDataset')
 
-    shp_output_path = output_path + 'allIntegratedData.shp'
-    csv_output_path = output_path + 'allIntegratedData.csv'
+    shp_output_path = output_path + 'preprocessedData.shp'
+    csv_output_path = output_path + 'preprocessedData.csv'
 
     final_gdf = grid
 
@@ -136,12 +136,16 @@ def mergeAllDataset(grid: gpd.GeoDataFrame, gdfs :list, output_path: str = None,
     # Removing all grid cells without value
     # (Mainly explained from grid covering whole area and foretOuverte data only in forested areas and in Qc boundaries )
     # 'cl_dens' used as 
-    final_gdf = final_gdf.dropna()
+    final_gdf = final_gdf.dropna(subset = ['cl_age_et'])
     print(final_gdf.shape)
 
     if write and output_path:
         final_gdf.to_file(shp_output_path, driver='ESRI Shapefile')
+        print(f"# Exported {shp_output_path} ")
         final_gdf.to_csv(csv_output_path)
+        print(f"# Exported {csv_output_path} ")
+
+
     
     return final_gdf
 
@@ -154,7 +158,7 @@ def combineAllSubsets(dir_path : str):
 
     for i, subset in enumerate(subsets_list):
         print(f'Combining {subset} ({i+1}/{len(subsets_list)})')
-        df_temp = pd.read_csv(dir_path + subset)
+        df_temp = pd.read_csv(dir_path + subset, low_memory= False)
         df = pd.concat([df,df_temp])
     
     print('#Combined all subsets#')

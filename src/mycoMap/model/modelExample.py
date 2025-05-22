@@ -20,39 +20,15 @@ from sklearn.impute import SimpleImputer
 
 bias_layers = pd.read_csv('data/interim/geodata/vector/bias/csv/combinedBiases.csv')
 
-regions = ['21E',
-    '21L',
-    '21M',
-    '21N',
-    '21O',
-    '22A',
-    '22B',
-    '22C',
-    '22G',
-    '22H',
-    '31F',
-    '31G',
-    '31H',
-    '31I',
-    '31J',
-    '31K'
-    ]
+df = pd.read_csv('data/interim/geodata/vector/allIntegratedData/allIntegratedData.csv')
 
-model_df = pd.DataFrame()
-
-for r in regions:
-
-    region_df = pd.read_csv(f'data/interim/geodata/vector/sampled_grid/csv/{r}_grid.csv')
-    model_df = pd.concat([model_df, region_df])
-
-#model_df = pd.read_csv('data/interim/geodata/vector/sampled_grid/csv/21E_grid.csv')
 
 
 # --- Step 2: Preprocessing ---
 
 # Define features (X) and target (y)
-X = model_df.drop(['FID', 'fungi_richness', 'fungi_shannon', 'item_count'], axis=1)
-y = model_df['fungi_richness']
+X = df.drop(['FID', 'fungi_richness', 'fungi_shannon', 'item_count'], axis=1)
+y = df['fungi_richness']
 
 numerical_features = ['cl_age_et','hauteur','tree_diver','tree_shann', 'cl_dens','cl_haut','cl_pent','cl_drai']
 

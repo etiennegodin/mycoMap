@@ -18,7 +18,7 @@ SJOIN_OCCURENCES_PATH = 'data/interim/occurences/griddedOccurences.csv'
 SAMPLED_BIOCLIM_PATH = 'data/interim/geodata/vector/sampledBioclim/0.5km_bioclim.shp'
 SUBSETS_OUTPUT_PATH = 'data/interim/geodata/vector/sampled_grid/'
 
-INTEGRATED_DATA_OUTPUT_PATH = 'data/interim/geodata/vector/allIntegratedData/'
+INTEGRATED_DATA_OUTPUT_PATH = 'data/interim/geodata/vector/preprocessedData/'
 
 def overwriteDecisionTree(file, overwrite:bool):
         
@@ -96,9 +96,13 @@ def fullPipeline(regions_list, overwriteFinal = False, overwriteForetOuvert = Fa
         print('Reading Bioclim data')
         bioclim_gdf = gpd.read_file(SAMPLED_BIOCLIM_PATH)
 
+        ########################### BIAS DATA PREPROCESS ###########################
+        print('Reading Bias data')
+        bias_gdf = gpd.read_file('data/interim/geodata/vector/bias/shp/combinedBiases.shp')
+
         ########################### MERGE ALL INTEGRATED DATA ###########################
 
-        dataToMerge = [gdf,fungi_ecology_gdf, bioclim_gdf]
+        dataToMerge = [gdf,fungi_ecology_gdf, bioclim_gdf, bias_gdf]
 
         allData_gdf = dataIntegration.main.mergeAllDataset(grid, dataToMerge, output_path= INTEGRATED_DATA_OUTPUT_PATH, write = overwriteFinal)
         allData_df = utils.gdf_to_df(allData_gdf)

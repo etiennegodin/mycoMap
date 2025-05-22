@@ -1,7 +1,0 @@
-{
-	"nodes":[
-		{"id":"39bec012bd1c4e90","x":-680,"y":-140,"width":400,"height":460,"type":"file","file":"modules/species.md"},
-		{"id":"ad6ddcc8ca0af494","x":-680,"y":-620,"width":400,"height":400,"type":"file","file":"modules/env_data_gathering.md"}
-	],
-	"edges":[]
-}
